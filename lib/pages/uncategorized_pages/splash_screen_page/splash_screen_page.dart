@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import '../../../resources/app_colors.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../main_page.dart';
 
@@ -47,9 +47,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: FadeInAnimation(
-        duration: Duration(
+        duration: const Duration(
           milliseconds: 2000,
         ),
         child: Column(
@@ -58,16 +58,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
                 Text(
                   'STAY GROUP',
-                  style: TextStyle(
-                    fontSize: 38.0,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: AppTextStyles.head1Bold,
                 ),
-                Spacer(),
+                const Spacer(),
               ],
             ),
           ],

@@ -14,8 +14,12 @@ class TeamPage extends StatefulWidget {
 class _TeamPageState extends State<TeamPage> {
   @override
   Widget build(BuildContext context) {
-    return const FlexibleLayout(
-      body: Text('Team Page'),
+    return FlexibleLayout(
+      builder: (Size size) {
+        return const Center(
+          child: Text('Team Page'),
+        );
+      },
     );
   }
 }

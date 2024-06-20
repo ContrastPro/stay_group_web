@@ -14,8 +14,12 @@ class ProjectsPage extends StatefulWidget {
 class _ProjectsPageState extends State<ProjectsPage> {
   @override
   Widget build(BuildContext context) {
-    return const FlexibleLayout(
-      body: Text('Projects Page'),
+    return FlexibleLayout(
+      builder: (Size size) {
+        return const Center(
+          child: Text('Projects Page'),
+        );
+      },
     );
   }
 }

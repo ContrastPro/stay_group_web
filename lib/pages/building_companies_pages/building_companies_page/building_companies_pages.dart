@@ -14,8 +14,12 @@ class BuildingCompaniesPage extends StatefulWidget {
 class _BuildingCompaniesPageState extends State<BuildingCompaniesPage> {
   @override
   Widget build(BuildContext context) {
-    return const FlexibleLayout(
-      body: Text('Building Companies Page'),
+    return FlexibleLayout(
+      builder: (Size size) {
+        return const Center(
+          child: Text('Building Companies Page'),
+        );
+      },
     );
   }
 }

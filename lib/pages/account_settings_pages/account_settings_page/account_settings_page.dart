@@ -14,8 +14,12 @@ class AccountSettingsPage extends StatefulWidget {
 class _AccountSettingsPageState extends State<AccountSettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return const FlexibleLayout(
-      body: Text('Account Settings Page'),
+    return FlexibleLayout(
+      builder: (Size size) {
+        return const Center(
+          child: Text('Account Settings Page'),
+        );
+      },
     );
   }
 }

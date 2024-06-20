@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'app_text_styles.dart';
 
 class AppThemes {
   const AppThemes._();
@@ -12,6 +13,7 @@ class AppThemes {
         secondary: AppColors.secondary,
       ),
       scaffoldBackgroundColor: AppColors.scaffoldPrimary,
+      fontFamily: AppTextStyles.fontFamily,
       textTheme: const TextTheme(
         bodySmall: TextStyle(
           color: AppColors.textPrimary,

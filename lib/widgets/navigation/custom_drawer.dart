@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../blocs/navigation_bloc/navigation_bloc.dart';
 import '../../models/uncategorized/custom_bottom_navigation_bar_item_model.dart';
@@ -8,9 +9,16 @@ import '../../pages/building_companies_pages/building_companies_page/building_co
 import '../../pages/projects_pages/projects_page/projects_page.dart';
 import '../../pages/team_pages/team_page/team_page.dart';
 import '../../resources/app_colors.dart';
+import '../../resources/app_icons.dart';
+import '../../resources/app_text_styles.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  const CustomDrawer({
+    super.key,
+    required this.screenSize,
+  });
+
+  final Size screenSize;
 
   static const List<String> _pages = [
     BuildingCompaniesPage.routeName,
@@ -19,21 +27,21 @@ class CustomDrawer extends StatelessWidget {
     AccountSettingsPage.routeName,
   ];
 
-  final List<CustomBottomNavigationBarItemModel> _tabs = const [
+  static const List<CustomBottomNavigationBarItemModel> _tabs = [
     CustomBottomNavigationBarItemModel(
-      icon: Icons.home_rounded,
-      title: 'Home',
+      icon: AppIcons.dashboard,
+      title: 'Dashboard',
     ),
     CustomBottomNavigationBarItemModel(
-      icon: Icons.add_business_rounded,
+      icon: AppIcons.projects,
       title: 'Projects',
     ),
     CustomBottomNavigationBarItemModel(
-      icon: Icons.supervised_user_circle_rounded,
+      icon: AppIcons.team,
       title: 'Team',
     ),
     CustomBottomNavigationBarItemModel(
-      icon: Icons.settings_rounded,
+      icon: AppIcons.settings,
       title: 'Account settings',
     ),
   ];
@@ -57,15 +65,84 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
+        if (screenSize.width >= 960.0) {
+          return SizedBox(
+            width: 240.0,
+            child: Column(
+              children: _tabs.map((i) {
+                final int index = _tabs.indexOf(i);
+
+                return Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: InkWell(
+                      onTap: () => _onSelect(
+                        context: context,
+                        currentTab: state.currentTab,
+                        index: index,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: index == state.currentTab
+                              ? AppColors.scaffoldSecondary
+                              : AppColors.transparent,
+                          border: Border.all(
+                            color: index == state.currentTab
+                                ? AppColors.border
+                                : AppColors.transparent,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              i.icon,
+                              width: 20.0,
+                              colorFilter: ColorFilter.mode(
+                                index == state.currentTab
+                                    ? AppColors.textPrimary
+                                    : AppColors.textSecondary,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                            Text(
+                              i.title,
+                              style: AppTextStyles.paragraphSRegular.copyWith(
+                                color: index == state.currentTab
+                                    ? AppColors.textPrimary
+                                    : AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }
+
         return SizedBox(
-          width: 216.0,
+          width: 45.0,
           child: Column(
             children: _tabs.map((i) {
               final int index = _tabs.indexOf(i);
 
-              return Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Tooltip(
+                  message: i.title,
+                  verticalOffset: 32.0,
                   child: InkWell(
                     onTap: () => _onSelect(
                       context: context,
@@ -74,10 +151,9 @@ class CustomDrawer extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(8.0),
                     child: Container(
-                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12.0,
-                        vertical: 8.0,
+                        vertical: 10.0,
                       ),
                       decoration: BoxDecoration(
                         color: index == state.currentTab
@@ -90,28 +166,15 @@ class CustomDrawer extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            i.icon,
-                            size: 20.0,
-                            color: index == state.currentTab
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 8.0),
-                          Text(
-                            i.title,
-                            style: TextStyle(
-                              color: index == state.currentTab
-                                  ? AppColors.textPrimary
-                                  : AppColors.textSecondary,
-                              fontSize: 11.0,
-                              height: 1.18,
-                            ),
-                          )
-                        ],
+                      child: SvgPicture.asset(
+                        i.icon,
+                        width: 20.0,
+                        colorFilter: ColorFilter.mode(
+                          index == state.currentTab
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),
