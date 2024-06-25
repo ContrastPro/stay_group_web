@@ -1,29 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../blocs/navigation_bloc/navigation_bloc.dart';
-import '../routes/app_router.dart';
-import 'building_companies_pages/building_companies_page/building_companies_pages.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class MainPage extends StatelessWidget {
+  const MainPage({
+    super.key,
+    required this.pageBuilder,
+  });
 
-  static const routeName = '/main';
+  final StatefulNavigationShell pageBuilder;
 
-  @override
-  State<MainPage> createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-
-  void _onSelectTab(String route) {
-    if (_navigatorKey.currentState != null) {
-      _navigatorKey.currentState!.pushNamedAndRemoveUntil(
-        route,
-        (_) => false,
-      );
-    }
+  void _onSelectTab(int currentTab) {
+    pageBuilder.goBranch(currentTab);
   }
 
   @override
@@ -37,16 +27,12 @@ class _MainPageState extends State<MainPage> {
       child: BlocConsumer<NavigationBloc, NavigationState>(
         listener: (_, state) {
           if (state.status == NavigationStatus.tab) {
-            _onSelectTab(state.route);
+            _onSelectTab(state.currentTab);
           }
         },
         builder: (context, state) {
           return Scaffold(
-            body: Navigator(
-              key: _navigatorKey,
-              initialRoute: BuildingCompaniesPage.routeName,
-              onGenerateRoute: AppRouter.generateRoute,
-            ),
+            body: pageBuilder,
           );
         },
       ),

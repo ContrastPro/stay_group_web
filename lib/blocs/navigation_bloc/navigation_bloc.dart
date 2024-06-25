@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../pages/building_companies_pages/building_companies_page/building_companies_pages.dart';
+import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 
 part 'navigation_event.dart';
 
@@ -14,7 +14,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         state.copyWith(
           status: NavigationStatus.tab,
           currentTab: event.index,
-          route: event.route,
+          routePath: event.route,
         ),
       );
     });

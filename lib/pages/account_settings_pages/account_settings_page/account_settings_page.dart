@@ -5,7 +5,7 @@ import '../../../widgets/navigation/flexible_layout.dart';
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
 
-  static const routeName = '/account_settings_pages/account_settings';
+  static const routePath = '/account_settings_pages/account_settings';
 
   @override
   State<AccountSettingsPage> createState() => _AccountSettingsPageState();

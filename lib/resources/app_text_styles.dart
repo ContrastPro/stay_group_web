@@ -10,6 +10,16 @@ class AppTextStyles {
         fontWeight: FontWeight.w700,
       );
 
+  static TextStyle get paragraphMRegular => const TextStyle(
+        fontSize: 16.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  static TextStyle get paragraphSMedium => const TextStyle(
+        fontSize: 14.0,
+        fontWeight: FontWeight.w500,
+      );
+
   static TextStyle get paragraphSRegular => const TextStyle(
         fontSize: 14.0,
         fontWeight: FontWeight.w400,

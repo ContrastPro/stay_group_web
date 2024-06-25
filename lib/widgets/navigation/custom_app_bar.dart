@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../resources/app_text_styles.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
@@ -37,10 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title != null
           ? Text(
               title!,
-              style: const TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.paragraphMRegular,
             )
           : null,
       actions: [

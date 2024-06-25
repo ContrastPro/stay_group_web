@@ -5,7 +5,7 @@ import '../../../widgets/navigation/flexible_layout.dart';
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
 
-  static const routeName = '/team_pages/team';
+  static const routePath = '/team_pages/team';
 
   @override
   State<TeamPage> createState() => _TeamPageState();

@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
+import '../resources/app_text_styles.dart';
 import '../utils/constants.dart';
 
 enum InAppNotificationType { info, warning, error }
@@ -55,7 +56,7 @@ class InAppNotificationService {
                 Flexible(
                   child: Text(
                     title,
-                    style: TextStyle(
+                    style: AppTextStyles.paragraphSRegular.copyWith(
                       color: _notificationColorText(type),
                     ),
                     textAlign: TextAlign.start,

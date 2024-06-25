@@ -5,7 +5,7 @@ import '../../../widgets/navigation/flexible_layout.dart';
 class ProjectsPage extends StatefulWidget {
   const ProjectsPage({super.key});
 
-  static const routeName = '/projects_pages/projects';
+  static const routePath = '/projects_pages/projects';
 
   @override
   State<ProjectsPage> createState() => _ProjectsPageState();

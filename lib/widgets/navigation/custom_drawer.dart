@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../blocs/navigation_bloc/navigation_bloc.dart';
 import '../../models/uncategorized/custom_bottom_navigation_bar_item_model.dart';
 import '../../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
-import '../../pages/building_companies_pages/building_companies_page/building_companies_pages.dart';
+import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../pages/projects_pages/projects_page/projects_page.dart';
 import '../../pages/team_pages/team_page/team_page.dart';
 import '../../resources/app_colors.dart';
@@ -21,10 +21,10 @@ class CustomDrawer extends StatelessWidget {
   final Size screenSize;
 
   static const List<String> _pages = [
-    BuildingCompaniesPage.routeName,
-    ProjectsPage.routeName,
-    TeamPage.routeName,
-    AccountSettingsPage.routeName,
+    DashboardPage.routePath,
+    ProjectsPage.routePath,
+    TeamPage.routePath,
+    AccountSettingsPage.routePath,
   ];
 
   static const List<CustomBottomNavigationBarItemModel> _tabs = [
@@ -107,8 +107,8 @@ class CustomDrawer extends StatelessWidget {
                               width: 20.0,
                               colorFilter: ColorFilter.mode(
                                 index == state.currentTab
-                                    ? AppColors.textPrimary
-                                    : AppColors.textSecondary,
+                                    ? AppColors.primary
+                                    : AppColors.secondary,
                                 BlendMode.srcIn,
                               ),
                             ),
@@ -140,41 +140,37 @@ class CustomDrawer extends StatelessWidget {
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
-                child: Tooltip(
-                  message: i.title,
-                  verticalOffset: 32.0,
-                  child: InkWell(
-                    onTap: () => _onSelect(
-                      context: context,
-                      currentTab: state.currentTab,
-                      index: index,
+                child: InkWell(
+                  onTap: () => _onSelect(
+                    context: context,
+                    currentTab: state.currentTab,
+                    index: index,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0,
+                      vertical: 10.0,
                     ),
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 10.0,
-                      ),
-                      decoration: BoxDecoration(
+                    decoration: BoxDecoration(
+                      color: index == state.currentTab
+                          ? AppColors.scaffoldSecondary
+                          : AppColors.transparent,
+                      border: Border.all(
                         color: index == state.currentTab
-                            ? AppColors.scaffoldSecondary
+                            ? AppColors.border
                             : AppColors.transparent,
-                        border: Border.all(
-                          color: index == state.currentTab
-                              ? AppColors.border
-                              : AppColors.transparent,
-                        ),
-                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      child: SvgPicture.asset(
-                        i.icon,
-                        width: 20.0,
-                        colorFilter: ColorFilter.mode(
-                          index == state.currentTab
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
-                          BlendMode.srcIn,
-                        ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: SvgPicture.asset(
+                      i.icon,
+                      width: 20.0,
+                      colorFilter: ColorFilter.mode(
+                        index == state.currentTab
+                            ? AppColors.primary
+                            : AppColors.secondary,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ),

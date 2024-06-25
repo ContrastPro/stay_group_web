@@ -3,8 +3,8 @@ import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import 'pages/uncategorized_pages/splash_screen_page/splash_screen_page.dart';
 import 'resources/app_themes.dart';
 import 'routes/app_router.dart';
 
@@ -21,8 +21,12 @@ Future<void> main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
+      final GoRouter routerConfig = AppRouter.generateRoute();
+
       runApp(
-        const _App(),
+        _App(
+          routerConfig: routerConfig,
+        ),
       );
     },
     _errorHandler,
@@ -30,23 +34,20 @@ Future<void> main() async {
 }
 
 class _App extends StatelessWidget {
-  const _App();
+  const _App({
+    required this.routerConfig,
+  });
+
+  final GoRouter routerConfig;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: BotToastInit(),
-      navigatorObservers: [
-        BotToastNavigatorObserver(),
-      ],
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'STAY GROUP',
       theme: AppThemes.light(),
-      initialRoute: SplashScreenPage.routeName,
-      onGenerateRoute: AppRouter.generateRoute,
-      routes: {
-        SplashScreenPage.routeName: (_) => const SplashScreenPage(),
-      },
+      builder: BotToastInit(),
+      routerConfig: routerConfig,
     );
   }
 }

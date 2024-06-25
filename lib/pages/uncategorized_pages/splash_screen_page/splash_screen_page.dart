@@ -1,14 +1,22 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
+import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
-import '../../main_page.dart';
 
 class SplashScreenPage extends StatefulWidget {
-  const SplashScreenPage({super.key});
+  const SplashScreenPage({
+    super.key,
+    required this.navigateToSignInPage,
+    required this.navigateToMainPage,
+  });
 
-  static const routeName = '/';
+  static const routePath = '/';
+
+  final void Function() navigateToSignInPage;
+  final void Function() navigateToMainPage;
 
   @override
   State<SplashScreenPage> createState() => _SplashScreenPageState();
@@ -27,21 +35,14 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         milliseconds: 3000,
       ),
       () {
-        return _navigateToPage(
-          MainPage.routeName,
-        );
-      },
-    );
-  }
+        const bool isAuth = true;
 
-  void _navigateToPage(
-    String route, {
-    Object? arguments,
-  }) {
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      route,
-      (_) => false,
-      arguments: arguments,
+        if (!isAuth) {
+          return widget.navigateToSignInPage();
+        }
+
+        return widget.navigateToMainPage();
+      },
     );
   }
 
@@ -58,12 +59,21 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(),
-                Text(
-                  'STAY GROUP',
-                  style: AppTextStyles.head1Bold,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 64.0,
+                    ),
+                    child: AutoSizeText(
+                      'STAY GROUP',
+                      style: AppTextStyles.head1Bold.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
-                const Spacer(),
               ],
             ),
           ],
