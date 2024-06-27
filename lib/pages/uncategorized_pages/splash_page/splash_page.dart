@@ -6,23 +6,23 @@ import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 
-class SplashScreenPage extends StatefulWidget {
-  const SplashScreenPage({
+class SplashPage extends StatefulWidget {
+  const SplashPage({
     super.key,
     required this.navigateToSignInPage,
-    required this.navigateToMainPage,
+    required this.navigateToDashboardPage,
   });
 
   static const routePath = '/';
 
   final void Function() navigateToSignInPage;
-  final void Function() navigateToMainPage;
+  final void Function() navigateToDashboardPage;
 
   @override
-  State<SplashScreenPage> createState() => _SplashScreenPageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashScreenPageState extends State<SplashScreenPage> {
+class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     _setInitialData();
@@ -32,16 +32,17 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   void _setInitialData() {
     Timer(
       const Duration(
-        milliseconds: 3000,
+        milliseconds: 2000,
       ),
       () {
+        //const bool isAuth = false;
         const bool isAuth = true;
 
         if (!isAuth) {
           return widget.navigateToSignInPage();
         }
 
-        return widget.navigateToMainPage();
+        return widget.navigateToDashboardPage();
       },
     );
   }
@@ -51,7 +52,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     return Scaffold(
       body: FadeInAnimation(
         duration: const Duration(
-          milliseconds: 2000,
+          milliseconds: 3000,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

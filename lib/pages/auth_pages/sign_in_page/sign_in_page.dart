@@ -5,9 +5,14 @@ import '../../../resources/app_icons.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  const SignInPage({
+    super.key,
+    required this.navigateToSignUpPage,
+  });
 
   static const routePath = '/auth_pages/sign_in';
+
+  final void Function() navigateToSignUpPage;
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -30,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
             borderRadius: BorderRadius.circular(12.0),
             boxShadow: AppColors.cardShadow,
           ),
-          child: const Column(
+          child: Column(
             children: [
               BorderTextField(
                 labelText: 'Email',
@@ -43,6 +48,11 @@ class _SignInPageState extends State<SignInPage> {
                 hintText: 'Password',
                 prefixIcon: AppIcons.lock,
                 suffixIcon: AppIcons.visibilityOn,
+              ),
+              SizedBox(height: 16.0),
+              TextButton(
+                onPressed: widget.navigateToSignUpPage,
+                child: Text('Log in'),
               ),
             ],
           ),

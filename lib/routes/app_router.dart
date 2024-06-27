@@ -4,97 +4,152 @@ import 'package:go_router/go_router.dart';
 
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../pages/auth_pages/sign_in_page/sign_in_page.dart';
+import '../pages/auth_pages/sign_up_page/sign_up_page.dart';
 import '../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../pages/main_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
 import '../pages/team_pages/team_page/team_page.dart';
-import '../pages/uncategorized_pages/splash_screen_page/splash_screen_page.dart';
+import '../pages/uncategorized_pages/splash_page/splash_page.dart';
 
 class AppRouter {
   const AppRouter._();
 
-  static final GlobalKey<NavigatorState> _rootNavigator =
-      GlobalKey<NavigatorState>();
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-  static final GlobalKey<NavigatorState> _sectionNavigator =
-      GlobalKey<NavigatorState>();
+  static final _shellDashboardNavigator = GlobalKey<NavigatorState>();
+  static final _shellProjectsNavigator = GlobalKey<NavigatorState>();
+  static final _shellTeamNavigator = GlobalKey<NavigatorState>();
+  static final _shellSettingsNavigator = GlobalKey<NavigatorState>();
 
   static GoRouter generateRoute() {
     return GoRouter(
       observers: [
         BotToastNavigatorObserver(),
       ],
-      navigatorKey: _rootNavigator,
-      initialLocation: SplashScreenPage.routePath,
+      navigatorKey: _rootNavigatorKey,
+      initialLocation: SplashPage.routePath,
       routes: [
-        // [START] Uncategorized pages
-
         GoRoute(
-          path: SplashScreenPage.routePath,
-          builder: (context, _) => SplashScreenPage(
-            navigateToSignInPage: () => context.go(
-              SignInPage.routePath,
-            ),
-            navigateToMainPage: () => context.go(
-              DashboardPage.routePath,
+          parentNavigatorKey: _rootNavigatorKey,
+          path: SplashPage.routePath,
+          pageBuilder: (context, state) => _customTransition(
+            state: state,
+            child: SplashPage(
+              navigateToSignInPage: () => context.go(
+                SignInPage.routePath,
+              ),
+              navigateToDashboardPage: () => context.go(
+                DashboardPage.routePath,
+              ),
             ),
           ),
         ),
 
-        // [END] Uncategorized pages
-
         // [START] Auth pages
 
         GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: SignInPage.routePath,
-          builder: (context, _) => const SignInPage(),
+          pageBuilder: (context, state) => _customTransition(
+            state: state,
+            child: SignInPage(
+              navigateToSignUpPage: () => context.go(
+                SignUpPage.routePath,
+              ),
+            ),
+          ),
+        ),
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: SignUpPage.routePath,
+          pageBuilder: (context, state) => _customTransition(
+            state: state,
+            child: const SignUpPage(),
+          ),
         ),
 
         // [END] Auth pages
+
+        // [START] Main pages
 
         StatefulShellRoute.indexedStack(
           builder: (context, _, StatefulNavigationShell pageBuilder) {
             return MainPage(
               pageBuilder: pageBuilder,
+              onSelectTab: context.go,
             );
           },
           branches: [
             StatefulShellBranch(
-              navigatorKey: _sectionNavigator,
+              navigatorKey: _shellDashboardNavigator,
               routes: [
                 GoRoute(
                   path: DashboardPage.routePath,
-                  builder: (context, _) => const DashboardPage(),
+                  pageBuilder: (context, state) => _customTransition(
+                    state: state,
+                    child: const DashboardPage(),
+                  ),
                 ),
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _shellProjectsNavigator,
               routes: [
                 GoRoute(
                   path: ProjectsPage.routePath,
-                  builder: (context, _) => const ProjectsPage(),
+                  pageBuilder: (context, state) => _customTransition(
+                    state: state,
+                    child: const ProjectsPage(),
+                  ),
                 ),
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _shellTeamNavigator,
               routes: [
                 GoRoute(
                   path: TeamPage.routePath,
-                  builder: (context, _) => const TeamPage(),
+                  pageBuilder: (context, state) => _customTransition(
+                    state: state,
+                    child: const TeamPage(),
+                  ),
                 ),
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _shellSettingsNavigator,
               routes: [
                 GoRoute(
                   path: AccountSettingsPage.routePath,
-                  builder: (context, _) => const AccountSettingsPage(),
+                  pageBuilder: (context, state) => _customTransition(
+                    state: state,
+                    child: const AccountSettingsPage(),
+                  ),
                 ),
               ],
             ),
           ],
         ),
+
+        // [END] Main pages
       ],
+    );
+  }
+
+  static CustomTransitionPage _customTransition<T>({
+    required GoRouterState state,
+    required Widget child,
+  }) {
+    return CustomTransitionPage<T>(
+      key: state.pageKey,
+      child: child,
+      transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
     );
   }
 }

@@ -8,9 +8,9 @@ abstract class NavigationEvent {
 class NavigateTab extends NavigationEvent {
   const NavigateTab({
     required this.index,
-    required this.route,
+    required this.routePath,
   });
 
   final int index;
-  final String route;
+  final String routePath;
 }

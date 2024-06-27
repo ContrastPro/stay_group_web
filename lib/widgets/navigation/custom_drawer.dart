@@ -20,29 +20,26 @@ class CustomDrawer extends StatelessWidget {
 
   final Size screenSize;
 
-  static const List<String> _pages = [
-    DashboardPage.routePath,
-    ProjectsPage.routePath,
-    TeamPage.routePath,
-    AccountSettingsPage.routePath,
-  ];
-
   static const List<CustomBottomNavigationBarItemModel> _tabs = [
     CustomBottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
       title: 'Dashboard',
+      routePath: DashboardPage.routePath,
     ),
     CustomBottomNavigationBarItemModel(
       icon: AppIcons.projects,
       title: 'Projects',
+      routePath: ProjectsPage.routePath,
     ),
     CustomBottomNavigationBarItemModel(
       icon: AppIcons.team,
       title: 'Team',
+      routePath: TeamPage.routePath,
     ),
     CustomBottomNavigationBarItemModel(
       icon: AppIcons.settings,
       title: 'Account settings',
+      routePath: AccountSettingsPage.routePath,
     ),
   ];
 
@@ -50,12 +47,13 @@ class CustomDrawer extends StatelessWidget {
     required BuildContext context,
     required int currentTab,
     required int index,
+    required String routePath,
   }) {
     if (currentTab != index) {
       context.read<NavigationBloc>().add(
             NavigateTab(
               index: index,
-              route: _pages[index],
+              routePath: routePath,
             ),
           );
     }
@@ -69,8 +67,8 @@ class CustomDrawer extends StatelessWidget {
           return SizedBox(
             width: 240.0,
             child: Column(
-              children: _tabs.map((i) {
-                final int index = _tabs.indexOf(i);
+              children: _tabs.map((e) {
+                final int index = _tabs.indexOf(e);
 
                 return Flexible(
                   child: Padding(
@@ -80,6 +78,7 @@ class CustomDrawer extends StatelessWidget {
                         context: context,
                         currentTab: state.currentTab,
                         index: index,
+                        routePath: e.routePath,
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                       child: Container(
@@ -103,7 +102,7 @@ class CustomDrawer extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SvgPicture.asset(
-                              i.icon,
+                              e.icon,
                               width: 20.0,
                               colorFilter: ColorFilter.mode(
                                 index == state.currentTab
@@ -114,7 +113,7 @@ class CustomDrawer extends StatelessWidget {
                             ),
                             const SizedBox(width: 8.0),
                             Text(
-                              i.title,
+                              e.title,
                               style: AppTextStyles.paragraphSRegular.copyWith(
                                 color: index == state.currentTab
                                     ? AppColors.textPrimary
@@ -135,8 +134,8 @@ class CustomDrawer extends StatelessWidget {
         return SizedBox(
           width: 45.0,
           child: Column(
-            children: _tabs.map((i) {
-              final int index = _tabs.indexOf(i);
+            children: _tabs.map((e) {
+              final int index = _tabs.indexOf(e);
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
@@ -145,6 +144,7 @@ class CustomDrawer extends StatelessWidget {
                     context: context,
                     currentTab: state.currentTab,
                     index: index,
+                    routePath: e.routePath,
                   ),
                   borderRadius: BorderRadius.circular(8.0),
                   child: Container(
@@ -164,7 +164,7 @@ class CustomDrawer extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: SvgPicture.asset(
-                      i.icon,
+                      e.icon,
                       width: 20.0,
                       colorFilter: ColorFilter.mode(
                         index == state.currentTab

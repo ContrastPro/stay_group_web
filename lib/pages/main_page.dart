@@ -8,13 +8,11 @@ class MainPage extends StatelessWidget {
   const MainPage({
     super.key,
     required this.pageBuilder,
+    required this.onSelectTab,
   });
 
   final StatefulNavigationShell pageBuilder;
-
-  void _onSelectTab(int currentTab) {
-    pageBuilder.goBranch(currentTab);
-  }
+  final void Function(String) onSelectTab;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +25,7 @@ class MainPage extends StatelessWidget {
       child: BlocConsumer<NavigationBloc, NavigationState>(
         listener: (_, state) {
           if (state.status == NavigationStatus.tab) {
-            _onSelectTab(state.currentTab);
+            onSelectTab(state.routePath);
           }
         },
         builder: (context, state) {

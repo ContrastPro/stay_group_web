@@ -14,7 +14,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         state.copyWith(
           status: NavigationStatus.tab,
           currentTab: event.index,
-          routePath: event.route,
+          routePath: event.routePath,
         ),
       );
     });
