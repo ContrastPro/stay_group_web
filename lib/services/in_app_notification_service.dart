@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
+import '../resources/app_colors.dart';
 import '../resources/app_text_styles.dart';
 import '../utils/constants.dart';
 
@@ -10,75 +11,69 @@ class InAppNotificationService {
   const InAppNotificationService._();
 
   static void show({
-    String title = 'Info message',
+    String title = 'Here is a test message!',
     InAppNotificationType type = InAppNotificationType.info,
   }) {
     BotToast.showCustomNotification(
       onlyOne: true,
       duration: const Duration(
-        milliseconds: 5000,
+        milliseconds: 10000,
       ),
       animationDuration: const Duration(
-        milliseconds: 300,
+        milliseconds: 450,
       ),
       toastBuilder: (_) {
-        return Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-          ),
-          decoration: BoxDecoration(
-            color: _notificationColor(type),
-            borderRadius: kCircleRadius,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                blurRadius: 8.0,
-                spreadRadius: 1.0,
-                offset: const Offset(0.0, 3.0),
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              width: 320.0,
+              margin: const EdgeInsets.symmetric(
+                horizontal: 32.0,
+                vertical: 16.0,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14.0,
-              vertical: 12.0,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _notificationIcon(type),
-                  size: 18.0,
+              decoration: BoxDecoration(
+                color: AppColors.scaffoldSecondary,
+                boxShadow: AppColors.mediumShadow,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18.0,
+                  vertical: 16.0,
                 ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                Flexible(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.paragraphSRegular.copyWith(
-                      color: _notificationColorText(type),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(2.0),
+                      decoration: BoxDecoration(
+                        borderRadius: kCircleRadius,
+                        color: _notificationIconColor(type),
+                      ),
+                      child: Icon(
+                        _notificationIcon(type),
+                        size: 16.0,
+                        color: AppColors.scaffoldSecondary,
+                      ),
                     ),
-                    textAlign: TextAlign.start,
-                  ),
+                    const SizedBox(width: 12.0),
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: AppTextStyles.paragraphSRegular.copyWith(
+                          color: AppColors.iconPrimary,
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         );
       },
     );
-  }
-
-  static Color _notificationColor(InAppNotificationType type) {
-    if (type == InAppNotificationType.warning) return Colors.orangeAccent;
-    if (type == InAppNotificationType.error) return Colors.redAccent;
-    return Colors.white;
-  }
-
-  static Color _notificationColorText(InAppNotificationType type) {
-    if (type == InAppNotificationType.info) return Colors.black54;
-    return Colors.white;
   }
 
   static IconData _notificationIcon(InAppNotificationType type) {
@@ -87,9 +82,15 @@ class InAppNotificationService {
     }
 
     if (type == InAppNotificationType.error) {
-      return Icons.error_rounded;
+      return Icons.close_rounded;
     }
 
     return Icons.done_rounded;
+  }
+
+  static Color _notificationIconColor(InAppNotificationType type) {
+    if (type == InAppNotificationType.warning) return AppColors.warning;
+    if (type == InAppNotificationType.error) return AppColors.error;
+    return AppColors.success;
   }
 }

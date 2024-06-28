@@ -52,7 +52,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             state.copyWith(
               status: BlocStatus.failed,
-              errorMessage: 'error_verification',
+              errorMessage:
+                  'The email address is not verified. Check your mailbox',
             ),
           );
         }
@@ -60,7 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'error_sign_in',
+            errorMessage: 'The email or password is incorrect',
           ),
         );
       }
@@ -106,7 +107,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(
             state.copyWith(
               status: BlocStatus.failed,
-              errorMessage: 'error_sign_up',
+              errorMessage: 'A user with this email address already exists',
             ),
           );
         }
@@ -120,7 +121,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'error_sign_up',
+            errorMessage: 'A user with this email address already exists',
           ),
         );
       }
@@ -153,7 +154,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'error_recovery',
+            errorMessage: 'User with this email does not exist',
           ),
         );
       }

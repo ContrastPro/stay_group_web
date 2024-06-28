@@ -83,8 +83,9 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: SignUpPage(
-              navigateToVerifyEmailPage: () => context.go(
+              navigateToVerifyEmailPage: (String email) => context.go(
                 VerifyEmailPage.routePath,
+                extra: email,
               ),
               navigateToLogInPage: () => context.go(
                 LogInPage.routePath,
@@ -96,10 +97,19 @@ class AppRouter {
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: VerifyEmailPage.routePath,
-          pageBuilder: (context, state) => _customTransition(
-            state: state,
-            child: const VerifyEmailPage(),
-          ),
+          pageBuilder: (context, state) {
+            final String args = state.extra as String;
+
+            return _customTransition(
+              state: state,
+              child: VerifyEmailPage(
+                email: args,
+                navigateToLogInPage: () => context.go(
+                  LogInPage.routePath,
+                ),
+              ),
+            );
+          },
         ),
 
         // [END] Auth pages

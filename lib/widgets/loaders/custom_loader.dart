@@ -18,7 +18,7 @@ class CustomLoader extends StatelessWidget {
         padding: padding,
         child: SpinKitSquareCircle(
           size: 50.0,
-          color: AppColors.secondary.withOpacity(0.6),
+          color: AppColors.primary.withOpacity(0.6),
         ),
       ),
     );

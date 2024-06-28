@@ -12,6 +12,7 @@ class BorderTextField extends StatefulWidget {
     this.labelText,
     this.hintText,
     this.errorText,
+    this.showErrorText = false,
     this.isObscureText = false,
     this.maxLines = 1,
     this.prefixIcon,
@@ -26,6 +27,7 @@ class BorderTextField extends StatefulWidget {
   final String? labelText;
   final String? hintText;
   final String? errorText;
+  final bool showErrorText;
   final bool isObscureText;
   final int maxLines;
   final String? prefixIcon;
@@ -104,10 +106,10 @@ class _BorderTextFieldState extends State<BorderTextField> {
                         : AppColors.secondary.withOpacity(0.20),
                   )
                 : Border.all(
-                    color: AppColors.error,
+                    color: AppColors.error.withOpacity(0.30),
                   ),
             borderRadius: BorderRadius.circular(10.0),
-            boxShadow: AppColors.lightShadow,
+            boxShadow: AppColors.regularShadow,
           ),
           child: Row(
             children: [
@@ -129,6 +131,7 @@ class _BorderTextFieldState extends State<BorderTextField> {
                   focusNode: _focusNode,
                   minLines: 1,
                   maxLines: widget.maxLines,
+                  cursorHeight: 16.0,
                   style: AppTextStyles.paragraphMRegular,
                   decoration: InputDecoration(
                     hintText: widget.hintText,
@@ -166,10 +169,8 @@ class _BorderTextFieldState extends State<BorderTextField> {
             ],
           ),
         ),
-        if (widget.errorText != null) ...[
-          const SizedBox(
-            height: 5.0,
-          ),
+        if (widget.errorText != null && widget.showErrorText) ...[
+          const SizedBox(height: 5.0),
           Text(
             widget.errorText!,
             style: AppTextStyles.paragraphSRegular.copyWith(

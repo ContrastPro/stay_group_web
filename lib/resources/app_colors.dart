@@ -13,9 +13,12 @@ class AppColors {
   static const Color textSecondary = Color(0xFF344051);
 
   static const Color iconPrimary = Color(0xFF637083);
+
   //static const Color iconSecondary = Color(0xFF637083);
 
   static const Color border = Color(0xFFE4E7EC);
+  static const Color success = Color(0xFF22C55E);
+  static const Color warning = Color(0xFFFB923C);
   static const Color error = Color(0xFFDE1212);
   static const Color transparent = Color(0x00000000);
 
@@ -28,7 +31,16 @@ class AppColors {
     ),
   ];
 
-  static List<BoxShadow> lightShadow = [
+  static List<BoxShadow> mediumShadow = [
+    BoxShadow(
+      color: AppColors.primary.withOpacity(0.05),
+      blurRadius: 6.0,
+      offset: const Offset(0.0, 4.0),
+      spreadRadius: -1.0,
+    ),
+  ];
+
+  static List<BoxShadow> regularShadow = [
     BoxShadow(
       color: AppColors.primary.withOpacity(0.05),
       blurRadius: 2.0,
