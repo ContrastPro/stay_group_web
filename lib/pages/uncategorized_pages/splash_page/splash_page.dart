@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../repositories/auth_repository.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -35,13 +38,18 @@ class _SplashPageState extends State<SplashPage> {
         milliseconds: 3000,
       ),
       () {
-        const bool isAuthorized = false;
+        final AuthRepository repository = context.read<AuthRepository>();
+        final User? user = repository.currentUser();
 
-        if (!isAuthorized) {
-          return widget.navigateToSignInPage();
+        if (user != null) {
+          if (!user.emailVerified) {
+            return widget.navigateToSignInPage();
+          }
+
+          return widget.navigateToDashboardPage();
         }
 
-        //return widget.navigateToDashboardPage();
+        return widget.navigateToSignInPage();
       },
     );
   }

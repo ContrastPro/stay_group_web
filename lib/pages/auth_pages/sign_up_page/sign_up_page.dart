@@ -16,7 +16,7 @@ class SignUpPage extends StatefulWidget {
 
   static const routePath = '/auth_pages/sign_up';
 
-  final void Function() navigateToVerifyEmailPage;
+  final void Function(String) navigateToVerifyEmailPage;
   final void Function() navigateToLogInPage;
 
   @override
