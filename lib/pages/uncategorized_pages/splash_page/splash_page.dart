@@ -32,17 +32,16 @@ class _SplashPageState extends State<SplashPage> {
   void _setInitialData() {
     Timer(
       const Duration(
-        milliseconds: 2000,
+        milliseconds: 3000,
       ),
       () {
-        //const bool isAuth = false;
-        const bool isAuth = true;
+        const bool isAuthorized = false;
 
-        if (!isAuth) {
+        if (!isAuthorized) {
           return widget.navigateToSignInPage();
         }
 
-        return widget.navigateToDashboardPage();
+        //return widget.navigateToDashboardPage();
       },
     );
   }
@@ -52,7 +51,7 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: FadeInAnimation(
         duration: const Duration(
-          milliseconds: 3000,
+          milliseconds: 1500,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

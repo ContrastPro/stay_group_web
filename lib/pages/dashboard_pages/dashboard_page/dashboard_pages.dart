@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/navigation/flexible_layout.dart';
+import '../../../widgets/layouts/flexible_layout.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});

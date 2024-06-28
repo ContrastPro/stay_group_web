@@ -28,7 +28,7 @@ class AppColors {
     ),
   ];
 
-  static List<BoxShadow> textFieldShadow = [
+  static List<BoxShadow> lightShadow = [
     BoxShadow(
       color: AppColors.primary.withOpacity(0.05),
       blurRadius: 2.0,

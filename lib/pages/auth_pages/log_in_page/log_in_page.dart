@@ -7,32 +7,29 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/center_container_layout.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({
+class LogInPage extends StatefulWidget {
+  const LogInPage({
     super.key,
-    required this.navigateToVerifyEmailPage,
-    required this.navigateToLogInPage,
+    required this.navigateToRestorePasswordPage,
+    required this.navigateToDashboardPage,
+    required this.navigateToSignUpPage,
   });
 
-  static const routePath = '/auth_pages/sign_up';
+  static const routePath = '/auth_pages/log_in';
 
-  final void Function() navigateToVerifyEmailPage;
-  final void Function() navigateToLogInPage;
+  final void Function() navigateToRestorePasswordPage;
+  final void Function() navigateToDashboardPage;
+  final void Function() navigateToSignUpPage;
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<LogInPage> createState() => _LogInPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _LogInPageState extends State<LogInPage> {
   bool _isObscurePassword = true;
-  bool _isObscurePasswordConfirm = true;
 
   void _switchObscurePassword() {
     setState(() => _isObscurePassword = !_isObscurePassword);
-  }
-
-  void _switchObscurePasswordConfirm() {
-    setState(() => _isObscurePasswordConfirm = !_isObscurePasswordConfirm);
   }
 
   @override
@@ -41,27 +38,18 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Column(
         children: [
           Text(
-            'Join us today',
+            'Welcome back',
             style: AppTextStyles.head5SemiBold,
           ),
           const SizedBox(height: 8.0),
           Text(
-            'Sign up today and unlock a world of possibilities. Your adventure begins here.',
+            "Dive back into your world with a simple sign-in. Your next adventure awaits - let's get started!",
             style: AppTextStyles.paragraphSRegular.copyWith(
               color: AppColors.iconPrimary,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 28.0),
-          BorderTextField(
-            labelText: 'Username',
-            hintText: 'Username',
-            prefixIcon: AppIcons.user,
-            focusListener: (_) {
-              //
-            },
-          ),
-          const SizedBox(height: 16.0),
           BorderTextField(
             labelText: 'Email',
             hintText: 'Placeholder',
@@ -84,41 +72,41 @@ class _SignUpPageState extends State<SignUpPage> {
               //
             },
           ),
-          const SizedBox(height: 16.0),
-          BorderTextField(
-            labelText: 'Confirm Password',
-            hintText: 'Confirm Password',
-            isObscureText: _isObscurePasswordConfirm,
-            prefixIcon: AppIcons.lock,
-            suffixIcon: _isObscurePasswordConfirm
-                ? AppIcons.visibilityOff
-                : AppIcons.visibilityOn,
-            onSuffixTap: _switchObscurePasswordConfirm,
-            focusListener: (_) {
-              //
-            },
+          const SizedBox(height: 6.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: widget.navigateToRestorePasswordPage,
+                behavior: HitTestBehavior.opaque,
+                child: Text(
+                  'Forgot password?',
+                  style: AppTextStyles.paragraphSMedium,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 40.0),
           CustomButton(
-            text: 'Sign up',
-            onTap: widget.navigateToVerifyEmailPage,
+            text: 'Log in',
+            onTap: widget.navigateToDashboardPage,
           ),
           const SizedBox(height: 40.0),
           GestureDetector(
-            onTap: widget.navigateToLogInPage,
+            onTap: widget.navigateToSignUpPage,
             behavior: HitTestBehavior.opaque,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Already have an account?',
+                  "Don't have an account?",
                   style: AppTextStyles.paragraphSMedium.copyWith(
                     color: AppColors.iconPrimary,
                   ),
                 ),
                 const SizedBox(width: 8.0),
                 Text(
-                  'Log in',
+                  'Register now!',
                   style: AppTextStyles.paragraphSMedium,
                 ),
               ],

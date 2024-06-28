@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../blocs/navigation_bloc/navigation_bloc.dart';
-import '../../models/uncategorized/custom_bottom_navigation_bar_item_model.dart';
+import '../../models/uncategorized/bottom_navigation_bar_item_model.dart';
 import '../../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../pages/projects_pages/projects_page/projects_page.dart';
@@ -20,23 +20,23 @@ class CustomDrawer extends StatelessWidget {
 
   final Size screenSize;
 
-  static const List<CustomBottomNavigationBarItemModel> _tabs = [
-    CustomBottomNavigationBarItemModel(
+  static const List<BottomNavigationBarItemModel> _tabs = [
+    BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
       title: 'Dashboard',
       routePath: DashboardPage.routePath,
     ),
-    CustomBottomNavigationBarItemModel(
+    BottomNavigationBarItemModel(
       icon: AppIcons.projects,
       title: 'Projects',
       routePath: ProjectsPage.routePath,
     ),
-    CustomBottomNavigationBarItemModel(
+    BottomNavigationBarItemModel(
       icon: AppIcons.team,
       title: 'Team',
       routePath: TeamPage.routePath,
     ),
-    CustomBottomNavigationBarItemModel(
+    BottomNavigationBarItemModel(
       icon: AppIcons.settings,
       title: 'Account settings',
       routePath: AccountSettingsPage.routePath,

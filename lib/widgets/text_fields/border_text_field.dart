@@ -107,7 +107,7 @@ class _BorderTextFieldState extends State<BorderTextField> {
                     color: AppColors.error,
                   ),
             borderRadius: BorderRadius.circular(10.0),
-            boxShadow: AppColors.textFieldShadow,
+            boxShadow: AppColors.lightShadow,
           ),
           child: Row(
             children: [
@@ -147,12 +147,16 @@ class _BorderTextFieldState extends State<BorderTextField> {
               ),
               if (widget.suffixIcon != null) ...[
                 const SizedBox(width: 8.0),
-                SvgPicture.asset(
-                  widget.suffixIcon!,
-                  width: 22.0,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.iconPrimary,
-                    BlendMode.srcIn,
+                GestureDetector(
+                  onTap: widget.onSuffixTap,
+                  behavior: HitTestBehavior.opaque,
+                  child: SvgPicture.asset(
+                    widget.suffixIcon!,
+                    width: 22.0,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.iconPrimary,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8.0),

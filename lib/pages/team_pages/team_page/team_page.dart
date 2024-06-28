@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../widgets/navigation/flexible_layout.dart';
+import '../../../widgets/layouts/flexible_layout.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});

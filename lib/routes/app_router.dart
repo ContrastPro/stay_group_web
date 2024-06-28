@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
-import '../pages/auth_pages/sign_in_page/sign_in_page.dart';
+import '../pages/auth_pages/log_in_page/log_in_page.dart';
+import '../pages/auth_pages/restore_password_page/restore_password_page.dart';
 import '../pages/auth_pages/sign_up_page/sign_up_page.dart';
+import '../pages/auth_pages/verify_email_page/verify_email_page.dart';
 import '../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../pages/main_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
@@ -36,7 +38,7 @@ class AppRouter {
             state: state,
             child: SplashPage(
               navigateToSignInPage: () => context.go(
-                SignInPage.routePath,
+                LogInPage.routePath,
               ),
               navigateToDashboardPage: () => context.go(
                 DashboardPage.routePath,
@@ -49,10 +51,16 @@ class AppRouter {
 
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
-          path: SignInPage.routePath,
+          path: LogInPage.routePath,
           pageBuilder: (context, state) => _customTransition(
             state: state,
-            child: SignInPage(
+            child: LogInPage(
+              navigateToRestorePasswordPage: () => context.go(
+                RestorePasswordPage.routePath,
+              ),
+              navigateToDashboardPage: () => context.go(
+                DashboardPage.routePath,
+              ),
               navigateToSignUpPage: () => context.go(
                 SignUpPage.routePath,
               ),
@@ -62,10 +70,35 @@ class AppRouter {
 
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
+          path: RestorePasswordPage.routePath,
+          pageBuilder: (context, state) => _customTransition(
+            state: state,
+            child: const RestorePasswordPage(),
+          ),
+        ),
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
           path: SignUpPage.routePath,
           pageBuilder: (context, state) => _customTransition(
             state: state,
-            child: const SignUpPage(),
+            child: SignUpPage(
+              navigateToVerifyEmailPage: () => context.go(
+                VerifyEmailPage.routePath,
+              ),
+              navigateToLogInPage: () => context.go(
+                LogInPage.routePath,
+              ),
+            ),
+          ),
+        ),
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: VerifyEmailPage.routePath,
+          pageBuilder: (context, state) => _customTransition(
+            state: state,
+            child: const VerifyEmailPage(),
           ),
         ),
 
