@@ -26,8 +26,22 @@ class AccountSettingsBloc
 
       final User? user = authRepository.currentUser();
 
+      if (user == null) {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.failed,
+          ),
+        );
+      }
+
       final UserModel? savedUser = await usersRepository.getUser(
-        userId: user!.uid,
+        userId: user.uid,
       );
 
       emit(
@@ -50,6 +64,10 @@ class AccountSettingsBloc
           ),
         );
       }
+    });
+
+    on<SignOut>((event, emit) async {
+      await authRepository.signOut();
     });
   }
 

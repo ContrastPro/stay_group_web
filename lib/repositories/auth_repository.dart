@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/repository_logger_service.dart';
@@ -26,11 +28,11 @@ class AuthRepository {
         password: password,
       );
 
-      _logger.log(response.toString(), name: 'emailSignIn');
+      _logger.log(response.toString(), name: 'emailLogIn');
 
       return response;
     } on FirebaseAuthException catch (e) {
-      _logger.log(e.code, name: 'emailSignIn');
+      _logger.log(e.code, name: 'emailLogIn');
       return null;
     }
   }
@@ -80,6 +82,20 @@ class AuthRepository {
       _logger.log(e.code, name: 'passwordRecovery');
       return null;
     }
+  }
+
+  StreamSubscription<User?> authChanges({
+    required void Function() navigateToLogInPage,
+  }) {
+    final Stream<User?> userStream = _api.authStateChanges();
+
+    return userStream.listen(
+      (User? user) {
+        if (user == null) {
+          return navigateToLogInPage();
+        }
+      },
+    );
   }
 
   Future<bool?> updatePassword({

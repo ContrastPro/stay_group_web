@@ -34,13 +34,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (response != null) {
         if (response.user!.emailVerified) {
-          /*const LocalDB localDB = LocalDB.instance;
-
-          await localDB.saveAuthData(
-            email: event.email,
-            password: event.password,
-          );*/
-
           emit(
             state.copyWith(
               status: BlocStatus.success,
@@ -80,8 +73,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (response != null) {
-        final bool? isSuccessful = await authRepository.sendEmailVerification();
-
         final User user = response.user!;
 
         await usersRepository.createUser(
@@ -89,28 +80,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           userId: user.uid,
         );
 
+        await authRepository.sendEmailVerification();
+
         emit(
           state.copyWith(
             status: BlocStatus.loaded,
           ),
         );
 
-        if (isSuccessful != null) {
-          await authRepository.signOut();
+        await authRepository.signOut();
 
-          emit(
-            state.copyWith(
-              status: BlocStatus.success,
-            ),
-          );
-        } else {
-          emit(
-            state.copyWith(
-              status: BlocStatus.failed,
-              errorMessage: 'A user with this email address already exists',
-            ),
-          );
-        }
+        emit(
+          state.copyWith(
+            status: BlocStatus.success,
+          ),
+        );
       } else {
         emit(
           state.copyWith(

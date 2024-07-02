@@ -17,11 +17,7 @@ class AppRouter {
   const AppRouter._();
 
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
-
-  static final _shellDashboardNavigator = GlobalKey<NavigatorState>();
-  static final _shellProjectsNavigator = GlobalKey<NavigatorState>();
-  static final _shellTeamNavigator = GlobalKey<NavigatorState>();
-  static final _shellSettingsNavigator = GlobalKey<NavigatorState>();
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static GoRouter generateRoute() {
     return GoRouter(
@@ -37,7 +33,7 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: SplashPage(
-              navigateToSignInPage: () => context.go(
+              navigateToLogInPage: () => context.go(
                 LogInPage.routePath,
               ),
               navigateToDashboardPage: () => context.go(
@@ -116,61 +112,44 @@ class AppRouter {
 
         // [START] Main pages
 
-        StatefulShellRoute.indexedStack(
-          builder: (context, _, StatefulNavigationShell pageBuilder) {
-            return MainPage(
-              pageBuilder: pageBuilder,
-              onSelectTab: context.go,
-            );
-          },
-          branches: [
-            StatefulShellBranch(
-              navigatorKey: _shellDashboardNavigator,
-              routes: [
-                GoRoute(
-                  path: DashboardPage.routePath,
-                  pageBuilder: (context, state) => _customTransition(
-                    state: state,
-                    child: const DashboardPage(),
-                  ),
-                ),
-              ],
+        ShellRoute(
+          navigatorKey: _shellNavigatorKey,
+          builder: (context, state, body) => MainPage(
+            body: body,
+            state: state,
+            navigateToLogInPage: () => context.go(
+              LogInPage.routePath,
             ),
-            StatefulShellBranch(
-              navigatorKey: _shellProjectsNavigator,
-              routes: [
-                GoRoute(
-                  path: ProjectsPage.routePath,
-                  pageBuilder: (context, state) => _customTransition(
-                    state: state,
-                    child: const ProjectsPage(),
-                  ),
-                ),
-              ],
+            onSelectTab: context.go,
+          ),
+          routes: [
+            GoRoute(
+              path: DashboardPage.routePath,
+              pageBuilder: (context, state) => _customTransition(
+                state: state,
+                child: const DashboardPage(),
+              ),
             ),
-            StatefulShellBranch(
-              navigatorKey: _shellTeamNavigator,
-              routes: [
-                GoRoute(
-                  path: TeamPage.routePath,
-                  pageBuilder: (context, state) => _customTransition(
-                    state: state,
-                    child: const TeamPage(),
-                  ),
-                ),
-              ],
+            GoRoute(
+              path: ProjectsPage.routePath,
+              pageBuilder: (context, state) => _customTransition(
+                state: state,
+                child: const ProjectsPage(),
+              ),
             ),
-            StatefulShellBranch(
-              navigatorKey: _shellSettingsNavigator,
-              routes: [
-                GoRoute(
-                  path: AccountSettingsPage.routePath,
-                  pageBuilder: (context, state) => _customTransition(
-                    state: state,
-                    child: const AccountSettingsPage(),
-                  ),
-                ),
-              ],
+            GoRoute(
+              path: TeamPage.routePath,
+              pageBuilder: (context, state) => _customTransition(
+                state: state,
+                child: const TeamPage(),
+              ),
+            ),
+            GoRoute(
+              path: AccountSettingsPage.routePath,
+              pageBuilder: (context, state) => _customTransition(
+                state: state,
+                child: const AccountSettingsPage(),
+              ),
             ),
           ],
         ),

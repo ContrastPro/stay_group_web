@@ -42,7 +42,6 @@ class InAppNotificationService {
                   vertical: 16.0,
                 ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(2.0),

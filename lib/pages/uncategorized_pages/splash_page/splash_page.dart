@@ -12,13 +12,13 @@ import '../../../widgets/animations/fade_in_animation.dart';
 class SplashPage extends StatefulWidget {
   const SplashPage({
     super.key,
-    required this.navigateToSignInPage,
+    required this.navigateToLogInPage,
     required this.navigateToDashboardPage,
   });
 
   static const routePath = '/';
 
-  final void Function() navigateToSignInPage;
+  final void Function() navigateToLogInPage;
   final void Function() navigateToDashboardPage;
 
   @override
@@ -43,13 +43,13 @@ class _SplashPageState extends State<SplashPage> {
 
         if (user != null) {
           if (!user.emailVerified) {
-            return widget.navigateToSignInPage();
+            return widget.navigateToLogInPage();
           }
 
           return widget.navigateToDashboardPage();
         }
 
-        return widget.navigateToSignInPage();
+        return widget.navigateToLogInPage();
       },
     );
   }

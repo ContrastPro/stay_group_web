@@ -43,7 +43,9 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _passwordValid = false;
   bool _confirmValid = false;
 
-  String? _errorText;
+  String? _errorTextEmail;
+  String? _errorTextPassword;
+  String? _errorTextConfirm;
 
   void _switchLoading(bool status) {
     if (_isLoading != status) {
@@ -59,8 +61,16 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() => _isObscureConfirm = !_isObscureConfirm);
   }
 
-  void _switchError({String? error}) {
-    setState(() => _errorText = error);
+  void _switchErrorEmail({String? error}) {
+    setState(() => _errorTextEmail = error);
+  }
+
+  void _switchErrorPassword({String? error}) {
+    setState(() => _errorTextPassword = error);
+  }
+
+  void _switchErrorConfirm({String? error}) {
+    setState(() => _errorTextConfirm = error);
   }
 
   void _validateEmail(String email) {
@@ -84,13 +94,34 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _emailSignUp(BuildContext context) {
+    _switchErrorEmail();
+    _switchErrorPassword();
+    _switchErrorConfirm();
+
     final String email = _controllerEmail.text.trim();
     final String password = _controllerPassword.text.trim();
     final String confirm = _controllerConfirm.text.trim();
 
-    if (email.isEmpty || !_emailValid) return;
-    if (password.isEmpty || !_passwordValid) return;
-    if (confirm.isEmpty || !_confirmValid) return;
+    if (email.isEmpty || !_emailValid) {
+      const String errorFormat = 'Wrong email format';
+
+      _switchErrorEmail(error: errorFormat);
+      return _showErrorMessage(errorMessage: errorFormat);
+    }
+
+    if (password.isEmpty || !_passwordValid) {
+      const String errorLength = 'Your password is too short';
+
+      _switchErrorPassword(error: errorLength);
+      return _showErrorMessage(errorMessage: errorLength);
+    }
+
+    if (confirm.isEmpty || !_confirmValid) {
+      const String errorMatch = 'Confirm passwords do NOT match';
+
+      _switchErrorConfirm(error: errorMatch);
+      return _showErrorMessage(errorMessage: errorMatch);
+    }
 
     context.read<AuthBloc>().add(
           EmailSignUp(
@@ -98,6 +129,15 @@ class _SignUpPageState extends State<SignUpPage> {
             password: password,
           ),
         );
+  }
+
+  void _showErrorMessage({
+    required String errorMessage,
+  }) {
+    InAppNotificationService.show(
+      title: errorMessage,
+      type: InAppNotificationType.error,
+    );
   }
 
   @override
@@ -111,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
         listener: (_, state) {
           if (state.status == BlocStatus.loading) {
             _switchLoading(true);
-            _switchError();
+            _switchErrorEmail();
           }
 
           if (state.status == BlocStatus.loaded) {
@@ -125,12 +165,8 @@ class _SignUpPageState extends State<SignUpPage> {
           }
 
           if (state.status == BlocStatus.failed) {
-            _switchError(error: state.errorMessage);
-
-            InAppNotificationService.show(
-              title: state.errorMessage!,
-              type: InAppNotificationType.error,
-            );
+            _switchErrorEmail(error: state.errorMessage);
+            _showErrorMessage(errorMessage: state.errorMessage!);
           }
         },
         builder: (context, _) {
@@ -157,7 +193,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     labelText: 'Email',
                     hintText: 'Placeholder',
                     prefixIcon: AppIcons.mail,
-                    errorText: _errorText,
+                    errorText: _errorTextEmail,
                     onChanged: _validateEmail,
                   ),
                   const SizedBox(height: 16.0),
@@ -170,6 +206,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     suffixIcon: _isObscurePassword
                         ? AppIcons.visibilityOff
                         : AppIcons.visibilityOn,
+                    errorText: _errorTextPassword,
                     onSuffixTap: _switchObscurePassword,
                     onChanged: _validatePassword,
                   ),
@@ -183,6 +220,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     suffixIcon: _isObscureConfirm
                         ? AppIcons.visibilityOff
                         : AppIcons.visibilityOn,
+                    errorText: _errorTextConfirm,
                     onSuffixTap: _switchObscureConfirm,
                     onChanged: _validateConfirm,
                   ),

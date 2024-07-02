@@ -8,3 +8,7 @@ sealed class AccountSettingsEvent {
 class GetAccountInfo extends AccountSettingsEvent {
   const GetAccountInfo();
 }
+
+class SignOut extends AccountSettingsEvent {
+  const SignOut();
+}
