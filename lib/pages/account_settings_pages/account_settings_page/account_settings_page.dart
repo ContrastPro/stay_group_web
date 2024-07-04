@@ -9,7 +9,7 @@ import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
-import 'blocs/account_settings/account_settings_bloc.dart';
+import 'blocs/account_settings_bloc/account_settings_bloc.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({

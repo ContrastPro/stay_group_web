@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../database/local_database.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';
@@ -13,6 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required this.authRepository,
     required this.usersRepository,
+    required this.localDB,
   }) : super(const AuthState()) {
     on<EmailLogIn>((event, emit) async {
       emit(
@@ -26,14 +28,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
 
-      emit(
-        state.copyWith(
-          status: BlocStatus.loaded,
-        ),
-      );
-
       if (response != null) {
         if (response.user!.emailVerified) {
+          await localDB.saveCurrentAuth(
+            email: event.email,
+            password: event.password,
+          );
+
+          emit(
+            state.copyWith(
+              status: BlocStatus.loaded,
+            ),
+          );
+
           emit(
             state.copyWith(
               status: BlocStatus.success,
@@ -44,6 +51,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           emit(
             state.copyWith(
+              status: BlocStatus.loaded,
+            ),
+          );
+
+          emit(
+            state.copyWith(
               status: BlocStatus.failed,
               errorMessage:
                   'The email address is not verified. Check your mailbox',
@@ -51,6 +64,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
       } else {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
         emit(
           state.copyWith(
             status: BlocStatus.failed,
@@ -82,13 +101,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         await authRepository.sendEmailVerification();
 
+        await authRepository.signOut();
+
         emit(
           state.copyWith(
             status: BlocStatus.loaded,
           ),
         );
-
-        await authRepository.signOut();
 
         emit(
           state.copyWith(
@@ -147,4 +166,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthRepository authRepository;
   final UsersRepository usersRepository;
+  final LocalDB localDB;
 }

@@ -1,7 +1,7 @@
 part of 'account_settings_bloc.dart';
 
 @immutable
-sealed class AccountSettingsEvent {
+abstract class AccountSettingsEvent {
   const AccountSettingsEvent();
 }
 
