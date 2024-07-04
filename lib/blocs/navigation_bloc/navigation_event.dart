@@ -15,10 +15,8 @@ class NavigateLogin extends NavigationEvent {
 
 class NavigateTab extends NavigationEvent {
   const NavigateTab({
-    required this.index,
     required this.routePath,
   });
 
-  final int index;
   final String routePath;
 }

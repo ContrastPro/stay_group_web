@@ -127,28 +127,36 @@ class AppRouter {
               path: DashboardPage.routePath,
               pageBuilder: (context, state) => _customTransition(
                 state: state,
-                child: const DashboardPage(),
+                child: DashboardPage(
+                  state: state,
+                ),
               ),
             ),
             GoRoute(
               path: ProjectsPage.routePath,
               pageBuilder: (context, state) => _customTransition(
                 state: state,
-                child: const ProjectsPage(),
+                child: ProjectsPage(
+                  state: state,
+                ),
               ),
             ),
             GoRoute(
               path: TeamPage.routePath,
               pageBuilder: (context, state) => _customTransition(
                 state: state,
-                child: const TeamPage(),
+                child: TeamPage(
+                  state: state,
+                ),
               ),
             ),
             GoRoute(
               path: AccountSettingsPage.routePath,
               pageBuilder: (context, state) => _customTransition(
                 state: state,
-                child: const AccountSettingsPage(),
+                child: AccountSettingsPage(
+                  state: state,
+                ),
               ),
             ),
           ],

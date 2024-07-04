@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
@@ -11,9 +12,14 @@ import '../../../widgets/loaders/custom_loader.dart';
 import 'blocs/account_settings/account_settings_bloc.dart';
 
 class AccountSettingsPage extends StatefulWidget {
-  const AccountSettingsPage({super.key});
+  const AccountSettingsPage({
+    super.key,
+    required this.state,
+  });
 
   static const routePath = '/account_settings_pages/account_settings';
+
+  final GoRouterState state;
 
   @override
   State<AccountSettingsPage> createState() => _AccountSettingsPageState();
@@ -30,6 +36,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           const GetAccountInfo(),
         ),
       child: FlexibleLayout(
+        state: widget.state,
         builder: (Size size) {
           return BlocConsumer<AccountSettingsBloc, AccountSettingsState>(
             listener: (_, state) {

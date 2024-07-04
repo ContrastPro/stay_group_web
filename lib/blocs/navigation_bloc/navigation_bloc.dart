@@ -55,7 +55,6 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       emit(
         state.copyWith(
           status: NavigationStatus.tab,
-          currentTab: event.index,
           routePath: event.routePath,
           authSubscription: state.authSubscription,
         ),

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../resources/app_colors.dart';
 import '../navigation/custom_drawer.dart';
@@ -8,9 +9,11 @@ import '../navigation/custom_drawer.dart';
 class FlexibleLayout extends StatelessWidget {
   const FlexibleLayout({
     super.key,
+    required this.state,
     required this.builder,
   });
 
+  final GoRouterState state;
   final Widget Function(Size) builder;
 
   @override
@@ -36,6 +39,7 @@ class FlexibleLayout extends StatelessWidget {
             child: Row(
               children: [
                 CustomDrawer(
+                  fullPath: state.fullPath,
                   screenSize: size,
                 ),
                 const SizedBox(width: 12.0),

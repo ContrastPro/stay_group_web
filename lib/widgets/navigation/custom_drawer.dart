@@ -15,9 +15,11 @@ import '../../resources/app_text_styles.dart';
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
     super.key,
+    required this.fullPath,
     required this.screenSize,
   });
 
+  final String? fullPath;
   final Size screenSize;
 
   static const List<BottomNavigationBarItemModel> _tabs = [
@@ -45,14 +47,11 @@ class CustomDrawer extends StatelessWidget {
 
   void _onSelect({
     required BuildContext context,
-    required int currentTab,
-    required int index,
     required String routePath,
   }) {
-    if (currentTab != index) {
+    if (fullPath != routePath) {
       context.read<NavigationBloc>().add(
             NavigateTab(
-              index: index,
               routePath: routePath,
             ),
           );
@@ -68,16 +67,12 @@ class CustomDrawer extends StatelessWidget {
             width: 240.0,
             child: Column(
               children: _tabs.map((e) {
-                final int index = _tabs.indexOf(e);
-
                 return Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: InkWell(
                       onTap: () => _onSelect(
                         context: context,
-                        currentTab: state.currentTab,
-                        index: index,
                         routePath: e.routePath,
                       ),
                       borderRadius: BorderRadius.circular(8.0),
@@ -88,11 +83,11 @@ class CustomDrawer extends StatelessWidget {
                           vertical: 8.0,
                         ),
                         decoration: BoxDecoration(
-                          color: index == state.currentTab
+                          color: e.routePath == fullPath
                               ? AppColors.scaffoldSecondary
                               : AppColors.transparent,
                           border: Border.all(
-                            color: index == state.currentTab
+                            color: e.routePath == fullPath
                                 ? AppColors.border
                                 : AppColors.transparent,
                           ),
@@ -105,7 +100,7 @@ class CustomDrawer extends StatelessWidget {
                               e.icon,
                               width: 20.0,
                               colorFilter: ColorFilter.mode(
-                                index == state.currentTab
+                                e.routePath == fullPath
                                     ? AppColors.primary
                                     : AppColors.secondary,
                                 BlendMode.srcIn,
@@ -115,7 +110,7 @@ class CustomDrawer extends StatelessWidget {
                             Text(
                               e.title,
                               style: AppTextStyles.paragraphSRegular.copyWith(
-                                color: index == state.currentTab
+                                color: e.routePath == fullPath
                                     ? AppColors.textPrimary
                                     : AppColors.textSecondary,
                               ),
@@ -135,15 +130,11 @@ class CustomDrawer extends StatelessWidget {
           width: 45.0,
           child: Column(
             children: _tabs.map((e) {
-              final int index = _tabs.indexOf(e);
-
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: InkWell(
                   onTap: () => _onSelect(
                     context: context,
-                    currentTab: state.currentTab,
-                    index: index,
                     routePath: e.routePath,
                   ),
                   borderRadius: BorderRadius.circular(8.0),
@@ -153,11 +144,11 @@ class CustomDrawer extends StatelessWidget {
                       vertical: 10.0,
                     ),
                     decoration: BoxDecoration(
-                      color: index == state.currentTab
+                      color: e.routePath == fullPath
                           ? AppColors.scaffoldSecondary
                           : AppColors.transparent,
                       border: Border.all(
-                        color: index == state.currentTab
+                        color: e.routePath == fullPath
                             ? AppColors.border
                             : AppColors.transparent,
                       ),
@@ -167,7 +158,7 @@ class CustomDrawer extends StatelessWidget {
                       e.icon,
                       width: 20.0,
                       colorFilter: ColorFilter.mode(
-                        index == state.currentTab
+                        e.routePath == fullPath
                             ? AppColors.primary
                             : AppColors.secondary,
                         BlendMode.srcIn,
