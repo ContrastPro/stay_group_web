@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../database/local_database.dart';
+import '../../models/users/user_info_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';
@@ -95,8 +96,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final User user = response.user!;
 
         await usersRepository.createUser(
-          email: user.email!,
           userId: user.uid,
+          role: UserRole.manager,
+          email: user.email!,
         );
 
         await authRepository.sendEmailVerification();

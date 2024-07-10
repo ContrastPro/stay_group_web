@@ -10,6 +10,7 @@ import '../pages/auth_pages/verify_email_page/verify_email_page.dart';
 import '../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../pages/main_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
+import '../pages/team_pages/manage_user_page/manage_user_page.dart';
 import '../pages/team_pages/team_page/team_page.dart';
 import '../pages/uncategorized_pages/splash_page/splash_page.dart';
 
@@ -147,6 +148,9 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
+                  navigateToManageUserPage: () => context.go(
+                    ManageUserPage.routePath,
+                  ),
                 ),
               ),
             ),
@@ -163,6 +167,28 @@ class AppRouter {
         ),
 
         // [END] Main pages
+
+        // [START] Team pages
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: ManageUserPage.routePath,
+          pageBuilder: (context, state) {
+            final String? args = state.extra as String?;
+
+            return _customTransition(
+              state: state,
+              child: ManageUserPage(
+                id: args,
+                navigateToTeamPage: () => context.go(
+                  TeamPage.routePath,
+                ),
+              ),
+            );
+          },
+        ),
+
+        // [END] Team pages
       ],
     );
   }

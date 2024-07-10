@@ -40,7 +40,7 @@ class AccountSettingsBloc
         );
       }
 
-      final UserModel? savedUser = await usersRepository.getUser(
+      final UserModel? userData = await usersRepository.getUser(
         userId: user.uid,
       );
 
@@ -50,11 +50,11 @@ class AccountSettingsBloc
         ),
       );
 
-      if (savedUser != null) {
+      if (userData != null) {
         emit(
           state.copyWith(
             status: BlocStatus.success,
-            user: savedUser,
+            user: userData,
           ),
         );
       } else {

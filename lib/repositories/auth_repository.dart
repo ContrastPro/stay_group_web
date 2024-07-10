@@ -11,13 +11,6 @@ class AuthRepository {
 
   static final FirebaseAuth _api = FirebaseAuth.instance;
 
-  User? currentUser() {
-    final User? user = _api.currentUser;
-    _logger.log(user.toString(), name: 'currentUser');
-
-    return user;
-  }
-
   Future<UserCredential?> emailLogIn({
     required String email,
     required String password,
@@ -82,6 +75,13 @@ class AuthRepository {
       _logger.log(e.code, name: 'passwordRecovery');
       return null;
     }
+  }
+
+  User? currentUser() {
+    final User? user = _api.currentUser;
+    _logger.log(user.toString(), name: 'currentUser');
+
+    return user;
   }
 
   StreamSubscription<User?> authChanges({
