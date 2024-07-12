@@ -70,8 +70,8 @@ class _App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'STAY GROUP',
         theme: AppThemes.light(),
-        builder: BotToastInit(),
         routerConfig: routerConfig,
+        builder: BotToastInit(),
       ),
     );
   }

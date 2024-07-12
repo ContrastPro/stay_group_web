@@ -50,7 +50,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        state.user!.info.email,
+                        state.user!.email,
                       ),
                       const SizedBox(height: 16.0),
                       SizedBox(

@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../database/local_database.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
@@ -14,7 +14,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
   TeamBloc({
     required this.authRepository,
     required this.usersRepository,
-    required this.localDB,
   }) : super(const TeamState()) {
     on<GetUsers>((event, emit) async {
       emit(
@@ -22,6 +21,24 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           status: BlocStatus.loading,
         ),
       );
+
+      final User? user = authRepository.currentUser();
+
+      if (user == null) {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.failed,
+          ),
+        );
+      }
+
+      await usersRepository.getTeam(spaceId: user.uid);
 
       emit(
         state.copyWith(
@@ -39,5 +56,4 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
   final AuthRepository authRepository;
   final UsersRepository usersRepository;
-  final LocalDB localDB;
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../database/local_database.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../utils/constants.dart';
@@ -35,7 +34,6 @@ class _TeamPageState extends State<TeamPage> {
       create: (_) => TeamBloc(
         authRepository: context.read<AuthRepository>(),
         usersRepository: context.read<UsersRepository>(),
-        localDB: LocalDB.instance,
       )..add(
           const GetUsers(),
         ),
@@ -45,20 +43,8 @@ class _TeamPageState extends State<TeamPage> {
           return BlocBuilder<TeamBloc, TeamState>(
             builder: (context, state) {
               if (state.status == BlocStatus.success) {
-                return FadeInAnimation(
-                  duration: kFadeInDuration,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 260.0,
-                        child: CustomButton(
-                          text: 'Create user',
-                          onTap: widget.navigateToManageUserPage,
-                        ),
-                      ),
-                    ],
-                  ),
+                return _TeamPageContent(
+                  navigateToManageUserPage: widget.navigateToManageUserPage,
                 );
               }
 
@@ -68,6 +54,33 @@ class _TeamPageState extends State<TeamPage> {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _TeamPageContent extends StatelessWidget {
+  const _TeamPageContent({
+    required this.navigateToManageUserPage,
+  });
+
+  final void Function() navigateToManageUserPage;
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeInAnimation(
+      duration: kFadeInDuration,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 260.0,
+            child: CustomButton(
+              text: 'Create user',
+              onTap: navigateToManageUserPage,
+            ),
+          ),
+        ],
       ),
     );
   }

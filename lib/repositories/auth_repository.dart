@@ -92,6 +92,7 @@ class AuthRepository {
     return userStream.listen(
       (User? user) {
         if (user == null) {
+          _logger.log('navigateToLogInPage', name: 'authChanges');
           return navigateToLogInPage();
         }
       },

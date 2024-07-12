@@ -19,8 +19,9 @@ class RepositoryLogger {
 
   void log(String? message, {String? name}) {
     _logger.i(
-      message,
-      error: '$repositoryName: $name',
+      '$repositoryName: $name'
+      '\n${'─' * 118}'
+      '\n$message',
     );
   }
 }
