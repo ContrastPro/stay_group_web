@@ -124,6 +124,8 @@ class AppRouter {
             onSelectTab: context.go,
           ),
           routes: [
+            // [START] Dashboard pages
+
             GoRoute(
               path: DashboardPage.routePath,
               pageBuilder: (context, state) => _customTransition(
@@ -133,6 +135,11 @@ class AppRouter {
                 ),
               ),
             ),
+
+            // [END] Dashboard pages
+
+            // [START] Team pages
+
             GoRoute(
               path: ProjectsPage.routePath,
               pageBuilder: (context, state) => _customTransition(
@@ -142,6 +149,11 @@ class AppRouter {
                 ),
               ),
             ),
+
+            // [END] Projects pages
+
+            // [START] Team pages
+
             GoRoute(
               path: TeamPage.routePath,
               pageBuilder: (context, state) => _customTransition(
@@ -154,6 +166,28 @@ class AppRouter {
                 ),
               ),
             ),
+
+            GoRoute(
+              path: ManageUserPage.routePath,
+              pageBuilder: (context, state) {
+                final String? args = state.extra as String?;
+
+                return _customTransition(
+                  state: state,
+                  child: ManageUserPage(
+                    id: args,
+                    navigateToTeamPage: () => context.go(
+                      TeamPage.routePath,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            // [END] Team pages
+
+            // [START] Account settings pages
+
             GoRoute(
               path: AccountSettingsPage.routePath,
               pageBuilder: (context, state) => _customTransition(
@@ -163,32 +197,12 @@ class AppRouter {
                 ),
               ),
             ),
+
+            // [END] Account settings pages
           ],
         ),
 
         // [END] Main pages
-
-        // [START] Team pages
-
-        GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
-          path: ManageUserPage.routePath,
-          pageBuilder: (context, state) {
-            final String? args = state.extra as String?;
-
-            return _customTransition(
-              state: state,
-              child: ManageUserPage(
-                id: args,
-                navigateToTeamPage: () => context.go(
-                  TeamPage.routePath,
-                ),
-              ),
-            );
-          },
-        ),
-
-        // [END] Team pages
       ],
     );
   }

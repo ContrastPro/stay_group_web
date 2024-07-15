@@ -6,6 +6,7 @@ import '../../models/users/user_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';
+import '../../utils/helpers.dart';
 
 part 'auth_event.dart';
 
@@ -95,10 +96,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response != null) {
         final User user = response.user!;
 
+        final DateTime dueDate = currentTime().add(
+          const Duration(days: 3),
+        );
+
         await usersRepository.createUser(
           userId: user.uid,
           role: UserRole.manager,
           email: user.email!,
+          name: 'My space',
+          dueDate: dueDate,
         );
 
         await authRepository.sendEmailVerification();

@@ -38,9 +38,10 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
 
         await usersRepository.createUser(
           userId: worker.uid,
-          spaceId: userData!.uid,
           role: UserRole.worker,
           email: worker.email!,
+          spaceId: userData!.uid,
+          name: event.name,
         );
 
         await authRepository.sendEmailVerification();

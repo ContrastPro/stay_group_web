@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 
 import '../models/users/user_model.dart';
 import '../models/users/user_response_model.dart';
 import '../services/repository_logger_service.dart';
+import '../utils/helpers.dart';
 
 class UsersRepository {
   static const RepositoryLogger _logger = RepositoryLogger(
@@ -21,17 +24,23 @@ class UsersRepository {
 
   Future<void> createUser({
     required String userId,
-    String? spaceId,
     required UserRole role,
     required String email,
+    String? spaceId,
+    required String name,
+    DateTime? dueDate,
   }) async {
     final DatabaseReference reference = _getRef(userId);
 
     await reference.set({
       'id': userId,
-      'spaceId': spaceId,
       'role': role.value,
       'email': email,
+      'spaceId': spaceId,
+      'name': name,
+      'createdAt': localToUtc(currentTime()),
+      'dueDate': dueDate != null ? localToUtc(dueDate) : null,
+      'isDeleted': false,
     });
 
     _logger.log('Successful', name: 'createUser');

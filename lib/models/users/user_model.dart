@@ -13,30 +13,35 @@ enum UserRole {
 
 class UserModel {
   const UserModel({
-    required this.email,
     required this.id,
     required this.role,
+    required this.email,
     this.spaceId,
+    required this.name,
+    required this.createdAt,
+    this.dueDate,
+    required this.isDeleted,
   });
 
   factory UserModel.fromJson(Map<Object?, dynamic> json) {
     return UserModel(
-      email: json['email'],
       id: json['id'],
       role: UserRole.fromValue(json['role']),
+      email: json['email'],
       spaceId: json['spaceId'],
+      name: json['name'],
+      createdAt: json['createdAt'],
+      dueDate: json['dueDate'],
+      isDeleted: json['isDeleted'],
     );
   }
 
-  final String email;
   final String id;
   final UserRole role;
+  final String email;
   final String? spaceId;
-
-  Map<String, dynamic> toJson() => {
-        'email': email,
-        'id': id,
-        'role': role.value,
-        'spaceId': spaceId,
-      };
+  final String name;
+  final String createdAt;
+  final String? dueDate;
+  final bool isDeleted;
 }

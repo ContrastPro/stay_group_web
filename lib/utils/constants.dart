@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 enum BlocStatus { initial, loading, loaded, success, failed }
 
+enum DateDifference { seconds, minutes, days }
+
 const BorderRadius kCircleRadius = BorderRadius.all(
   Radius.circular(100.0),
 );

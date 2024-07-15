@@ -31,14 +31,17 @@ class ManageUserPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<ManageUserPage> {
+  final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
   bool _isLoading = false;
   bool _isObscurePassword = true;
+  bool _nameValid = false;
   bool _emailValid = false;
   bool _passwordValid = false;
 
+  String? _errorTextName;
   String? _errorTextEmail;
   String? _errorTextPassword;
 
@@ -52,12 +55,22 @@ class _TeamPageState extends State<ManageUserPage> {
     setState(() => _isObscurePassword = !_isObscurePassword);
   }
 
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
   void _switchErrorEmail({String? error}) {
     setState(() => _errorTextEmail = error);
   }
 
   void _switchErrorPassword({String? error}) {
     setState(() => _errorTextPassword = error);
+  }
+
+  void _validateName(String name) {
+    setState(() {
+      _nameValid = name.length > 2;
+    });
   }
 
   void _validateEmail(String email) {
@@ -73,11 +86,20 @@ class _TeamPageState extends State<ManageUserPage> {
   }
 
   void _createWorker(BuildContext context) {
+    _switchErrorName();
     _switchErrorEmail();
     _switchErrorPassword();
 
+    final String name = _controllerName.text.trim();
     final String email = _controllerEmail.text.trim();
     final String password = _controllerPassword.text.trim();
+
+    if (name.isEmpty || !_nameValid) {
+      const String errorName = 'User name is too short';
+
+      _switchErrorName(error: errorName);
+      return _showErrorMessage(errorMessage: errorName);
+    }
 
     if (email.isEmpty || !_emailValid) {
       const String errorFormat = 'Wrong email format';
@@ -95,6 +117,7 @@ class _TeamPageState extends State<ManageUserPage> {
 
     context.read<ManageUserBloc>().add(
           CreateWorker(
+            name: name,
             email: email,
             password: password,
           ),
@@ -155,6 +178,15 @@ class _TeamPageState extends State<ManageUserPage> {
                       width: 260.0,
                       child: Column(
                         children: [
+                          BorderTextField(
+                            controller: _controllerName,
+                            labelText: 'Name',
+                            hintText: 'Worker name',
+                            prefixIcon: AppIcons.user,
+                            errorText: _errorTextName,
+                            onChanged: _validateName,
+                          ),
+                          const SizedBox(height: 16.0),
                           BorderTextField(
                             controller: _controllerEmail,
                             labelText: 'Email',

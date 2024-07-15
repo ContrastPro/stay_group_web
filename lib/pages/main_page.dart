@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../blocs/navigation_bloc/navigation_bloc.dart';
 import '../repositories/auth_repository.dart';
+import '../repositories/users_repository.dart';
+import '../services/timer_service.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({
@@ -25,7 +27,9 @@ class MainPage extends StatelessWidget {
       providers: [
         BlocProvider<NavigationBloc>(
           create: (_) => NavigationBloc(
+            timerService: TimerService.instance,
             authRepository: context.read<AuthRepository>(),
+            usersRepository: context.read<UsersRepository>(),
           )..add(
               const StartSubscription(),
             ),
