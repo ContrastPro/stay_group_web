@@ -85,7 +85,7 @@ class _TeamPageState extends State<ManageUserPage> {
     });
   }
 
-  void _createWorker(BuildContext context) {
+  void _createUser(BuildContext context) {
     _switchErrorName();
     _switchErrorEmail();
     _switchErrorPassword();
@@ -116,7 +116,7 @@ class _TeamPageState extends State<ManageUserPage> {
     }
 
     context.read<ManageUserBloc>().add(
-          CreateWorker(
+          CreateUser(
             name: name,
             email: email,
             password: password,
@@ -182,7 +182,7 @@ class _TeamPageState extends State<ManageUserPage> {
                           BorderTextField(
                             controller: _controllerName,
                             labelText: 'Name',
-                            hintText: 'Worker name',
+                            hintText: 'User name',
                             prefixIcon: AppIcons.user,
                             errorText: _errorTextName,
                             onChanged: _validateName,
@@ -213,7 +213,7 @@ class _TeamPageState extends State<ManageUserPage> {
                           const SizedBox(height: 16.0),
                           CustomButton(
                             text: 'Create user',
-                            onTap: () => _createWorker(context),
+                            onTap: () => _createUser(context),
                           ),
                         ],
                       ),

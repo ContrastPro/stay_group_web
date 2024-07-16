@@ -29,22 +29,8 @@ class AccountSettingsBloc
 
       final User? user = authRepository.currentUser();
 
-      if (user == null) {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
-        );
-
-        return emit(
-          state.copyWith(
-            status: BlocStatus.failed,
-          ),
-        );
-      }
-
       final UserModel? userData = await usersRepository.getUser(
-        userId: user.uid,
+        userId: user!.uid,
       );
 
       emit(

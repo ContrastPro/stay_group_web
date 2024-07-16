@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../models/users/user_model.dart';
+import '../../../../../models/users/user_response_model.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
@@ -27,21 +29,15 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       final User? user = authRepository.currentUser();
 
-      if (user == null) {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
-        );
+      final List<UserModel> users = [];
 
-        return emit(
-          state.copyWith(
-            status: BlocStatus.failed,
-          ),
-        );
+      final UserResponseModel? response = await usersRepository.getTeam(
+        spaceId: user!.uid,
+      );
+
+      if (response != null) {
+        users.addAll(response.users);
       }
-
-      await usersRepository.getTeam(spaceId: user.uid);
 
       emit(
         state.copyWith(
@@ -52,6 +48,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       emit(
         state.copyWith(
           status: BlocStatus.success,
+          users: users,
         ),
       );
     });

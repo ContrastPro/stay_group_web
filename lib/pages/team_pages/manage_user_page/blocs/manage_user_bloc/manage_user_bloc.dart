@@ -19,7 +19,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
     required this.usersRepository,
     required this.localDB,
   }) : super(const ManageUserState()) {
-    on<CreateWorker>((event, emit) async {
+    on<CreateUser>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,
@@ -28,19 +28,19 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
 
       final User? userData = authRepository.currentUser();
 
-      final UserCredential? createdWorker = await authRepository.emailSignUp(
+      final UserCredential? createdUser = await authRepository.emailSignUp(
         email: event.email,
         password: event.password,
       );
 
-      if (createdWorker != null) {
-        final User worker = createdWorker.user!;
+      if (createdUser != null) {
+        final User user = createdUser.user!;
 
         await usersRepository.createUser(
-          userId: worker.uid,
+          userId: user.uid,
           spaceId: userData!.uid,
           role: UserRole.worker,
-          email: worker.email!,
+          email: user.email!,
           name: event.name,
         );
 

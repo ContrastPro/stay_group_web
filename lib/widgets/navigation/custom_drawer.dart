@@ -65,8 +65,8 @@ class CustomDrawer extends StatelessWidget {
     ),
   ];
 
-  List<BottomNavigationBarItemModel> _getTabs(UserModel? user) {
-    if (user!.info.role == UserRole.manager) {
+  List<BottomNavigationBarItemModel> _getTabs(UserModel user) {
+    if (user.info.role == UserRole.manager) {
       return _tabsManager;
     }
 
@@ -94,7 +94,7 @@ class CustomDrawer extends StatelessWidget {
           return SizedBox(
             width: 240.0,
             child: Column(
-              children: _getTabs(state.user).map((e) {
+              children: _getTabs(state.user!).map((e) {
                 return Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
@@ -157,7 +157,7 @@ class CustomDrawer extends StatelessWidget {
         return SizedBox(
           width: 45.0,
           child: Column(
-            children: _getTabs(state.user).map((e) {
+            children: _getTabs(state.user!).map((e) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: InkWell(

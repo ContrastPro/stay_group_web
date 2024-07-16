@@ -5,8 +5,8 @@ abstract class ManageUserEvent {
   const ManageUserEvent();
 }
 
-class CreateWorker extends ManageUserEvent {
-  const CreateWorker({
+class CreateUser extends ManageUserEvent {
+  const CreateUser({
     required this.name,
     required this.email,
     required this.password,
