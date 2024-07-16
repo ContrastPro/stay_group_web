@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../database/local_database.dart';
-import '../../models/users/user_model.dart';
+import '../../models/users/user_info_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';

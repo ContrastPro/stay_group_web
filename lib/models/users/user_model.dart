@@ -1,47 +1,31 @@
-enum UserRole {
-  manager('client_manager'),
-  worker('client_worker');
-
-  const UserRole(this.value);
-
-  final String value;
-
-  static UserRole fromValue(String i) {
-    return UserRole.values.firstWhere((e) => e.value == i);
-  }
-}
+import 'user_info_model.dart';
+import 'user_metadata_model.dart';
 
 class UserModel {
   const UserModel({
+    required this.archived,
+    required this.blocked,
     required this.id,
-    required this.role,
-    required this.email,
     this.spaceId,
-    required this.name,
-    required this.createdAt,
-    this.dueDate,
-    required this.isDeleted,
+    required this.info,
+    required this.metadata,
   });
 
   factory UserModel.fromJson(Map<Object?, dynamic> json) {
     return UserModel(
+      archived: json['archived'],
+      blocked: json['blocked'],
       id: json['id'],
-      role: UserRole.fromValue(json['role']),
-      email: json['email'],
       spaceId: json['spaceId'],
-      name: json['name'],
-      createdAt: json['createdAt'],
-      dueDate: json['dueDate'],
-      isDeleted: json['isDeleted'],
+      info: UserInfoModel.fromJson(json['info']),
+      metadata: UserMetadataModel.fromJson(json['metadata']),
     );
   }
 
+  final bool archived;
+  final bool blocked;
   final String id;
-  final UserRole role;
-  final String email;
   final String? spaceId;
-  final String name;
-  final String createdAt;
-  final String? dueDate;
-  final bool isDeleted;
+  final UserInfoModel info;
+  final UserMetadataModel metadata;
 }

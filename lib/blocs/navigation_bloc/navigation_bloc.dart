@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/users/user_info_model.dart';
 import '../../models/users/user_model.dart';
 import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../repositories/auth_repository.dart';
@@ -26,7 +27,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       final Timer timerDueDate = timerService.startTimer(
         addInitialTick: true,
         tick: const Duration(
-          milliseconds: 10000,
+          milliseconds: 30000,
         ),
         onTick: () => add(
           const DueDateTick(),
@@ -64,25 +65,44 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         userId: user.uid,
       );
 
-      if (userData!.spaceId != null) {
-        final UserModel? spaseData = await usersRepository.getUser(
+      if (userData!.info.role == UserRole.worker) {
+        final UserModel? spaceData = await usersRepository.getUser(
           userId: userData.spaceId!,
         );
 
+        if (spaceData!.blocked) {
+          return add(
+            const NavigateLogin(
+              errorMessage:
+                  'You have been logged out due to your space account blocking',
+            ),
+          );
+        }
+
         difference = dateDifference(
-          spaseData!.dueDate!,
+          spaceData.metadata.dueDate!,
           type: DateDifference.minutes,
         );
       } else {
+        if (userData.blocked) {
+          return add(
+            const NavigateLogin(
+              errorMessage: 'You have been logged out due to account blocking',
+            ),
+          );
+        }
+
         difference = dateDifference(
-          userData.dueDate!,
+          userData.metadata.dueDate!,
           type: DateDifference.minutes,
         );
       }
 
       if (difference < 0) {
         return add(
-          const NavigatePricing(),
+          const NavigatePricing(
+            errorMessage: 'Your subscription is expired',
+          ),
         );
       }
     });
@@ -99,6 +119,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       emit(
         state.copyWith(
           status: NavigationStatus.auth,
+          errorMessage: event.errorMessage,
         ),
       );
     });
@@ -116,7 +137,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       emit(
         state.copyWith(
-          status: NavigationStatus.auth,
+          status: NavigationStatus.pricing,
+          errorMessage: event.errorMessage,
         ),
       );
     });

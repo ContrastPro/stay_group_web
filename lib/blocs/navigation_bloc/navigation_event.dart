@@ -10,7 +10,11 @@ class StartSubscription extends NavigationEvent {
 }
 
 class NavigateLogin extends NavigationEvent {
-  const NavigateLogin();
+  const NavigateLogin({
+    this.errorMessage,
+  });
+
+  final String? errorMessage;
 }
 
 class DueDateTick extends NavigationEvent {
@@ -18,7 +22,11 @@ class DueDateTick extends NavigationEvent {
 }
 
 class NavigatePricing extends NavigationEvent {
-  const NavigatePricing();
+  const NavigatePricing({
+    this.errorMessage,
+  });
+
+  final String? errorMessage;
 }
 
 class NavigateTab extends NavigationEvent {

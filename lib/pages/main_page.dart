@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../blocs/navigation_bloc/navigation_bloc.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/users_repository.dart';
+import '../services/in_app_notification_service.dart';
 import '../services/timer_service.dart';
 
 class MainPage extends StatelessWidget {
@@ -37,7 +38,18 @@ class MainPage extends StatelessWidget {
       ],
       child: BlocConsumer<NavigationBloc, NavigationState>(
         listener: (_, state) {
+          if (state.errorMessage != null) {
+            InAppNotificationService.show(
+              title: state.errorMessage!,
+              type: InAppNotificationType.error,
+            );
+          }
+
           if (state.status == NavigationStatus.auth) {
+            navigateToLogInPage();
+          }
+
+          if (state.status == NavigationStatus.pricing) {
             navigateToLogInPage();
           }
 

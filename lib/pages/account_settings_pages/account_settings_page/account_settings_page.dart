@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
@@ -50,9 +51,24 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        state.user!.email,
+                        'Account info',
+                        style: AppTextStyles.paragraphMBold,
                       ),
-                      const SizedBox(height: 16.0),
+                      Text(
+                        '${state.user!.info.name} - ${state.user!.info.role.value}',
+                      ),
+                      Text(
+                        state.user!.info.email,
+                      ),
+                      const SizedBox(height: 32.0),
+                      Text(
+                        'User space',
+                        style: AppTextStyles.paragraphMBold,
+                      ),
+                      Text(
+                        '${state.user!.spaceId}',
+                      ),
+                      const SizedBox(height: 32.0),
                       SizedBox(
                         width: 260.0,
                         child: CustomButton(
