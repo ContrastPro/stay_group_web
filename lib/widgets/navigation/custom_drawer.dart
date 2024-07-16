@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../blocs/navigation_bloc/navigation_bloc.dart';
 import '../../models/uncategorized/bottom_navigation_bar_item_model.dart';
+import '../../models/users/user_info_model.dart';
+import '../../models/users/user_model.dart';
 import '../../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../pages/projects_pages/projects_page/projects_page.dart';
@@ -22,7 +24,7 @@ class CustomDrawer extends StatelessWidget {
   final String? fullPath;
   final Size screenSize;
 
-  static const List<BottomNavigationBarItemModel> _tabs = [
+  static const List<BottomNavigationBarItemModel> _tabsManager = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
       title: 'Dashboard',
@@ -45,6 +47,32 @@ class CustomDrawer extends StatelessWidget {
     ),
   ];
 
+  static const List<BottomNavigationBarItemModel> _tabsWorker = [
+    BottomNavigationBarItemModel(
+      icon: AppIcons.dashboard,
+      title: 'Dashboard',
+      routePath: DashboardPage.routePath,
+    ),
+    BottomNavigationBarItemModel(
+      icon: AppIcons.projects,
+      title: 'Projects',
+      routePath: ProjectsPage.routePath,
+    ),
+    BottomNavigationBarItemModel(
+      icon: AppIcons.settings,
+      title: 'Account settings',
+      routePath: AccountSettingsPage.routePath,
+    ),
+  ];
+
+  List<BottomNavigationBarItemModel> _getTabs(UserModel? user) {
+    if (user!.info.role == UserRole.manager) {
+      return _tabsManager;
+    }
+
+    return _tabsWorker;
+  }
+
   void _onSelect({
     required BuildContext context,
     required String routePath,
@@ -66,7 +94,7 @@ class CustomDrawer extends StatelessWidget {
           return SizedBox(
             width: 240.0,
             child: Column(
-              children: _tabs.map((e) {
+              children: _getTabs(state.user).map((e) {
                 return Flexible(
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
@@ -129,7 +157,7 @@ class CustomDrawer extends StatelessWidget {
         return SizedBox(
           width: 45.0,
           child: Column(
-            children: _tabs.map((e) {
+            children: _getTabs(state.user).map((e) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: InkWell(

@@ -6,6 +6,7 @@ import '../../../../../models/users/user_model.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
+import '../../../../../utils/helpers.dart';
 
 part 'account_settings_event.dart';
 
@@ -23,6 +24,8 @@ class AccountSettingsBloc
           status: BlocStatus.loading,
         ),
       );
+
+      await requestDelay();
 
       final User? user = authRepository.currentUser();
 

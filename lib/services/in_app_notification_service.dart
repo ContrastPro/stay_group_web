@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 
 import '../resources/app_colors.dart';
 import '../resources/app_text_styles.dart';
-import '../utils/constants.dart';
 
-enum InAppNotificationType { info, warning, error }
+enum InAppNotificationType { info, success, caution, error }
 
 class InAppNotificationService {
   const InAppNotificationService._();
 
   static void show({
-    String title = 'Here is a test message!',
+    required String title,
     InAppNotificationType type = InAppNotificationType.info,
   }) {
     BotToast.showCustomNotification(
@@ -28,45 +27,45 @@ class InAppNotificationService {
           children: [
             Container(
               width: 320.0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               margin: const EdgeInsets.symmetric(
                 horizontal: 32.0,
                 vertical: 16.0,
               ),
               decoration: BoxDecoration(
-                color: AppColors.scaffoldSecondary,
-                boxShadow: AppColors.mediumShadow,
+                color: _notificationColor(type),
+                borderRadius: BorderRadius.circular(12.0),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18.0,
-                  vertical: 16.0,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(2.0),
-                      decoration: BoxDecoration(
-                        borderRadius: kCircleRadius,
-                        color: _notificationIconColor(type),
-                      ),
-                      child: Icon(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
                         _notificationIcon(type),
-                        size: 16.0,
-                        color: AppColors.scaffoldSecondary,
+                        color: AppColors.scaffoldPrimary,
                       ),
-                    ),
-                    const SizedBox(width: 12.0),
-                    Flexible(
-                      child: Text(
-                        title,
-                        style: AppTextStyles.paragraphSRegular.copyWith(
-                          color: AppColors.iconPrimary,
+                      const SizedBox(width: 8.0),
+                      Text(
+                        _notificationTitle(type),
+                        style: AppTextStyles.subtitleMedium.copyWith(
+                          color: AppColors.scaffoldSecondary,
                         ),
-                        textAlign: TextAlign.start,
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 2.0),
+                  Text(
+                    title,
+                    style: AppTextStyles.paragraphMRegular.copyWith(
+                      color: AppColors.scaffoldSecondary,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -75,21 +74,35 @@ class InAppNotificationService {
     );
   }
 
+  static Color _notificationColor(InAppNotificationType type) {
+    if (type == InAppNotificationType.success) return AppColors.success;
+    if (type == InAppNotificationType.caution) return AppColors.caution;
+    if (type == InAppNotificationType.error) return AppColors.error;
+
+    return AppColors.info;
+  }
+
+  static String _notificationTitle(InAppNotificationType type) {
+    if (type == InAppNotificationType.success) return 'Success';
+    if (type == InAppNotificationType.caution) return 'Caution';
+    if (type == InAppNotificationType.error) return 'Error';
+
+    return 'Information';
+  }
+
   static IconData _notificationIcon(InAppNotificationType type) {
-    if (type == InAppNotificationType.warning) {
+    if (type == InAppNotificationType.success) {
+      return Icons.check_circle_rounded;
+    }
+
+    if (type == InAppNotificationType.caution) {
       return Icons.warning_rounded;
     }
 
     if (type == InAppNotificationType.error) {
-      return Icons.close_rounded;
+      return Icons.error_rounded;
     }
 
-    return Icons.done_rounded;
-  }
-
-  static Color _notificationIconColor(InAppNotificationType type) {
-    if (type == InAppNotificationType.warning) return AppColors.warning;
-    if (type == InAppNotificationType.error) return AppColors.error;
-    return AppColors.success;
+    return Icons.info_rounded;
   }
 }

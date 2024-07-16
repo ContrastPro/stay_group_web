@@ -10,7 +10,11 @@ class StartSubscription extends NavigationEvent {
 }
 
 class DueDateTick extends NavigationEvent {
-  const DueDateTick();
+  const DueDateTick({
+    required this.user,
+  });
+
+  final User user;
 }
 
 class StopSubscription extends NavigationEvent {

@@ -8,6 +8,7 @@ class NavigationState {
     this.status = NavigationStatus.initial,
     this.routePath = DashboardPage.routePath,
     this.errorMessage,
+    this.user,
     this.timerDueDate,
     this.authSubscription,
   });
@@ -15,6 +16,7 @@ class NavigationState {
   final NavigationStatus status;
   final String routePath;
   final String? errorMessage;
+  final UserModel? user;
   final Timer? timerDueDate;
   final StreamSubscription<User?>? authSubscription;
 
@@ -22,6 +24,7 @@ class NavigationState {
     NavigationStatus? status,
     String? routePath,
     String? errorMessage,
+    UserModel? user,
     Timer? timerDueDate,
     StreamSubscription<User?>? authSubscription,
   }) {
@@ -29,6 +32,7 @@ class NavigationState {
       status: status ?? this.status,
       routePath: routePath ?? this.routePath,
       errorMessage: errorMessage,
+      user: user,
       timerDueDate: timerDueDate,
       authSubscription: authSubscription,
     );

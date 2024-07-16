@@ -13,13 +13,13 @@ class AppColors {
   static const Color textSecondary = Color(0xFF344051);
 
   static const Color iconPrimary = Color(0xFF637083);
-
   //static const Color iconSecondary = Color(0xFF637083);
 
   static const Color border = Color(0xFFE4E7EC);
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFFB923C);
-  static const Color error = Color(0xFFDE1212);
+  static const Color info = Color(0xFF0166FF);
+  static const Color success = Color(0xFF10B978);
+  static const Color caution = Color(0xFFFBBF24);
+  static const Color error = Color(0xFFFF4D4D);
   static const Color transparent = Color(0x00000000);
 
   static List<BoxShadow> cardShadow = [

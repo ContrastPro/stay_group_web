@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../resources/app_colors.dart';
+import '../../resources/app_text_styles.dart';
 
 class CustomLoader extends StatelessWidget {
   const CustomLoader({
@@ -16,9 +17,22 @@ class CustomLoader extends StatelessWidget {
     return Center(
       child: Padding(
         padding: padding,
-        child: SpinKitSquareCircle(
-          size: 50.0,
-          color: AppColors.primary.withOpacity(0.6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SpinKitFoldingCube(
+              size: 50.0,
+              color: AppColors.primary.withOpacity(0.6),
+            ),
+            const SizedBox(height: 26.0),
+            Material(
+              color: AppColors.transparent,
+              child: Text(
+                'Loading...',
+                style: AppTextStyles.subtitleMedium,
+              ),
+            ),
+          ],
         ),
       ),
     );

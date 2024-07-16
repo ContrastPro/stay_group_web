@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
+import '../../../../../utils/helpers.dart';
 
 part 'team_event.dart';
 
@@ -21,6 +22,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           status: BlocStatus.loading,
         ),
       );
+
+      await requestDelay();
 
       final User? user = authRepository.currentUser();
 

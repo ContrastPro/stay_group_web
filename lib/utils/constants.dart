@@ -8,6 +8,8 @@ const BorderRadius kCircleRadius = BorderRadius.all(
   Radius.circular(100.0),
 );
 
+const Duration kRequestDuration = Duration(milliseconds: 1600);
+
 const Duration kAnimationDuration = Duration(milliseconds: 800);
 
 const Duration kFadeInDuration = Duration(milliseconds: 350);

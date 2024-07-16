@@ -156,6 +156,7 @@ class _TeamPageState extends State<ManageUserPage> {
             if (state.status == BlocStatus.success) {
               InAppNotificationService.show(
                 title: 'User successfully created!',
+                type: InAppNotificationType.success,
               );
 
               widget.navigateToTeamPage();

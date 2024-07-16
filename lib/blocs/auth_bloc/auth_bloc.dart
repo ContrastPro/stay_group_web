@@ -25,6 +25,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
 
+      await requestDelay();
+
       final UserCredential? response = await authRepository.emailLogIn(
         email: event.email,
         password: event.password,
@@ -88,6 +90,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
 
+      await requestDelay();
+
       final UserCredential? response = await authRepository.emailSignUp(
         email: event.email,
         password: event.password,
@@ -145,6 +149,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           status: BlocStatus.loading,
         ),
       );
+
+      await requestDelay();
 
       final bool? response = await authRepository.passwordRecovery(
         email: event.email,

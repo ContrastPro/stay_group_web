@@ -24,13 +24,25 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     required this.timerService,
   }) : super(const NavigationState()) {
     on<StartSubscription>((event, emit) async {
+      await requestDelay();
+
+      final User? user = authRepository.currentUser();
+
+      if (user == null) {
+        return add(
+          const StopSubscription(
+            status: NavigationStatus.auth,
+          ),
+        );
+      }
+
       final Timer timerDueDate = timerService.startTimer(
         addInitialTick: true,
         tick: const Duration(
           milliseconds: 30000,
         ),
         onTick: () => add(
-          const DueDateTick(),
+          DueDateTick(user: user),
         ),
       );
 
@@ -44,8 +56,13 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         },
       );
 
+      final UserModel? userData = await usersRepository.getUser(
+        userId: user.uid,
+      );
+
       emit(
         state.copyWith(
+          user: userData,
           timerDueDate: timerDueDate,
           authSubscription: authChanges,
         ),
@@ -53,20 +70,10 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     });
 
     on<DueDateTick>((event, emit) async {
-      final User? user = authRepository.currentUser();
-
-      if (user == null) {
-        return add(
-          const StopSubscription(
-            status: NavigationStatus.auth,
-          ),
-        );
-      }
-
       final int difference;
 
       final UserModel? userData = await usersRepository.getUser(
-        userId: user.uid,
+        userId: event.user.uid,
       );
 
       if (userData!.info.role == UserRole.worker) {
@@ -137,6 +144,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         state.copyWith(
           status: NavigationStatus.tab,
           routePath: event.routePath,
+          user: state.user,
           timerDueDate: state.timerDueDate,
           authSubscription: state.authSubscription,
         ),

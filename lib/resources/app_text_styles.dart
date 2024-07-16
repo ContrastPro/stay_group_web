@@ -23,6 +23,15 @@ class AppTextStyles {
 
   // [END] H5 - Heading
 
+  // [START] Subtitle
+
+  static TextStyle get subtitleMedium => const TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  // [END] Subtitle
+
   // [START] Paragraph M
 
   static TextStyle get paragraphMBold => const TextStyle(

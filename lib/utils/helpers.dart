@@ -77,3 +77,7 @@ String localToUtc(
 
   return date.toUtc().toIso8601String();
 }
+
+Future<void> requestDelay() async {
+  await Future.delayed(kRequestDuration);
+}
