@@ -14,12 +14,14 @@ class MainPage extends StatelessWidget {
     required this.state,
     required this.body,
     required this.navigateToLogInPage,
+    required this.navigateToPricingPage,
     required this.onSelectTab,
   });
 
   final GoRouterState state;
   final Widget body;
   final void Function() navigateToLogInPage;
+  final void Function() navigateToPricingPage;
   final void Function(String) onSelectTab;
 
   @override
@@ -50,7 +52,7 @@ class MainPage extends StatelessWidget {
           }
 
           if (state.status == NavigationStatus.pricing) {
-            navigateToLogInPage();
+            navigateToPricingPage();
           }
 
           if (state.status == NavigationStatus.tab) {

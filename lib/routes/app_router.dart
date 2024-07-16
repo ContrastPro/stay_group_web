@@ -121,6 +121,9 @@ class AppRouter {
             navigateToLogInPage: () => context.go(
               LogInPage.routePath,
             ),
+            navigateToPricingPage: () => context.go(
+              LogInPage.routePath,
+            ),
             onSelectTab: context.go,
           ),
           routes: [

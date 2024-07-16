@@ -37,7 +37,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       final StreamSubscription<User?> authChanges = authRepository.authChanges(
         navigateToLogInPage: () {
           return add(
-            const NavigateLogin(),
+            const StopSubscription(
+              status: NavigationStatus.auth,
+            ),
           );
         },
       );
@@ -55,7 +57,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       if (user == null) {
         return add(
-          const NavigateLogin(),
+          const StopSubscription(
+            status: NavigationStatus.auth,
+          ),
         );
       }
 
@@ -72,9 +76,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
         if (spaceData!.blocked) {
           return add(
-            const NavigateLogin(
-              errorMessage:
-                  'You have been logged out due to your space account blocking',
+            const StopSubscription(
+              status: NavigationStatus.auth,
+              errorMessage: 'You have been logged out due to account blocking',
             ),
           );
         }
@@ -86,7 +90,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       } else {
         if (userData.blocked) {
           return add(
-            const NavigateLogin(
+            const StopSubscription(
+              status: NavigationStatus.auth,
               errorMessage: 'You have been logged out due to account blocking',
             ),
           );
@@ -100,31 +105,15 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       if (difference < 0) {
         return add(
-          const NavigatePricing(
+          const StopSubscription(
+            status: NavigationStatus.pricing,
             errorMessage: 'Your subscription is expired',
           ),
         );
       }
     });
 
-    on<NavigateLogin>((event, emit) async {
-      if (state.timerDueDate != null) {
-        state.timerDueDate!.cancel();
-      }
-
-      if (state.authSubscription != null) {
-        await state.authSubscription!.cancel();
-      }
-
-      emit(
-        state.copyWith(
-          status: NavigationStatus.auth,
-          errorMessage: event.errorMessage,
-        ),
-      );
-    });
-
-    on<NavigatePricing>((event, emit) async {
+    on<StopSubscription>((event, emit) async {
       if (state.timerDueDate != null) {
         state.timerDueDate!.cancel();
       }
@@ -137,7 +126,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       emit(
         state.copyWith(
-          status: NavigationStatus.pricing,
+          status: event.status,
           errorMessage: event.errorMessage,
         ),
       );

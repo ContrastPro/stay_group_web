@@ -9,23 +9,17 @@ class StartSubscription extends NavigationEvent {
   const StartSubscription();
 }
 
-class NavigateLogin extends NavigationEvent {
-  const NavigateLogin({
-    this.errorMessage,
-  });
-
-  final String? errorMessage;
-}
-
 class DueDateTick extends NavigationEvent {
   const DueDateTick();
 }
 
-class NavigatePricing extends NavigationEvent {
-  const NavigatePricing({
+class StopSubscription extends NavigationEvent {
+  const StopSubscription({
+    required this.status,
     this.errorMessage,
   });
 
+  final NavigationStatus status;
   final String? errorMessage;
 }
 
