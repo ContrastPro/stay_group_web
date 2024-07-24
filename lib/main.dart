@@ -14,6 +14,10 @@ import 'repositories/users_repository.dart';
 import 'resources/app_themes.dart';
 import 'routes/app_router.dart';
 
+// todo: delete
+// glebon0202@gmail.com
+// leojugaschvili@gmail.com
+
 void _errorHandler(Object error, StackTrace stack) {
   log(
     '\nError description: $error'
