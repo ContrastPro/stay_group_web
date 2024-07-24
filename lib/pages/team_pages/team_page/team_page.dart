@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +15,8 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/uncategorized/table_item.dart';
+import '../../../widgets/uncategorized/user_status.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
 class TeamPage extends StatefulWidget {
@@ -95,72 +98,100 @@ class _TeamPageContent extends StatelessWidget {
         ),
         body: Column(
           children: [
-            Container(
-              height: 50.0,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Customer Full Name',
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Email',
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Role',
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Date Joined',
-                    ),
-                  ),
-                ],
-              ),
+            TableItem(
+              backgroundColor: AppColors.border,
+              borderRadius: BorderRadius.circular(8.0),
+              cells: const [
+                TableCellItem(
+                  flex: 20,
+                  title: 'Customer Full Name',
+                ),
+                TableCellItem(
+                  flex: 30,
+                  title: 'Email',
+                ),
+                TableCellItem(
+                  flex: 15,
+                  title: 'Role',
+                ),
+                TableCellItem(
+                  flex: 15,
+                  title: 'Status',
+                ),
+                TableCellItem(
+                  flex: 10,
+                  alignment: Alignment.center,
+                  title: 'Date Joined',
+                ),
+                TableCellItem(
+                  flex: 10,
+                  alignment: Alignment.center,
+                  title: 'Actions',
+                ),
+              ],
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: state.users.length,
                 itemBuilder: (_, int i) {
-                  return SizedBox(
-                    height: 50.0,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            state.users[i].info.name,
+                  return TableItem(
+                    height: 68.0,
+                    cells: [
+                      TableCellItem(
+                        flex: 20,
+                        title: state.users[i].info.name,
+                      ),
+                      TableCellItem(
+                        flex: 30,
+                        title: state.users[i].info.email,
+                      ),
+                      const TableCellItem(
+                        flex: 15,
+                        title: 'Worker',
+                      ),
+                      TableCellItem(
+                        flex: 15,
+                        child: UserStatus(
+                          archived: state.users[i].archived,
+                        ),
+                      ),
+                      TableCellItem(
+                        flex: 10,
+                        alignment: Alignment.center,
+                        title: utcToLocal(
+                          state.users[i].metadata.createdAt,
+                          format: DateFormat(
+                            'dd/MM/yy',
                           ),
                         ),
-                        Expanded(
-                          child: Text(
-                            state.users[i].info.email,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            state.users[i].info.role.value,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            utcToLocal(
-                              state.users[i].metadata.createdAt,
-                              format: DateFormat(
-                                'dd/MM/yy',
+                      ),
+                      TableCellItem(
+                        flex: 10,
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppIcons.edit,
+                              width: 22.0,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.iconPrimary,
+                                BlendMode.srcIn,
                               ),
                             ),
-                          ),
+                            const SizedBox(width: 12.0),
+                            SvgPicture.asset(
+                              AppIcons.delete,
+                              width: 22.0,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.iconPrimary,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),

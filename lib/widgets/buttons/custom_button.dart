@@ -46,7 +46,7 @@ class CustomButton extends StatelessWidget {
                   BlendMode.srcIn,
                 ),
               ),
-              const SizedBox(width: 8.0),
+              const SizedBox(width: 4.0),
             ],
             Text(
               text,
@@ -54,6 +54,9 @@ class CustomButton extends StatelessWidget {
                 color: textColor,
               ),
             ),
+            if (prefixIcon != null) ...[
+              const SizedBox(width: 8.0),
+            ],
           ],
         ),
       ),
