@@ -5,33 +5,33 @@ import '../../resources/app_colors.dart';
 import '../../resources/app_text_styles.dart';
 import '../uncategorized/splash_box.dart';
 
-class CustomButton extends StatelessWidget {
-  const CustomButton({
+class CustomTextButton extends StatelessWidget {
+  const CustomTextButton({
     super.key,
     this.prefixIcon,
     required this.text,
-    this.backgroundColor = AppColors.primary,
-    this.textColor = AppColors.scaffoldSecondary,
     required this.onTap,
   });
 
   final String? prefixIcon;
   final String text;
-  final Color backgroundColor;
-  final Color textColor;
   final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
     return SplashBox(
       onTap: onTap,
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.scaffoldSecondary,
+      splashColor: AppColors.scaffoldPrimary,
       borderRadius: BorderRadius.circular(10.0),
       child: Container(
         width: double.infinity,
         height: 44.0,
         decoration: BoxDecoration(
-          boxShadow: AppColors.regularShadow,
+          border: Border.all(
+            color: AppColors.border,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
         ),
         alignment: Alignment.center,
         child: Row(
@@ -41,8 +41,8 @@ class CustomButton extends StatelessWidget {
               SvgPicture.asset(
                 prefixIcon!,
                 width: 22.0,
-                colorFilter: ColorFilter.mode(
-                  textColor,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.primary,
                   BlendMode.srcIn,
                 ),
               ),
@@ -51,7 +51,7 @@ class CustomButton extends StatelessWidget {
             Text(
               text,
               style: AppTextStyles.paragraphMMedium.copyWith(
-                color: textColor,
+                color: AppColors.textSecondary,
               ),
             ),
           ],

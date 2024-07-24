@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
+import '../../../resources/app_icons.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
@@ -76,30 +78,24 @@ class _TeamPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInAnimation(
       duration: kFadeInDuration,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 32.0,
-          vertical: 32.0,
-        ),
-        child: Column(
+      child: TablesLayout(
+        header: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: 130.0,
-                    child: CustomButton(
-                      text: 'Create user',
-                      onTap: navigateToManageUserPage,
-                    ),
-                  ),
-                ],
+              width: 140.0,
+              child: CustomButton(
+                prefixIcon: AppIcons.add,
+                text: 'Add user',
+                backgroundColor: AppColors.info,
+                onTap: navigateToManageUserPage,
               ),
             ),
-            const SizedBox(height: 24.0),
-             Container(
+          ],
+        ),
+        body: Column(
+          children: [
+            Container(
               height: 50.0,
               decoration: BoxDecoration(
                 color: AppColors.border,

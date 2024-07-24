@@ -5,12 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../database/local_database.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
+import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
-import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_text_button.dart';
+import '../../../widgets/layouts/center_container_layout.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_user_bloc/manage_user_bloc.dart';
 
@@ -170,53 +173,67 @@ class _TeamPageState extends State<ManageUserPage> {
           builder: (context, state) {
             return ActionLoader(
               isLoading: _isLoading,
-              child: FadeInAnimation(
-                duration: kFadeInDuration,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              child: CenterContainerLayout(
+                body: Column(
                   children: [
-                    SizedBox(
-                      width: 260.0,
-                      child: Column(
-                        children: [
-                          BorderTextField(
-                            controller: _controllerName,
-                            labelText: 'Name',
-                            hintText: 'User name',
-                            prefixIcon: AppIcons.user,
-                            errorText: _errorTextName,
-                            onChanged: _validateName,
+                    Column(
+                      children: [
+                        Text(
+                          'Add New Member',
+                          style: AppTextStyles.head5SemiBold,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          'Create your team member.',
+                          style: AppTextStyles.paragraphSRegular.copyWith(
+                            color: AppColors.iconPrimary,
                           ),
-                          const SizedBox(height: 16.0),
-                          BorderTextField(
-                            controller: _controllerEmail,
-                            labelText: 'Email',
-                            hintText: 'Placeholder',
-                            prefixIcon: AppIcons.mail,
-                            errorText: _errorTextEmail,
-                            onChanged: _validateEmail,
-                          ),
-                          const SizedBox(height: 16.0),
-                          BorderTextField(
-                            controller: _controllerPassword,
-                            labelText: 'Password',
-                            hintText: 'Password',
-                            isObscureText: _isObscurePassword,
-                            prefixIcon: AppIcons.lock,
-                            suffixIcon: _isObscurePassword
-                                ? AppIcons.visibilityOff
-                                : AppIcons.visibilityOn,
-                            errorText: _errorTextPassword,
-                            onSuffixTap: _switchObscurePassword,
-                            onChanged: _validatePassword,
-                          ),
-                          const SizedBox(height: 16.0),
-                          CustomButton(
-                            text: 'Create user',
-                            onTap: () => _createUser(context),
-                          ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 28.0),
+                        BorderTextField(
+                          controller: _controllerName,
+                          labelText: 'Name',
+                          hintText: 'User name',
+                          prefixIcon: AppIcons.user,
+                          errorText: _errorTextName,
+                          onChanged: _validateName,
+                        ),
+                        const SizedBox(height: 16.0),
+                        BorderTextField(
+                          controller: _controllerEmail,
+                          labelText: 'Email',
+                          hintText: 'Placeholder',
+                          prefixIcon: AppIcons.mail,
+                          errorText: _errorTextEmail,
+                          onChanged: _validateEmail,
+                        ),
+                        const SizedBox(height: 16.0),
+                        BorderTextField(
+                          controller: _controllerPassword,
+                          labelText: 'Password',
+                          hintText: 'Password',
+                          isObscureText: _isObscurePassword,
+                          prefixIcon: AppIcons.lock,
+                          suffixIcon: _isObscurePassword
+                              ? AppIcons.visibilityOff
+                              : AppIcons.visibilityOn,
+                          errorText: _errorTextPassword,
+                          onSuffixTap: _switchObscurePassword,
+                          onChanged: _validatePassword,
+                        ),
+                        const SizedBox(height: 40.0),
+                        CustomButton(
+                          text: 'Create user',
+                          onTap: () => _createUser(context),
+                        ),
+                        const SizedBox(height: 12.0),
+                        CustomTextButton(
+                          prefixIcon: AppIcons.arrowBack,
+                          text: 'Back to Team page',
+                          onTap: widget.navigateToTeamPage,
+                        ),
+                      ],
                     ),
                   ],
                 ),

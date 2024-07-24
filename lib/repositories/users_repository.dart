@@ -42,6 +42,7 @@ class UsersRepository {
         'role': role.value,
         'email': email,
         'name': name,
+        'billingPlan': 0,
       },
       'metadata': {
         'createdAt': localToUtc(currentTime()),
