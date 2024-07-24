@@ -76,7 +76,17 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         userId: event.user.uid,
       );
 
-      if (userData!.info.role == UserRole.worker) {
+      if (userData!.archived) {
+        return add(
+          const StopSubscription(
+            status: NavigationStatus.auth,
+            errorMessage:
+                'You have been logged out due to account archived or deleted',
+          ),
+        );
+      }
+
+      if (userData.info.role == UserRole.worker) {
         final UserModel? spaceData = await usersRepository.getUser(
           userId: userData.spaceId!,
         );

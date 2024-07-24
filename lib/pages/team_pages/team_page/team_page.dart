@@ -77,6 +77,19 @@ class _TeamPageContent extends StatelessWidget {
   final TeamState state;
   final void Function() navigateToManageUserPage;
 
+  void _switchUserArchive({
+    required BuildContext context,
+    required String id,
+    required bool archived,
+  }) {
+    context.read<TeamBloc>().add(
+          SwitchUserArchive(
+            id: id,
+            archived: !archived,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
@@ -180,12 +193,22 @@ class _TeamPageContent extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12.0),
-                            SvgPicture.asset(
-                              AppIcons.delete,
-                              width: 22.0,
-                              colorFilter: const ColorFilter.mode(
-                                AppColors.iconPrimary,
-                                BlendMode.srcIn,
+                            GestureDetector(
+                              onTap: () => _switchUserArchive(
+                                context: context,
+                                id: state.users[i].id,
+                                archived: state.users[i].archived,
+                              ),
+                              behavior: HitTestBehavior.opaque,
+                              child: SvgPicture.asset(
+                                state.users[i].archived
+                                    ? AppIcons.visibilityOn
+                                    : AppIcons.visibilityOff,
+                                width: 22.0,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.iconPrimary,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
                           ],

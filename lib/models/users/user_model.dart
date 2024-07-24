@@ -28,4 +28,22 @@ class UserModel {
   final String? spaceId;
   final UserInfoModel info;
   final UserMetadataModel metadata;
+
+  UserModel copyWith({
+    bool? archived,
+    bool? blocked,
+    String? id,
+    String? spaceId,
+    UserInfoModel? info,
+    UserMetadataModel? metadata,
+  }) {
+    return UserModel(
+      archived: archived ?? this.archived,
+      blocked: blocked ?? this.blocked,
+      id: id ?? this.id,
+      spaceId: spaceId ?? this.spaceId,
+      info: info ?? this.info,
+      metadata: metadata ?? this.metadata,
+    );
+  }
 }

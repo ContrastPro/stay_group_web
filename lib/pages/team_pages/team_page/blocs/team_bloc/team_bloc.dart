@@ -52,6 +52,44 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         ),
       );
     });
+
+    on<SwitchUserArchive>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      final List<UserModel> users = [...state.users];
+
+      final int index = users.indexWhere(
+        (e) => e.id == event.id,
+      );
+
+      await usersRepository.updateUserArchive(
+        userId: event.id,
+        archived: event.archived,
+      );
+
+      users[index] = users[index].copyWith(
+        archived: event.archived,
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.success,
+          users: users,
+        ),
+      );
+    });
   }
 
   final AuthRepository authRepository;

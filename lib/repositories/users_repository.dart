@@ -71,6 +71,19 @@ class UsersRepository {
     return null;
   }
 
+  Future<void> updateUserArchive({
+    required String userId,
+    required bool archived,
+  }) async {
+    final DatabaseReference reference = _getRef(userId);
+
+    await reference.update({
+      'archived': archived,
+    });
+
+    _logger.log('Successful', name: 'updateUserArchive');
+  }
+
   Future<UserResponseModel?> getTeam({
     required String spaceId,
   }) async {
