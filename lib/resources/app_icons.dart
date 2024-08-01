@@ -4,7 +4,6 @@ class AppIcons {
   static const String _path = 'assets/icons';
 
   static const String add = '$_path/add.svg';
-  static const String archive = '$_path/archive.svg';
   static const String arrowBack = '$_path/arrow_back.svg';
   static const String dashboard = '$_path/dashboard.svg';
   static const String delete = '$_path/delete.svg';

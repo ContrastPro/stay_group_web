@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../database/local_database.dart';
-import '../../../../../models/users/auth_data_model.dart';
 import '../../../../../models/users/user_info_model.dart';
+import '../../../../../models/users/user_model.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
+import '../../../../../utils/helpers.dart';
 
 part 'manage_user_event.dart';
 
@@ -17,7 +17,6 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   ManageUserBloc({
     required this.authRepository,
     required this.usersRepository,
-    required this.localDB,
   }) : super(const ManageUserState()) {
     on<CreateUser>((event, emit) async {
       emit(
@@ -26,31 +25,25 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         ),
       );
 
-      final User? userData = authRepository.currentUser();
+      await requestDelay();
 
-      final UserCredential? createdUser = await authRepository.emailSignUp(
+      final User? user = authRepository.currentUser();
+
+      final UserModel? response = await usersRepository.getUserByEmail(
         email: event.email,
-        password: event.password,
       );
 
-      if (createdUser != null) {
-        final User user = createdUser.user!;
+      if (response == null) {
+        final String id = uuid();
+        final String presignedPassword = cryptPassword(event.password);
 
         await usersRepository.createUser(
-          userId: user.uid,
-          spaceId: userData!.uid,
+          id: id,
+          spaceId: user!.uid,
+          email: event.email,
+          presignedPassword: presignedPassword,
           role: UserRole.worker,
-          email: user.email!,
           name: event.name,
-        );
-
-        await authRepository.sendEmailVerification();
-
-        final AuthDataModel? currentAuth = await localDB.getCurrentAuth();
-
-        await authRepository.emailLogIn(
-          email: currentAuth!.email,
-          password: currentAuth.password,
         );
 
         emit(
@@ -83,5 +76,4 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
 
   final AuthRepository authRepository;
   final UsersRepository usersRepository;
-  final LocalDB localDB;
 }

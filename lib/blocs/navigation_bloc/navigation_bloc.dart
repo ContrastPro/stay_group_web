@@ -41,9 +41,13 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         tick: const Duration(
           milliseconds: 30000,
         ),
-        onTick: () => add(
+
+        /*onTick: () => add(
           DueDateTick(user: user),
-        ),
+        ),*/
+        onTick: () {
+          //
+        },
       );
 
       final StreamSubscription<User?> authChanges = authRepository.authChanges(
@@ -56,7 +60,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         },
       );
 
-      final UserModel? userData = await usersRepository.getUser(
+      final UserModel? userData = await usersRepository.getUserById(
         userId: user.uid,
       );
 
@@ -72,7 +76,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     on<DueDateTick>((event, emit) async {
       final int difference;
 
-      final UserModel? userData = await usersRepository.getUser(
+      final UserModel? userData = await usersRepository.getUserById(
         userId: event.user.uid,
       );
 
@@ -87,7 +91,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       }
 
       if (userData.info.role == UserRole.worker) {
-        final UserModel? spaceData = await usersRepository.getUser(
+        final UserModel? spaceData = await usersRepository.getUserById(
           userId: userData.spaceId!,
         );
 

@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'database/local_database.dart';
 import 'firebase_options.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/users_repository.dart';
@@ -15,8 +14,8 @@ import 'resources/app_themes.dart';
 import 'routes/app_router.dart';
 
 // todo: delete
+// staygroup.io@gmail.com
 // glebon0202@gmail.com
-// leojugaschvili@gmail.com
 
 void _errorHandler(Object error, StackTrace stack) {
   log(
@@ -34,8 +33,6 @@ Future<void> main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-
-      await LocalDB.instance.ensureInitialized();
 
       final GoRouter routerConfig = AppRouter.generateRoute();
 

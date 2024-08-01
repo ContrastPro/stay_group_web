@@ -5,16 +5,9 @@ import '../../resources/app_colors.dart';
 class CenterContainerLayout extends StatelessWidget {
   const CenterContainerLayout({
     super.key,
-    this.padding = const EdgeInsets.symmetric(
-      horizontal: 40.0,
-      vertical: 32.0,
-    ),
-    this.maxWidth = 440.0,
     required this.body,
   });
 
-  final EdgeInsetsGeometry padding;
-  final double maxWidth;
   final Widget body;
 
   @override
@@ -27,13 +20,16 @@ class CenterContainerLayout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: padding,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 32.0,
+                ),
                 margin: const EdgeInsets.symmetric(
                   horizontal: 16.0,
                   vertical: 32.0,
                 ),
-                constraints: BoxConstraints(
-                  maxWidth: maxWidth,
+                constraints: const BoxConstraints(
+                  maxWidth: 440.0,
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.scaffoldSecondary,

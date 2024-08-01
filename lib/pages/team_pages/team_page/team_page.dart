@@ -77,6 +77,15 @@ class _TeamPageContent extends StatelessWidget {
   final TeamState state;
   final void Function() navigateToManageUserPage;
 
+  void _deleteUser({
+    required BuildContext context,
+    required String id,
+  }) {
+    context.read<TeamBloc>().add(
+          DeleteUser(id: id),
+        );
+  }
+
   void _switchUserArchive({
     required BuildContext context,
     required String id,
@@ -114,30 +123,38 @@ class _TeamPageContent extends StatelessWidget {
             TableItem(
               backgroundColor: AppColors.border,
               borderRadius: BorderRadius.circular(8.0),
-              cells: const [
+              cells: [
                 TableCellItem(
                   flex: 20,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                  ).copyWith(
+                    left: 16.0,
+                    right: 4.0,
+                  ),
                   title: 'Customer Full Name',
                 ),
-                TableCellItem(
-                  flex: 30,
+                const TableCellItem(
+                  flex: 25,
                   title: 'Email',
                 ),
-                TableCellItem(
-                  flex: 15,
+                const TableCellItem(
+                  flex: 10,
+                  alignment: Alignment.center,
                   title: 'Role',
                 ),
-                TableCellItem(
+                const TableCellItem(
                   flex: 15,
+                  alignment: Alignment.center,
                   title: 'Status',
                 ),
-                TableCellItem(
-                  flex: 10,
+                const TableCellItem(
+                  flex: 15,
                   alignment: Alignment.center,
                   title: 'Date Joined',
                 ),
-                TableCellItem(
-                  flex: 10,
+                const TableCellItem(
+                  flex: 15,
                   alignment: Alignment.center,
                   title: 'Actions',
                 ),
@@ -152,24 +169,32 @@ class _TeamPageContent extends StatelessWidget {
                     cells: [
                       TableCellItem(
                         flex: 20,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8.0,
+                        ).copyWith(
+                          left: 16.0,
+                          right: 4.0,
+                        ),
                         title: state.users[i].info.name,
                       ),
                       TableCellItem(
-                        flex: 30,
-                        title: state.users[i].info.email,
+                        flex: 25,
+                        title: state.users[i].credential.email,
                       ),
                       const TableCellItem(
-                        flex: 15,
+                        flex: 10,
+                        alignment: Alignment.center,
                         title: 'Worker',
                       ),
                       TableCellItem(
                         flex: 15,
+                        alignment: Alignment.center,
                         child: UserStatus(
                           archived: state.users[i].archived,
                         ),
                       ),
                       TableCellItem(
-                        flex: 10,
+                        flex: 15,
                         alignment: Alignment.center,
                         title: utcToLocal(
                           state.users[i].metadata.createdAt,
@@ -179,7 +204,7 @@ class _TeamPageContent extends StatelessWidget {
                         ),
                       ),
                       TableCellItem(
-                        flex: 10,
+                        flex: 15,
                         alignment: Alignment.center,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -193,24 +218,42 @@ class _TeamPageContent extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12.0),
-                            GestureDetector(
-                              onTap: () => _switchUserArchive(
-                                context: context,
-                                id: state.users[i].id,
-                                archived: state.users[i].archived,
-                              ),
-                              behavior: HitTestBehavior.opaque,
-                              child: SvgPicture.asset(
-                                state.users[i].archived
-                                    ? AppIcons.visibilityOn
-                                    : AppIcons.visibilityOff,
-                                width: 22.0,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.iconPrimary,
-                                  BlendMode.srcIn,
+                            if (state.users[i].userId == null) ...[
+                              GestureDetector(
+                                onTap: () => _deleteUser(
+                                  context: context,
+                                  id: state.users[i].id,
+                                ),
+                                behavior: HitTestBehavior.opaque,
+                                child: SvgPicture.asset(
+                                  AppIcons.delete,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ] else ...[
+                              GestureDetector(
+                                onTap: () => _switchUserArchive(
+                                  context: context,
+                                  id: state.users[i].id,
+                                  archived: state.users[i].archived,
+                                ),
+                                behavior: HitTestBehavior.opaque,
+                                child: SvgPicture.asset(
+                                  state.users[i].archived
+                                      ? AppIcons.visibilityOn
+                                      : AppIcons.visibilityOff,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

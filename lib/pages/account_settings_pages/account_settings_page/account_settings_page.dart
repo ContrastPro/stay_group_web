@@ -58,7 +58,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         '${state.user!.info.name} - ${state.user!.info.role.value}',
                       ),
                       Text(
-                        state.user!.info.email,
+                        state.user!.credential.email,
                       ),
                       const SizedBox(height: 32.0),
                       Text(

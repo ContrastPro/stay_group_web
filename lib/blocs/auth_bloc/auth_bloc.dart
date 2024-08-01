@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../database/local_database.dart';
 import '../../models/users/user_info_model.dart';
+import '../../models/users/user_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';
@@ -16,7 +16,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required this.authRepository,
     required this.usersRepository,
-    required this.localDB,
   }) : super(const AuthState()) {
     on<EmailLogIn>((event, emit) async {
       emit(
@@ -34,11 +33,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (response != null) {
         if (response.user!.emailVerified) {
-          await localDB.saveCurrentAuth(
-            email: event.email,
-            password: event.password,
-          );
-
           emit(
             state.copyWith(
               status: BlocStatus.loaded,
@@ -68,18 +62,67 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
         }
       } else {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
+        final UserModel? unregistered = await usersRepository.getUserByEmail(
+          email: event.email,
         );
 
-        emit(
-          state.copyWith(
-            status: BlocStatus.failed,
-            errorMessage: 'The email or password is incorrect',
-          ),
-        );
+        if (unregistered != null) {
+          final bool passwordValid = passwordIsValid(
+            oldPassword: unregistered.credential.presignedPassword!,
+            newPassword: event.password,
+          );
+
+          if (passwordValid) {
+            final UserCredential? registered = await authRepository.emailSignUp(
+              email: event.email,
+              password: event.password,
+            );
+
+            await usersRepository.updateUserId(
+              id: unregistered.id,
+              userId: registered!.user!.uid,
+              email: unregistered.credential.email,
+            );
+
+            emit(
+              state.copyWith(
+                status: BlocStatus.loaded,
+              ),
+            );
+
+            emit(
+              state.copyWith(
+                status: BlocStatus.success,
+              ),
+            );
+          } else {
+            emit(
+              state.copyWith(
+                status: BlocStatus.loaded,
+              ),
+            );
+
+            emit(
+              state.copyWith(
+                status: BlocStatus.failed,
+                errorMessage: 'The email or password is incorrect',
+              ),
+            );
+          }
+        } else {
+          emit(
+            state.copyWith(
+              status: BlocStatus.loaded,
+            ),
+          );
+
+          emit(
+            state.copyWith(
+              status: BlocStatus.failed,
+              errorMessage: 'The email or password is incorrect',
+            ),
+          );
+        }
       }
     });
 
@@ -100,14 +143,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response != null) {
         final User user = response.user!;
 
+        final String id = uuid();
+
         final DateTime dueDate = currentTime().add(
           const Duration(days: 3),
         );
 
         await usersRepository.createUser(
+          id: id,
           userId: user.uid,
-          role: UserRole.manager,
           email: user.email!,
+          role: UserRole.manager,
           name: 'My space',
           dueDate: dueDate,
         );
@@ -181,5 +227,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthRepository authRepository;
   final UsersRepository usersRepository;
-  final LocalDB localDB;
 }

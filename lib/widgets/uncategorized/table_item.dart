@@ -39,7 +39,7 @@ class TableCellItem extends StatelessWidget {
     super.key,
     this.flex = 1,
     this.padding = const EdgeInsets.symmetric(
-      horizontal: 16.0,
+      horizontal: 4.0,
       vertical: 8.0,
     ),
     this.alignment = Alignment.centerLeft,
@@ -64,6 +64,7 @@ class TableCellItem extends StatelessWidget {
             ? Text(
                 title!,
                 style: AppTextStyles.paragraphSMedium,
+                textAlign: TextAlign.center,
               )
             : child,
       ),

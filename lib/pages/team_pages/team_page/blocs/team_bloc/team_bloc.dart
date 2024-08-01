@@ -31,13 +31,48 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       final List<UserModel> users = [];
 
-      final UserResponseModel? response = await usersRepository.getTeam(
+      final UserResponseModel? response = await usersRepository.getUserTeam(
         spaceId: user!.uid,
       );
 
       if (response != null) {
         users.addAll(response.users);
       }
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.success,
+          users: users,
+        ),
+      );
+    });
+
+    on<DeleteUser>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      final List<UserModel> users = [...state.users];
+
+      final int index = users.indexWhere(
+        (e) => e.id == event.id,
+      );
+
+      await usersRepository.deleteUser(
+        id: event.id,
+      );
+
+      users.removeAt(index);
 
       emit(
         state.copyWith(
@@ -69,7 +104,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       );
 
       await usersRepository.updateUserArchive(
-        userId: event.id,
+        id: event.id,
         archived: event.archived,
       );
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../blocs/auth_bloc/auth_bloc.dart';
-import '../../../database/local_database.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
@@ -147,7 +146,6 @@ class _SignUpPageState extends State<SignUpPage> {
       create: (_) => AuthBloc(
         authRepository: context.read<AuthRepository>(),
         usersRepository: context.read<UsersRepository>(),
-        localDB: LocalDB.instance,
       ),
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (_, state) {

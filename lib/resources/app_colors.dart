@@ -48,4 +48,11 @@ class AppColors {
       spreadRadius: 0.0,
     ),
   ];
+
+  static const LinearGradient userGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment(0.8, 1),
+    colors: [primary, secondary],
+    tileMode: TileMode.mirror,
+  );
 }

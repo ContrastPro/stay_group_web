@@ -79,6 +79,7 @@ class AuthRepository {
 
   User? currentUser() {
     final User? user = _api.currentUser;
+
     _logger.log(user.toString(), name: 'currentUser');
 
     return user;
@@ -93,6 +94,7 @@ class AuthRepository {
       (User? user) {
         if (user == null) {
           _logger.log('navigateToLogInPage', name: 'authChanges');
+
           return navigateToLogInPage();
         }
       },

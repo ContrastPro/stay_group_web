@@ -90,7 +90,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
-        if (screenSize.width >= 960.0) {
+        if (screenSize.width >= 1200.0) {
           return SizedBox(
             width: 240.0,
             child: Column(

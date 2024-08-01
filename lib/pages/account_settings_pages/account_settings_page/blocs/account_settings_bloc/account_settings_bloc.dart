@@ -29,7 +29,7 @@ class AccountSettingsBloc
 
       final User? user = authRepository.currentUser();
 
-      final UserModel? userData = await usersRepository.getUser(
+      final UserModel? userData = await usersRepository.getUserById(
         userId: user!.uid,
       );
 

@@ -36,8 +36,12 @@ class UserStatus extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8.0),
-          Text(
-            archived ? 'Inactive' : 'Active',
+          Flexible(
+            child: Text(
+              archived ? 'Inactive' : 'Active',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

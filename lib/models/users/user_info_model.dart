@@ -15,22 +15,19 @@ enum UserRole {
 class UserInfoModel {
   const UserInfoModel({
     required this.role,
-    required this.email,
     required this.name,
-    required this.billingPlan,
+    this.billingPlan,
   });
 
   factory UserInfoModel.fromJson(Map<Object?, dynamic> json) {
     return UserInfoModel(
       role: UserRole.fromValue(json['role']),
-      email: json['email'],
       name: json['name'],
       billingPlan: json['billingPlan'],
     );
   }
 
   final UserRole role;
-  final String email;
   final String name;
-  final int billingPlan;
+  final int? billingPlan;
 }

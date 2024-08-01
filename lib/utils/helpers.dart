@@ -1,7 +1,12 @@
+import 'package:crypt/crypt.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import 'constants.dart';
+
+String getFirstLetter(String data) {
+  return data[0].toUpperCase();
+}
 
 DateTime currentTime() {
   return DateTime.now();
@@ -53,6 +58,19 @@ String uuid({
   }
 
   return uuid.v4();
+}
+
+String cryptPassword(String password) {
+  final Crypt crypt = Crypt.sha512(password);
+  return crypt.toString();
+}
+
+bool passwordIsValid({
+  required String oldPassword,
+  required String newPassword,
+}) {
+  final Crypt crypt = Crypt(oldPassword);
+  return crypt.match(newPassword);
 }
 
 String utcToLocal(

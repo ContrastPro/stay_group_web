@@ -15,67 +15,137 @@ class UsersRepository {
 
   static final FirebaseDatabase _api = FirebaseDatabase.instance;
 
-  DatabaseReference _getRef([String? userId]) {
-    if (userId == null) {
+  DatabaseReference _getRef([String? id]) {
+    if (id == null) {
       return _api.ref('users');
     }
 
-    return _api.ref('users/$userId');
+    return _api.ref('users/$id');
   }
 
   Future<void> createUser({
-    required String userId,
+    required String id,
+    String? userId,
     String? spaceId,
-    required UserRole role,
     required String email,
+    String? presignedPassword,
+    required UserRole role,
     required String name,
     DateTime? dueDate,
   }) async {
-    final DatabaseReference reference = _getRef(userId);
+    final DatabaseReference reference = _getRef(id);
 
-    await reference.set({
+    final Map<String, dynamic> formData = {
       'archived': false,
       'blocked': false,
-      'id': userId,
-      'spaceId': spaceId,
-      'info': {
-        'role': role.value,
-        'email': email,
-        'name': name,
-        'billingPlan': 0,
-      },
-      'metadata': {
-        'createdAt': localToUtc(currentTime()),
-        'dueDate': dueDate != null ? localToUtc(dueDate) : null,
-      },
-    });
+      'id': id,
+    };
+
+    if (role == UserRole.manager) {
+      formData.addEntries([
+        MapEntry('userId', userId),
+        MapEntry('credential', {
+          'email': email,
+        }),
+        MapEntry('info', {
+          'role': role.value,
+          'name': name,
+          'billingPlan': 0,
+        }),
+        MapEntry('metadata', {
+          'createdAt': localToUtc(currentTime()),
+          'dueDate': localToUtc(dueDate!),
+        }),
+      ]);
+    }
+
+    if (role == UserRole.worker) {
+      formData.addEntries([
+        MapEntry('spaceId', spaceId),
+        MapEntry('credential', {
+          'email': email,
+          'presignedPassword': presignedPassword,
+        }),
+        MapEntry('info', {
+          'role': role.value,
+          'name': name,
+        }),
+        MapEntry('metadata', {
+          'createdAt': localToUtc(currentTime()),
+        }),
+      ]);
+    }
+
+    await reference.set(formData);
 
     _logger.log('Successful', name: 'createUser');
   }
 
-  Future<UserModel?> getUser({
+  Future<UserModel?> getUserById({
     required String userId,
   }) async {
-    final DatabaseReference reference = _getRef(userId);
+    final DatabaseReference reference = _getRef();
 
-    final DataSnapshot response = await reference.get();
+    final DataSnapshot response =
+        await reference.orderByChild('userId').equalTo(userId).get();
+
+    _logger.log('${response.value}', name: 'getUserById');
 
     if (response.exists) {
-      _logger.log('${response.value}', name: 'getUser');
-
-      return UserModel.fromJson(
+      final UserResponseModel userResponse = UserResponseModel.fromJson(
         response.value as Map<Object?, dynamic>,
       );
+
+      return userResponse.users.first;
     }
 
     return null;
   }
 
-  Future<void> updateUserArchive({
+  Future<UserModel?> getUserByEmail({
+    required String email,
+  }) async {
+    final DatabaseReference reference = _getRef();
+
+    final DataSnapshot response =
+        await reference.orderByChild('credential/email').equalTo(email).get();
+
+    _logger.log('${response.value}', name: 'getUserByEmail');
+
+    if (response.exists) {
+      final UserResponseModel userResponse = UserResponseModel.fromJson(
+        response.value as Map<Object?, dynamic>,
+      );
+
+      return userResponse.users.first;
+    }
+
+    return null;
+  }
+
+  Future<void> updateUserId({
+    required String id,
     required String userId,
+    required String email,
+  }) async {
+    final DatabaseReference reference = _getRef(id);
+
+    await reference.update({
+      'userId': userId,
+      'credential': {
+        'email': email,
+        'presignedPassword': null,
+      },
+    });
+
+    _logger.log('Successful', name: 'updateUserId');
+  }
+
+  Future<void> updateUserArchive({
+    required String id,
     required bool archived,
   }) async {
-    final DatabaseReference reference = _getRef(userId);
+    final DatabaseReference reference = _getRef(id);
 
     await reference.update({
       'archived': archived,
@@ -84,7 +154,17 @@ class UsersRepository {
     _logger.log('Successful', name: 'updateUserArchive');
   }
 
-  Future<UserResponseModel?> getTeam({
+  Future<void> deleteUser({
+    required String id,
+  }) async {
+    final DatabaseReference reference = _getRef(id);
+
+    await reference.remove();
+
+    _logger.log('Successful', name: 'deleteUser');
+  }
+
+  Future<UserResponseModel?> getUserTeam({
     required String spaceId,
   }) async {
     final DatabaseReference reference = _getRef();
@@ -92,9 +172,9 @@ class UsersRepository {
     final DataSnapshot response =
         await reference.orderByChild('spaceId').equalTo(spaceId).get();
 
-    if (response.exists) {
-      _logger.log('${response.value}', name: 'getTeam');
+    _logger.log('${response.value}', name: 'getUserTeam');
 
+    if (response.exists) {
       return UserResponseModel.fromJson(
         response.value as Map<Object?, dynamic>,
       );
