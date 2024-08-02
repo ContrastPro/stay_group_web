@@ -62,6 +62,16 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       await requestDelay();
 
+      final UserModel? response = await usersRepository.getUserByEmail(
+        email: event.email,
+      );
+
+      if (response!.userId != null) {
+        return add(
+          const GetUsers(),
+        );
+      }
+
       final List<UserModel> users = [...state.users];
 
       final int index = users.indexWhere(

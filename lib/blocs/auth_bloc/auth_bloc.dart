@@ -32,19 +32,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (response != null) {
-        if (response.user!.emailVerified) {
-          emit(
-            state.copyWith(
-              status: BlocStatus.loaded,
-            ),
-          );
+        final UserModel? userData = await usersRepository.getUserById(
+          userId: response.user!.uid,
+        );
 
-          emit(
-            state.copyWith(
-              status: BlocStatus.success,
-            ),
-          );
-        } else {
+        if (userData!.info.role == UserRole.manager) {
+          if (response.user!.emailVerified) {
+            emit(
+              state.copyWith(
+                status: BlocStatus.loaded,
+              ),
+            );
+
+            return emit(
+              state.copyWith(
+                status: BlocStatus.success,
+              ),
+            );
+          }
+
           await authRepository.signOut();
 
           emit(
@@ -53,7 +59,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
 
-          emit(
+          return emit(
             state.copyWith(
               status: BlocStatus.failed,
               errorMessage:
@@ -61,69 +67,96 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
         }
-      } else {
-        final UserModel? unregistered = await usersRepository.getUserByEmail(
-          email: event.email,
+
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
         );
 
-        if (unregistered != null) {
-          final bool passwordValid = passwordIsValid(
-            oldPassword: unregistered.credential.presignedPassword!,
-            newPassword: event.password,
-          );
+        return emit(
+          state.copyWith(
+            status: BlocStatus.success,
+          ),
+        );
+      }
 
-          if (passwordValid) {
-            final UserCredential? registered = await authRepository.emailSignUp(
-              email: event.email,
-              password: event.password,
-            );
+      final UserModel? userData = await usersRepository.getUserByEmail(
+        email: event.email,
+      );
 
-            await usersRepository.updateUserId(
-              id: unregistered.id,
-              userId: registered!.user!.uid,
-              email: unregistered.credential.email,
-            );
-
-            emit(
-              state.copyWith(
-                status: BlocStatus.loaded,
-              ),
-            );
-
-            emit(
-              state.copyWith(
-                status: BlocStatus.success,
-              ),
-            );
-          } else {
-            emit(
-              state.copyWith(
-                status: BlocStatus.loaded,
-              ),
-            );
-
-            emit(
-              state.copyWith(
-                status: BlocStatus.failed,
-                errorMessage: 'The email or password is incorrect',
-              ),
-            );
-          }
-        } else {
+      if (userData != null) {
+        if (userData.userId != null) {
           emit(
             state.copyWith(
               status: BlocStatus.loaded,
             ),
           );
 
-          emit(
+          return emit(
             state.copyWith(
               status: BlocStatus.failed,
               errorMessage: 'The email or password is incorrect',
             ),
           );
         }
+
+        final bool passwordValid = passwordIsValid(
+          cryptPassword: userData.credential.presignedPassword!,
+          enterPassword: event.password,
+        );
+
+        if (passwordValid) {
+          final UserCredential? credential = await authRepository.emailSignUp(
+            email: event.email,
+            password: event.password,
+          );
+
+          await usersRepository.activateUser(
+            id: userData.id,
+            userId: credential!.user!.uid,
+            email: userData.credential.email,
+          );
+
+          emit(
+            state.copyWith(
+              status: BlocStatus.loaded,
+            ),
+          );
+
+          return emit(
+            state.copyWith(
+              status: BlocStatus.success,
+            ),
+          );
+        }
+
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.failed,
+            errorMessage: 'The email or password is incorrect',
+          ),
+        );
       }
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      return emit(
+        state.copyWith(
+          status: BlocStatus.failed,
+          errorMessage: 'The email or password is incorrect',
+        ),
+      );
     });
 
     on<EmailSignUp>((event, emit) async {

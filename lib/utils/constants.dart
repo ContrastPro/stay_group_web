@@ -8,8 +8,9 @@ const BorderRadius kCircleRadius = BorderRadius.all(
   Radius.circular(100.0),
 );
 
-//todo: change on prod
-const Duration kRequestDuration = Duration(milliseconds: 50); //1400 //50
+const Duration kDebugRequestDuration = Duration(milliseconds: 50);
+
+const Duration kProdRequestDuration = Duration(milliseconds: 1400);
 
 const Duration kAnimationDuration = Duration(milliseconds: 800);
 

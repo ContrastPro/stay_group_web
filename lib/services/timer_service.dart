@@ -8,7 +8,7 @@ class TimerService {
   Timer startTimer({
     bool addInitialTick = false,
     Duration tick = const Duration(
-      milliseconds: 30000,
+      milliseconds: 60000,
     ),
     required void Function() onTick,
   }) {

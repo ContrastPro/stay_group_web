@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,19 +37,70 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         );
       }
 
-      final Timer timerDueDate = timerService.startTimer(
-        addInitialTick: true,
-        tick: const Duration(
-          milliseconds: 30000,
-        ),
-
-        /*onTick: () => add(
-          DueDateTick(user: user),
-        ),*/
-        onTick: () {
-          //
-        },
+      final UserModel? userData = await usersRepository.getUserById(
+        userId: user.uid,
       );
+
+      final StreamSubscription<DatabaseEvent> userChanges;
+      StreamSubscription<DatabaseEvent>? spaceChanges;
+      final Timer timerDueDate;
+
+      if (userData!.info.role == UserRole.manager) {
+        userChanges = usersRepository.userChanges(
+          id: userData.id,
+          userUpdates: (UserModel event) {
+            add(
+              CheckUserStatus(
+                userData: event,
+              ),
+            );
+          },
+        );
+
+        timerDueDate = timerService.startTimer(
+          addInitialTick: true,
+          onTick: () => add(
+            DueDateTick(
+              userData: userData,
+            ),
+          ),
+        );
+      } else {
+        userChanges = usersRepository.userChanges(
+          id: userData.id,
+          userUpdates: (UserModel event) {
+            add(
+              CheckUserStatus(
+                userData: event,
+              ),
+            );
+          },
+        );
+
+        final UserModel? spaceData = await usersRepository.getUserById(
+          userId: userData.spaceId!,
+        );
+
+        spaceChanges = usersRepository.userChanges(
+          id: spaceData!.id,
+          userUpdates: (UserModel event) {
+            add(
+              CheckUserStatus(
+                userData: event,
+              ),
+            );
+          },
+        );
+
+        timerDueDate = timerService.startTimer(
+          addInitialTick: true,
+          onTick: () => add(
+            DueDateTick(
+              userData: spaceData,
+            ),
+          ),
+        );
+      }
 
       final StreamSubscription<User?> authChanges = authRepository.authChanges(
         navigateToLogInPage: () {
@@ -60,27 +112,19 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         },
       );
 
-      final UserModel? userData = await usersRepository.getUserById(
-        userId: user.uid,
-      );
-
       emit(
         state.copyWith(
           user: userData,
+          userSubscription: userChanges,
+          spaceSubscription: spaceChanges,
           timerDueDate: timerDueDate,
           authSubscription: authChanges,
         ),
       );
     });
 
-    on<DueDateTick>((event, emit) async {
-      final int difference;
-
-      final UserModel? userData = await usersRepository.getUserById(
-        userId: event.user.uid,
-      );
-
-      if (userData!.archived) {
+    on<CheckUserStatus>((event, emit) async {
+      if (event.userData.archived) {
         return add(
           const StopSubscription(
             status: NavigationStatus.auth,
@@ -90,39 +134,21 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         );
       }
 
-      if (userData.info.role == UserRole.worker) {
-        final UserModel? spaceData = await usersRepository.getUserById(
-          userId: userData.spaceId!,
-        );
-
-        if (spaceData!.blocked) {
-          return add(
-            const StopSubscription(
-              status: NavigationStatus.auth,
-              errorMessage: 'You have been logged out due to account blocking',
-            ),
-          );
-        }
-
-        difference = dateDifference(
-          spaceData.metadata.dueDate!,
-          type: DateDifference.minutes,
-        );
-      } else {
-        if (userData.blocked) {
-          return add(
-            const StopSubscription(
-              status: NavigationStatus.auth,
-              errorMessage: 'You have been logged out due to account blocking',
-            ),
-          );
-        }
-
-        difference = dateDifference(
-          userData.metadata.dueDate!,
-          type: DateDifference.minutes,
+      if (event.userData.blocked) {
+        return add(
+          const StopSubscription(
+            status: NavigationStatus.auth,
+            errorMessage: 'You have been logged out due to account blocking',
+          ),
         );
       }
+    });
+
+    on<DueDateTick>((event, emit) async {
+      final int difference = dateDifference(
+        event.userData.metadata.dueDate!,
+        type: DateDifference.minutes,
+      );
 
       if (difference < 0) {
         return add(
@@ -135,6 +161,14 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     });
 
     on<StopSubscription>((event, emit) async {
+      if (state.userSubscription != null) {
+        await state.userSubscription!.cancel();
+      }
+
+      if (state.spaceSubscription != null) {
+        await state.spaceSubscription!.cancel();
+      }
+
       if (state.timerDueDate != null) {
         state.timerDueDate!.cancel();
       }
@@ -159,6 +193,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
           status: NavigationStatus.tab,
           routePath: event.routePath,
           user: state.user,
+          userSubscription: state.userSubscription,
+          spaceSubscription: state.spaceSubscription,
           timerDueDate: state.timerDueDate,
           authSubscription: state.authSubscription,
         ),

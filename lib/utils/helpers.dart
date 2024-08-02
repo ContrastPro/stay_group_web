@@ -1,4 +1,5 @@
 import 'package:crypt/crypt.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -61,16 +62,16 @@ String uuid({
 }
 
 String cryptPassword(String password) {
-  final Crypt crypt = Crypt.sha512(password);
+  final Crypt crypt = Crypt.sha256(password);
   return crypt.toString();
 }
 
 bool passwordIsValid({
-  required String oldPassword,
-  required String newPassword,
+  required String cryptPassword,
+  required String enterPassword,
 }) {
-  final Crypt crypt = Crypt(oldPassword);
-  return crypt.match(newPassword);
+  final Crypt crypt = Crypt(cryptPassword);
+  return crypt.match(enterPassword);
 }
 
 String utcToLocal(
@@ -97,5 +98,7 @@ String localToUtc(
 }
 
 Future<void> requestDelay() async {
-  await Future.delayed(kRequestDuration);
+  await Future.delayed(
+    kDebugMode ? kDebugRequestDuration : kProdRequestDuration,
+  );
 }

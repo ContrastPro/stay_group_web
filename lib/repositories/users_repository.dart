@@ -123,7 +123,28 @@ class UsersRepository {
     return null;
   }
 
-  Future<void> updateUserId({
+  StreamSubscription<DatabaseEvent> userChanges({
+    required String id,
+    required void Function(UserModel) userUpdates,
+  }) {
+    final DatabaseReference reference = _getRef(id);
+
+    final Stream<DatabaseEvent> userStream = reference.onValue;
+
+    return userStream.listen(
+      (DatabaseEvent event) {
+        final UserModel userData = UserModel.fromJson(
+          event.snapshot.value as Map<Object?, dynamic>,
+        );
+
+        _logger.log('${event.snapshot.value}', name: 'userChanges');
+
+        userUpdates(userData);
+      },
+    );
+  }
+
+  Future<void> activateUser({
     required String id,
     required String userId,
     required String email,
@@ -138,7 +159,7 @@ class UsersRepository {
       },
     });
 
-    _logger.log('Successful', name: 'updateUserId');
+    _logger.log('Successful', name: 'activateUser');
   }
 
   Future<void> updateUserArchive({

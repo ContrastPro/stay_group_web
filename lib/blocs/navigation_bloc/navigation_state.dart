@@ -9,6 +9,8 @@ class NavigationState {
     this.routePath = DashboardPage.routePath,
     this.errorMessage,
     this.user,
+    this.userSubscription,
+    this.spaceSubscription,
     this.timerDueDate,
     this.authSubscription,
   });
@@ -17,6 +19,8 @@ class NavigationState {
   final String routePath;
   final String? errorMessage;
   final UserModel? user;
+  final StreamSubscription<DatabaseEvent>? userSubscription;
+  final StreamSubscription<DatabaseEvent>? spaceSubscription;
   final Timer? timerDueDate;
   final StreamSubscription<User?>? authSubscription;
 
@@ -25,6 +29,8 @@ class NavigationState {
     String? routePath,
     String? errorMessage,
     UserModel? user,
+    StreamSubscription<DatabaseEvent>? userSubscription,
+    StreamSubscription<DatabaseEvent>? spaceSubscription,
     Timer? timerDueDate,
     StreamSubscription<User?>? authSubscription,
   }) {
@@ -33,6 +39,8 @@ class NavigationState {
       routePath: routePath ?? this.routePath,
       errorMessage: errorMessage,
       user: user,
+      userSubscription: userSubscription,
+      spaceSubscription: spaceSubscription,
       timerDueDate: timerDueDate,
       authSubscription: authSubscription,
     );

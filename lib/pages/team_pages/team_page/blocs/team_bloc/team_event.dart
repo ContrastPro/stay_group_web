@@ -12,9 +12,11 @@ class GetUsers extends TeamEvent {
 class DeleteUser extends TeamEvent {
   const DeleteUser({
     required this.id,
+    required this.email,
   });
 
   final String id;
+  final String email;
 }
 
 class SwitchUserArchive extends TeamEvent {
