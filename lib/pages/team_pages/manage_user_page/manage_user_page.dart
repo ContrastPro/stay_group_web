@@ -1,7 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../models/users/user_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
@@ -20,13 +22,13 @@ import 'blocs/manage_user_bloc/manage_user_bloc.dart';
 class ManageUserPage extends StatefulWidget {
   const ManageUserPage({
     super.key,
-    this.id,
+    this.user,
     required this.navigateToTeamPage,
   });
 
   static const routePath = '/team_pages/manage_user';
 
-  final String? id;
+  final UserModel? user;
   final void Function() navigateToTeamPage;
 
   @override
@@ -48,6 +50,19 @@ class _TeamPageState extends State<ManageUserPage> {
   String? _errorTextEmail;
   String? _errorTextPassword;
 
+  @override
+  void initState() {
+    _setInitialData();
+    super.initState();
+  }
+
+  void _setInitialData() {
+    if (widget.user != null) {
+      _controllerName.text = widget.user!.info.name;
+      _controllerEmail.text = widget.user!.credential.email;
+    }
+  }
+
   void _switchLoading(bool status) {
     if (_isLoading != status) {
       setState(() => _isLoading = status);
@@ -56,7 +71,7 @@ class _TeamPageState extends State<ManageUserPage> {
 
   void _validateName(String name) {
     setState(() {
-      _nameValid = name.length > 2;
+      _nameValid = name.length > 4;
     });
   }
 
@@ -127,6 +142,26 @@ class _TeamPageState extends State<ManageUserPage> {
         );
   }
 
+  void _updateUser(BuildContext context) {
+    _switchErrorName();
+
+    final String name = _controllerName.text.trim();
+
+    if (name.isEmpty || !_nameValid) {
+      const String errorName = 'User name is too short';
+
+      _switchErrorName(error: errorName);
+      return _showErrorMessage(errorMessage: errorName);
+    }
+
+    context.read<ManageUserBloc>().add(
+          UpdateUser(
+            id: widget.user!.id,
+            name: name,
+          ),
+        );
+  }
+
   void _showErrorMessage({
     required String errorMessage,
   }) {
@@ -157,7 +192,9 @@ class _TeamPageState extends State<ManageUserPage> {
 
             if (state.status == BlocStatus.success) {
               InAppNotificationService.show(
-                title: 'User successfully created!',
+                title: widget.user == null
+                    ? 'User successfully created'
+                    : 'User successfully updated',
                 type: InAppNotificationType.success,
               );
 
@@ -176,12 +213,16 @@ class _TeamPageState extends State<ManageUserPage> {
                 content: Column(
                   children: [
                     Text(
-                      'Add New Member',
+                      widget.user == null
+                          ? 'Add new team member'
+                          : 'Edit team member',
                       style: AppTextStyles.head5SemiBold,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      'Create your team member.',
+                      widget.user == null
+                          ? 'Create your team member'
+                          : 'Edit your team member info',
                       style: AppTextStyles.paragraphSRegular.copyWith(
                         color: AppColors.iconPrimary,
                       ),
@@ -194,36 +235,51 @@ class _TeamPageState extends State<ManageUserPage> {
                       hintText: 'User name',
                       prefixIcon: AppIcons.user,
                       errorText: _errorTextName,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(32),
+                      ],
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
                     BorderTextField(
                       controller: _controllerEmail,
                       labelText: 'Email',
+                      enabled: widget.user == null,
                       hintText: 'Placeholder',
                       prefixIcon: AppIcons.mail,
                       errorText: _errorTextEmail,
                       onChanged: _validateEmail,
                     ),
-                    const SizedBox(height: 16.0),
-                    BorderTextField(
-                      controller: _controllerPassword,
-                      labelText: 'Password',
-                      hintText: 'Password',
-                      isObscureText: _isObscurePassword,
-                      prefixIcon: AppIcons.lock,
-                      suffixIcon: _isObscurePassword
-                          ? AppIcons.visibilityOff
-                          : AppIcons.visibilityOn,
-                      errorText: _errorTextPassword,
-                      onSuffixTap: _switchObscurePassword,
-                      onChanged: _validatePassword,
-                    ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                      text: 'Create user',
-                      onTap: () => _createUser(context),
-                    ),
+                    if (widget.user == null) ...[
+                      const SizedBox(height: 16.0),
+                      BorderTextField(
+                        controller: _controllerPassword,
+                        labelText: 'Password',
+                        hintText: 'Password',
+                        isObscureText: _isObscurePassword,
+                        prefixIcon: AppIcons.lock,
+                        suffixIcon: _isObscurePassword
+                            ? AppIcons.visibilityOff
+                            : AppIcons.visibilityOn,
+                        errorText: _errorTextPassword,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(32),
+                        ],
+                        onSuffixTap: _switchObscurePassword,
+                        onChanged: _validatePassword,
+                      ),
+                      const SizedBox(height: 40.0),
+                      CustomButton(
+                        text: 'Create user',
+                        onTap: () => _createUser(context),
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 40.0),
+                      CustomButton(
+                        text: 'Save changes',
+                        onTap: () => _updateUser(context),
+                      ),
+                    ],
                     const SizedBox(height: 12.0),
                     CustomTextButton(
                       prefixIcon: AppIcons.arrowBack,
@@ -232,98 +288,109 @@ class _TeamPageState extends State<ManageUserPage> {
                     ),
                   ],
                 ),
-                preview: SizedBox(
-                  width: 360.0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 120.0,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(8.0),
-                            topRight: Radius.circular(8.0),
-                          ),
-                          gradient: AppColors.userGradient,
-                        ),
-                      ),
-                      Container(
-                        height: 4.0,
-                        color: AppColors.border,
-                      ),
-                      Container(
-                        height: 100.0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                        ),
-                        decoration: const BoxDecoration(
-                          color: AppColors.scaffoldSecondary,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(8.0),
-                            bottomRight: Radius.circular(8.0),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 60.0,
-                              height: 60.0,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(14.0),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                getFirstLetter(
-                                  _controllerName.text.isNotEmpty
-                                      ? _controllerName.text
-                                      : 'User Name',
-                                ),
-                                style:
-                                    AppTextStyles.paragraphMSemiBold.copyWith(
-                                  color: AppColors.scaffoldSecondary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12.0),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      _controllerName.text.isNotEmpty
-                                          ? _controllerName.text
-                                          : 'User Name',
-                                      style: AppTextStyles.paragraphMRegular,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      _controllerEmail.text.isNotEmpty
-                                          ? _controllerEmail.text
-                                          : '@placeholder.com',
-                                      style: AppTextStyles.paragraphSRegular,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                preview: _UserPreview(
+                  name: _controllerName.text,
+                  email: _controllerEmail.text,
                 ),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _UserPreview extends StatelessWidget {
+  const _UserPreview({
+    required this.name,
+    required this.email,
+  });
+
+  final String name;
+  final String email;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 360.0,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 120.0,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                topRight: Radius.circular(8.0),
+              ),
+              gradient: AppColors.userGradient,
+            ),
+          ),
+          Container(
+            height: 4.0,
+            color: AppColors.border,
+          ),
+          Container(
+            height: 100.0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+            ),
+            decoration: const BoxDecoration(
+              color: AppColors.scaffoldSecondary,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 60.0,
+                  height: 60.0,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(14.0),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    getFirstLetter(
+                      name.isNotEmpty ? name : 'User Name',
+                    ),
+                    style: AppTextStyles.subtitleMedium.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12.0),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name.isNotEmpty ? name : 'User Name',
+                          style: AppTextStyles.paragraphMRegular,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          email.isNotEmpty ? email : '@placeholder.com',
+                          style: AppTextStyles.paragraphSRegular,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

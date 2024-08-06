@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../models/users/user_model.dart';
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../pages/auth_pages/log_in_page/log_in_page.dart';
 import '../pages/auth_pages/restore_email_page/restore_email_page.dart';
@@ -191,9 +192,9 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
-                  navigateToManageUserPage: ([String? id]) => context.go(
+                  navigateToManageUserPage: ([UserModel? user]) => context.go(
                     ManageUserPage.routePath,
-                    extra: id,
+                    extra: user,
                   ),
                 ),
               ),
@@ -202,12 +203,12 @@ class AppRouter {
             GoRoute(
               path: ManageUserPage.routePath,
               pageBuilder: (context, state) {
-                final String? args = state.extra as String?;
+                final UserModel? args = state.extra as UserModel?;
 
                 return _customTransition(
                   state: state,
                   child: ManageUserPage(
-                    id: args,
+                    user: args,
                     navigateToTeamPage: () => context.go(
                       TeamPage.routePath,
                     ),

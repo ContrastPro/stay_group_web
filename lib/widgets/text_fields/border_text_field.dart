@@ -9,6 +9,7 @@ class BorderTextField extends StatefulWidget {
   const BorderTextField({
     super.key,
     this.controller,
+    this.enabled = true,
     this.labelText,
     this.hintText,
     this.errorText,
@@ -24,6 +25,7 @@ class BorderTextField extends StatefulWidget {
   });
 
   final TextEditingController? controller;
+  final bool enabled;
   final String? labelText;
   final String? hintText;
   final String? errorText;
@@ -89,7 +91,9 @@ class _BorderTextFieldState extends State<BorderTextField> {
           Text(
             widget.labelText!,
             style: AppTextStyles.paragraphSMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: widget.enabled
+                  ? AppColors.textSecondary
+                  : AppColors.textSecondary.withOpacity(0.40),
             ),
             textAlign: TextAlign.start,
           ),
@@ -118,8 +122,10 @@ class _BorderTextFieldState extends State<BorderTextField> {
                 SvgPicture.asset(
                   widget.prefixIcon!,
                   width: 22.0,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.iconPrimary,
+                  colorFilter: ColorFilter.mode(
+                    widget.enabled
+                        ? AppColors.iconPrimary
+                        : AppColors.iconPrimary.withOpacity(0.40),
                     BlendMode.srcIn,
                   ),
                 ),
@@ -128,6 +134,7 @@ class _BorderTextFieldState extends State<BorderTextField> {
               Expanded(
                 child: TextField(
                   controller: widget.controller,
+                  enabled: widget.enabled,
                   focusNode: _focusNode,
                   minLines: 1,
                   maxLines: widget.maxLines,

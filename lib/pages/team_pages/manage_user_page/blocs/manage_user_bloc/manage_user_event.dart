@@ -16,3 +16,13 @@ class CreateUser extends ManageUserEvent {
   final String email;
   final String password;
 }
+
+class UpdateUser extends ManageUserEvent {
+  const UpdateUser({
+    required this.id,
+    required this.name,
+  });
+
+  final String id;
+  final String name;
+}

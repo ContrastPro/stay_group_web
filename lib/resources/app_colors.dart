@@ -13,6 +13,7 @@ class AppColors {
   static const Color textSecondary = Color(0xFF344051);
 
   static const Color iconPrimary = Color(0xFF637083);
+
   //static const Color iconSecondary = Color(0xFF637083);
 
   static const Color border = Color(0xFFE4E7EC);
@@ -52,7 +53,7 @@ class AppColors {
   static const LinearGradient userGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment(0.8, 1),
-    colors: [primary, secondary],
+    colors: [secondary, iconPrimary],
     tileMode: TileMode.mirror,
   );
 }

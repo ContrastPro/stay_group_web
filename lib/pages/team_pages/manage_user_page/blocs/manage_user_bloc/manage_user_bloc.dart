@@ -72,6 +72,34 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
         );
       }
     });
+
+    on<UpdateUser>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      await usersRepository.updateUserInfo(
+        id: event.id,
+        role: UserRole.worker,
+        name: event.name,
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.success,
+        ),
+      );
+    });
   }
 
   final AuthRepository authRepository;

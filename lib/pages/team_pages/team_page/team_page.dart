@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../models/users/user_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
@@ -31,7 +32,7 @@ class TeamPage extends StatelessWidget {
   static const routePath = '/team_pages/team';
 
   final GoRouterState state;
-  final void Function([String?]) navigateToManageUserPage;
+  final void Function([UserModel?]) navigateToManageUserPage;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +73,7 @@ class _TeamPageContent extends StatelessWidget {
   });
 
   final TeamState state;
-  final void Function() navigateToManageUserPage;
+  final void Function([UserModel?]) navigateToManageUserPage;
 
   void _deleteUser({
     required BuildContext context,
@@ -185,15 +186,18 @@ class _TeamPageContent extends StatelessWidget {
                             right: 4.0,
                           ),
                           title: state.users[i].info.name,
+                          maxLines: 1,
                         ),
                         TableCellItem(
                           flex: 25,
                           title: state.users[i].credential.email,
+                          maxLines: 1,
                         ),
                         const TableCellItem(
                           flex: 10,
                           alignment: Alignment.center,
                           title: 'Worker',
+                          maxLines: 1,
                         ),
                         TableCellItem(
                           flex: 15,
@@ -211,6 +215,7 @@ class _TeamPageContent extends StatelessWidget {
                               'dd/MM/yy',
                             ),
                           ),
+                          maxLines: 1,
                         ),
                         TableCellItem(
                           flex: 15,
@@ -218,12 +223,18 @@ class _TeamPageContent extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SvgPicture.asset(
-                                AppIcons.edit,
-                                width: 22.0,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.iconPrimary,
-                                  BlendMode.srcIn,
+                              GestureDetector(
+                                onTap: () => navigateToManageUserPage(
+                                  state.users[i],
+                                ),
+                                behavior: HitTestBehavior.opaque,
+                                child: SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12.0),

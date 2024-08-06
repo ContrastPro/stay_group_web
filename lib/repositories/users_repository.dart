@@ -175,6 +175,23 @@ class UsersRepository {
     _logger.log('Successful', name: 'updateUserArchive');
   }
 
+  Future<void> updateUserInfo({
+    required String id,
+    required UserRole role,
+    required String name,
+  }) async {
+    final DatabaseReference reference = _getRef(id);
+
+    await reference.update({
+      'info': {
+        'role': role.value,
+        'name': name,
+      },
+    });
+
+    _logger.log('Successful', name: 'updateUserInfo');
+  }
+
   Future<void> deleteUser({
     required String id,
   }) async {
