@@ -12,7 +12,7 @@ import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import 'blocs/account_settings_bloc/account_settings_bloc.dart';
 
-class AccountSettingsPage extends StatefulWidget {
+class AccountSettingsPage extends StatelessWidget {
   const AccountSettingsPage({
     super.key,
     required this.state,
@@ -23,11 +23,6 @@ class AccountSettingsPage extends StatefulWidget {
   final GoRouterState state;
 
   @override
-  State<AccountSettingsPage> createState() => _AccountSettingsPageState();
-}
-
-class _AccountSettingsPageState extends State<AccountSettingsPage> {
-  @override
   Widget build(BuildContext context) {
     return BlocProvider<AccountSettingsBloc>(
       create: (_) => AccountSettingsBloc(
@@ -37,7 +32,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           const GetAccountInfo(),
         ),
       child: FlexibleLayout(
-        state: widget.state,
+        state: state,
         builder: (Size size) {
           return BlocConsumer<AccountSettingsBloc, AccountSettingsState>(
             listener: (_, state) {

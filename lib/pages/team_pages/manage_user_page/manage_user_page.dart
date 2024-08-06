@@ -39,9 +39,9 @@ class _TeamPageState extends State<ManageUserPage> {
   final TextEditingController _controllerPassword = TextEditingController();
 
   bool _isLoading = false;
-  bool _isObscurePassword = true;
   bool _nameValid = false;
   bool _emailValid = false;
+  bool _isObscurePassword = true;
   bool _passwordValid = false;
 
   String? _errorTextName;
@@ -52,22 +52,6 @@ class _TeamPageState extends State<ManageUserPage> {
     if (_isLoading != status) {
       setState(() => _isLoading = status);
     }
-  }
-
-  void _switchObscurePassword() {
-    setState(() => _isObscurePassword = !_isObscurePassword);
-  }
-
-  void _switchErrorName({String? error}) {
-    setState(() => _errorTextName = error);
-  }
-
-  void _switchErrorEmail({String? error}) {
-    setState(() => _errorTextEmail = error);
-  }
-
-  void _switchErrorPassword({String? error}) {
-    setState(() => _errorTextPassword = error);
   }
 
   void _validateName(String name) {
@@ -82,10 +66,26 @@ class _TeamPageState extends State<ManageUserPage> {
     });
   }
 
+  void _switchObscurePassword() {
+    setState(() => _isObscurePassword = !_isObscurePassword);
+  }
+
   void _validatePassword(String password) {
     setState(() {
       _passwordValid = password.length > 5;
     });
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _switchErrorEmail({String? error}) {
+    setState(() => _errorTextEmail = error);
+  }
+
+  void _switchErrorPassword({String? error}) {
+    setState(() => _errorTextPassword = error);
   }
 
   void _createUser(BuildContext context) {

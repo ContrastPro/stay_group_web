@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../pages/auth_pages/log_in_page/log_in_page.dart';
+import '../pages/auth_pages/restore_email_page/restore_email_page.dart';
 import '../pages/auth_pages/restore_password_page/restore_password_page.dart';
 import '../pages/auth_pages/sign_up_page/sign_up_page.dart';
 import '../pages/auth_pages/verify_email_page/verify_email_page.dart';
+import '../pages/calculations_pages/calculations_page/calculations_page.dart';
 import '../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../pages/main_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
@@ -70,8 +72,34 @@ class AppRouter {
           path: RestorePasswordPage.routePath,
           pageBuilder: (context, state) => _customTransition(
             state: state,
-            child: const RestorePasswordPage(),
+            child: RestorePasswordPage(
+              navigateToRestoreEmailPage: (String email) => context.go(
+                RestoreEmailPage.routePath,
+                extra: email,
+              ),
+              navigateToLogInPage: () => context.go(
+                LogInPage.routePath,
+              ),
+            ),
           ),
+        ),
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: RestoreEmailPage.routePath,
+          pageBuilder: (context, state) {
+            final String args = state.extra as String;
+
+            return _customTransition(
+              state: state,
+              child: RestoreEmailPage(
+                email: args,
+                navigateToLogInPage: () => context.go(
+                  LogInPage.routePath,
+                ),
+              ),
+            );
+          },
         ),
 
         GoRoute(
@@ -163,8 +191,9 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
-                  navigateToManageUserPage: () => context.go(
+                  navigateToManageUserPage: ([String? id]) => context.go(
                     ManageUserPage.routePath,
+                    extra: id,
                   ),
                 ),
               ),
@@ -188,6 +217,20 @@ class AppRouter {
             ),
 
             // [END] Team pages
+
+            // [START] Calculations pages
+
+            GoRoute(
+              path: CalculationsPage.routePath,
+              pageBuilder: (context, state) => _customTransition(
+                state: state,
+                child: CalculationsPage(
+                  state: state,
+                ),
+              ),
+            ),
+
+            // [END] Calculations pages
 
             // [START] Account settings pages
 

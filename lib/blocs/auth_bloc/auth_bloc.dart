@@ -231,9 +231,57 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await requestDelay();
 
-      final bool? response = await authRepository.passwordRecovery(
+      final UserModel? response = await usersRepository.getUserByEmail(
         email: event.email,
       );
+
+      if (response == null) {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.failed,
+            errorMessage: 'User with this email does not exist',
+          ),
+        );
+      }
+
+      if (response.userId == null) {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.failed,
+            errorMessage: 'User with this email does not exist',
+          ),
+        );
+      }
+
+      final bool? isSent = await authRepository.passwordRecovery(
+        email: event.email,
+      );
+
+      if (isSent != null) {
+        emit(
+          state.copyWith(
+            status: BlocStatus.loaded,
+          ),
+        );
+
+        return emit(
+          state.copyWith(
+            status: BlocStatus.success,
+          ),
+        );
+      }
 
       emit(
         state.copyWith(
@@ -241,20 +289,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
 
-      if (response != null) {
-        emit(
-          state.copyWith(
-            status: BlocStatus.success,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: BlocStatus.failed,
-            errorMessage: 'User with this email does not exist',
-          ),
-        );
-      }
+      emit(
+        state.copyWith(
+          status: BlocStatus.failed,
+          errorMessage: 'User with this email does not exist',
+        ),
+      );
     });
   }
 

@@ -7,6 +7,7 @@ import '../../models/uncategorized/bottom_navigation_bar_item_model.dart';
 import '../../models/users/user_info_model.dart';
 import '../../models/users/user_model.dart';
 import '../../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
+import '../../pages/calculations_pages/calculations_page/calculations_page.dart';
 import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../pages/projects_pages/projects_page/projects_page.dart';
 import '../../pages/team_pages/team_page/team_page.dart';
@@ -41,6 +42,11 @@ class CustomDrawer extends StatelessWidget {
       routePath: TeamPage.routePath,
     ),
     BottomNavigationBarItemModel(
+      icon: AppIcons.calculation,
+      title: 'Calculations',
+      routePath: CalculationsPage.routePath,
+    ),
+    BottomNavigationBarItemModel(
       icon: AppIcons.settings,
       title: 'Account settings',
       routePath: AccountSettingsPage.routePath,
@@ -57,6 +63,11 @@ class CustomDrawer extends StatelessWidget {
       icon: AppIcons.projects,
       title: 'Projects',
       routePath: ProjectsPage.routePath,
+    ),
+    BottomNavigationBarItemModel(
+      icon: AppIcons.calculation,
+      title: 'Calculations',
+      routePath: CalculationsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.settings,

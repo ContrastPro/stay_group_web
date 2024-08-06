@@ -7,13 +7,13 @@ import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
 
-class ProjectsPage extends StatelessWidget {
-  const ProjectsPage({
+class CalculationsPage extends StatelessWidget {
+  const CalculationsPage({
     super.key,
     required this.state,
   });
 
-  static const routePath = '/projects_pages/projects';
+  static const routePath = '/calculations_pages/calculations';
 
   final GoRouterState state;
 
@@ -22,14 +22,14 @@ class ProjectsPage extends StatelessWidget {
     return FlexibleLayout(
       state: state,
       builder: (Size size) {
-        return const _ProjectsPageContent();
+        return const _CalculationsPageContent();
       },
     );
   }
 }
 
-class _ProjectsPageContent extends StatelessWidget {
-  const _ProjectsPageContent({super.key});
+class _CalculationsPageContent extends StatelessWidget {
+  const _CalculationsPageContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +37,17 @@ class _ProjectsPageContent extends StatelessWidget {
       duration: kFadeInDuration,
       child: EmptyStateView(
         isEmpty: true,
-        animation: AppAnimations.addProject,
-        title: 'Add first project',
+        animation: AppAnimations.addCalculation,
+        title: 'Add first calculation',
         description:
-            "You don't added your first project yet - let's get started!",
-        buttonWidth: 160.0,
-        buttonText: 'Add project',
+            "You don't added your first calculation yet - let's get started!",
+        buttonWidth: 190.0,
+        buttonText: 'Add calculation',
         onTap: () {
           //
         },
         content: const Center(
-          child: Text('Projects Page'),
+          child: Text('Calculation Page'),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
+import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../utils/constants.dart';
@@ -20,7 +21,7 @@ import '../../../widgets/uncategorized/table_item.dart';
 import '../../../widgets/uncategorized/user_status.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
-class TeamPage extends StatefulWidget {
+class TeamPage extends StatelessWidget {
   const TeamPage({
     super.key,
     required this.state,
@@ -30,13 +31,8 @@ class TeamPage extends StatefulWidget {
   static const routePath = '/team_pages/team';
 
   final GoRouterState state;
-  final void Function() navigateToManageUserPage;
+  final void Function([String?]) navigateToManageUserPage;
 
-  @override
-  State<TeamPage> createState() => _TeamPageState();
-}
-
-class _TeamPageState extends State<TeamPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TeamBloc>(
@@ -47,14 +43,14 @@ class _TeamPageState extends State<TeamPage> {
           const GetUsers(),
         ),
       child: FlexibleLayout(
-        state: widget.state,
+        state: state,
         builder: (Size size) {
           return BlocBuilder<TeamBloc, TeamState>(
             builder: (context, state) {
               if (state.status == BlocStatus.success) {
                 return _TeamPageContent(
                   state: state,
-                  navigateToManageUserPage: widget.navigateToManageUserPage,
+                  navigateToManageUserPage: navigateToManageUserPage,
                 );
               }
 
@@ -110,8 +106,10 @@ class _TeamPageContent extends StatelessWidget {
       duration: kFadeInDuration,
       child: EmptyStateView(
         isEmpty: state.users.isEmpty,
+        animation: AppAnimations.addUser,
         title: 'Add first user',
         description: "You don't added your first user yet - let's get started!",
+        buttonWidth: 140.0,
         buttonText: 'Add user',
         onTap: navigateToManageUserPage,
         content: TablesLayout(

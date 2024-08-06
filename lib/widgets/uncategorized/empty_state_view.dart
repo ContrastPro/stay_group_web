@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../resources/app_animations.dart';
 import '../../resources/app_colors.dart';
 import '../../resources/app_icons.dart';
 import '../../resources/app_text_styles.dart';
@@ -11,16 +10,20 @@ class EmptyStateView extends StatelessWidget {
   const EmptyStateView({
     super.key,
     required this.isEmpty,
+    required this.animation,
     required this.title,
     required this.description,
+    required this.buttonWidth,
     required this.buttonText,
     required this.content,
     required this.onTap,
   });
 
   final bool isEmpty;
+  final String animation;
   final String title;
   final String description;
+  final double buttonWidth;
   final String buttonText;
   final Widget content;
   final void Function() onTap;
@@ -31,9 +34,12 @@ class EmptyStateView extends StatelessWidget {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset(
-            width: 480.0,
-            AppAnimations.empty,
+          SizedBox(
+            height: 420.0,
+            child: Lottie.asset(
+              animation,
+              fit: BoxFit.cover,
+            ),
           ),
           Text(
             title,
@@ -49,7 +55,7 @@ class EmptyStateView extends StatelessWidget {
           ),
           const SizedBox(height: 28.0),
           SizedBox(
-            width: 140.0,
+            width: buttonWidth,
             child: CustomButton(
               prefixIcon: AppIcons.add,
               text: buttonText,

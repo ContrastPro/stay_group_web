@@ -37,11 +37,11 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _controllerConfirm = TextEditingController();
 
   bool _isLoading = false;
-  bool _isObscurePassword = true;
-  bool _isObscureConfirm = true;
   bool _emailValid = false;
   bool _passwordValid = false;
+  bool _isObscurePassword = true;
   bool _confirmValid = false;
+  bool _isObscureConfirm = true;
 
   String? _errorTextEmail;
   String? _errorTextPassword;
@@ -53,12 +53,32 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+  void _validateEmail(String email) {
+    setState(() {
+      _emailValid = EmailValidator.validate(email);
+    });
+  }
+
   void _switchObscurePassword() {
     setState(() => _isObscurePassword = !_isObscurePassword);
   }
 
+  void _validatePassword(String password) {
+    setState(() {
+      _passwordValid = password.length > 5;
+    });
+  }
+
   void _switchObscureConfirm() {
     setState(() => _isObscureConfirm = !_isObscureConfirm);
+  }
+
+  void _validateConfirm(String confirm) {
+    final String password = _controllerPassword.text.trim();
+
+    setState(() {
+      _confirmValid = confirm == password;
+    });
   }
 
   void _switchErrorEmail({String? error}) {
@@ -71,26 +91,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _switchErrorConfirm({String? error}) {
     setState(() => _errorTextConfirm = error);
-  }
-
-  void _validateEmail(String email) {
-    setState(() {
-      _emailValid = EmailValidator.validate(email);
-    });
-  }
-
-  void _validatePassword(String password) {
-    setState(() {
-      _passwordValid = password.length > 5;
-    });
-  }
-
-  void _validateConfirm(String confirm) {
-    final String password = _controllerPassword.text.trim();
-
-    setState(() {
-      _confirmValid = confirm == password;
-    });
   }
 
   void _emailSignUp(BuildContext context) {

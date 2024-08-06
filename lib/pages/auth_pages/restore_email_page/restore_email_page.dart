@@ -5,14 +5,14 @@ import '../../../resources/app_text_styles.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/center_container_layout.dart';
 
-class VerifyEmailPage extends StatelessWidget {
-  const VerifyEmailPage({
+class RestoreEmailPage extends StatelessWidget {
+  const RestoreEmailPage({
     super.key,
     required this.email,
     required this.navigateToLogInPage,
   });
 
-  static const routePath = '/auth_pages/verify_email';
+  static const routePath = '/auth_pages/restore_email';
 
   final String email;
   final void Function() navigateToLogInPage;
@@ -28,7 +28,7 @@ class VerifyEmailPage extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           Text(
-            'We have sent verification email link to\n$email',
+            'We have sent password reset link to\n$email',
             style: AppTextStyles.paragraphSRegular.copyWith(
               color: AppColors.iconPrimary,
             ),
