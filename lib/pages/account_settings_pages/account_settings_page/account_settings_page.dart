@@ -41,7 +41,6 @@ class AccountSettingsPage extends StatelessWidget {
             builder: (context, state) {
               if (state.status == BlocStatus.success) {
                 return FadeInAnimation(
-                  duration: kFadeInDuration,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

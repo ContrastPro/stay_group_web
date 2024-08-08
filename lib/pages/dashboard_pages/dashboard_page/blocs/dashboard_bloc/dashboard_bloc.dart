@@ -1,0 +1,117 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../../models/companies/company_model.dart';
+import '../../../../../models/companies/company_response_model.dart';
+import '../../../../../models/users/user_info_model.dart';
+import '../../../../../models/users/user_model.dart';
+import '../../../../../repositories/auth_repository.dart';
+import '../../../../../repositories/companies_repository.dart';
+import '../../../../../repositories/users_repository.dart';
+import '../../../../../utils/constants.dart';
+import '../../../../../utils/helpers.dart';
+
+part 'dashboard_event.dart';
+
+part 'dashboard_state.dart';
+
+class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
+  DashboardBloc({
+    required this.authRepository,
+    required this.companiesRepository,
+    required this.usersRepository,
+  }) : super(const DashboardState()) {
+    on<GetCompanies>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      final User? user = authRepository.currentUser();
+
+      final UserModel? response = await usersRepository.getUserById(
+        userId: user!.uid,
+      );
+
+      final String spaceId = response!.info.role == UserRole.manager
+          ? response.userId!
+          : response.spaceId!;
+
+      final List<CompanyModel> companies = [];
+
+      final CompanyResponseModel? savedCompanies =
+          await companiesRepository.getCompanies(spaceId: spaceId);
+
+      if (savedCompanies != null) {
+        companies.addAll(savedCompanies.companies);
+      }
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.success,
+          companies: companies,
+        ),
+      );
+    });
+
+    on<DeleteCompany>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      final User? user = authRepository.currentUser();
+
+      final UserModel? response = await usersRepository.getUserById(
+        userId: user!.uid,
+      );
+
+      final String spaceId = response!.info.role == UserRole.manager
+          ? response.userId!
+          : response.spaceId!;
+
+      final List<CompanyModel> companies = [...state.companies];
+
+      final int index = companies.indexWhere(
+        (e) => e.id == event.id,
+      );
+
+      await companiesRepository.deleteCompany(
+        spaceId: spaceId,
+        id: event.id,
+      );
+
+      companies.removeAt(index);
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.success,
+          companies: companies,
+        ),
+      );
+    });
+  }
+
+  final AuthRepository authRepository;
+  final CompaniesRepository companiesRepository;
+  final UsersRepository usersRepository;
+}

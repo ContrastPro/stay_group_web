@@ -37,17 +37,17 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         );
       }
 
-      final UserModel? userData = await usersRepository.getUserById(
+      final UserModel? response = await usersRepository.getUserById(
         userId: user.uid,
       );
 
       final StreamSubscription<DatabaseEvent> userChanges;
-      StreamSubscription<DatabaseEvent>? spaceChanges;
+      final StreamSubscription<DatabaseEvent>? spaceChanges;
       final Timer timerDueDate;
 
-      if (userData!.info.role == UserRole.manager) {
+      if (response!.info.role == UserRole.manager) {
         userChanges = usersRepository.userChanges(
-          id: userData.id,
+          id: response.id,
           userUpdates: (UserModel event) {
             add(
               CheckUserStatus(
@@ -57,17 +57,19 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
           },
         );
 
+        spaceChanges = null;
+
         timerDueDate = timerService.startTimer(
           addInitialTick: true,
           onTick: () => add(
             DueDateTick(
-              userData: userData,
+              userData: response,
             ),
           ),
         );
       } else {
         userChanges = usersRepository.userChanges(
-          id: userData.id,
+          id: response.id,
           userUpdates: (UserModel event) {
             add(
               CheckUserStatus(
@@ -78,7 +80,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         );
 
         final UserModel? spaceData = await usersRepository.getUserById(
-          userId: userData.spaceId!,
+          userId: response.spaceId!,
         );
 
         spaceChanges = usersRepository.userChanges(
@@ -114,7 +116,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       emit(
         state.copyWith(
-          user: userData,
+          user: response,
           userSubscription: userChanges,
           spaceSubscription: spaceChanges,
           timerDueDate: timerDueDate,

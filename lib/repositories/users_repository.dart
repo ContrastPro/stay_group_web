@@ -155,7 +155,6 @@ class UsersRepository {
       'userId': userId,
       'credential': {
         'email': email,
-        'presignedPassword': null,
       },
     });
 
@@ -179,6 +178,7 @@ class UsersRepository {
     required String id,
     required UserRole role,
     required String name,
+    int? billingPlan,
   }) async {
     final DatabaseReference reference = _getRef(id);
 
@@ -186,6 +186,7 @@ class UsersRepository {
       'info': {
         'role': role.value,
         'name': name,
+        'billingPlan': billingPlan,
       },
     });
 

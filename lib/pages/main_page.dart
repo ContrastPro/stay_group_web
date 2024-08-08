@@ -7,7 +7,6 @@ import '../repositories/auth_repository.dart';
 import '../repositories/users_repository.dart';
 import '../services/in_app_notification_service.dart';
 import '../services/timer_service.dart';
-import '../utils/constants.dart';
 import '../widgets/animations/fade_in_animation.dart';
 import '../widgets/loaders/custom_loader.dart';
 
@@ -66,7 +65,6 @@ class MainPage extends StatelessWidget {
           return Scaffold(
             body: state.user != null
                 ? FadeInAnimation(
-                    duration: kFadeInDuration,
                     child: body,
                   )
                 : const Center(

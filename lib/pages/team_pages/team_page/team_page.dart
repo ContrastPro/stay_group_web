@@ -104,7 +104,6 @@ class _TeamPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      duration: kFadeInDuration,
       child: EmptyStateView(
         isEmpty: state.users.isEmpty,
         animation: AppAnimations.addUser,
@@ -211,9 +210,7 @@ class _TeamPageContent extends StatelessWidget {
                           alignment: Alignment.center,
                           title: utcToLocal(
                             state.users[i].metadata.createdAt,
-                            format: DateFormat(
-                              'dd/MM/yy',
-                            ),
+                            format: DateFormat('dd/MM/yy'),
                           ),
                           maxLines: 1,
                         ),

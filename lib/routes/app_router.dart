@@ -2,6 +2,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../models/calculations/calculation_model.dart';
+import '../models/companies/company_model.dart';
+import '../models/projects/project_model.dart';
 import '../models/users/user_model.dart';
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../pages/auth_pages/log_in_page/log_in_page.dart';
@@ -10,8 +13,11 @@ import '../pages/auth_pages/restore_password_page/restore_password_page.dart';
 import '../pages/auth_pages/sign_up_page/sign_up_page.dart';
 import '../pages/auth_pages/verify_email_page/verify_email_page.dart';
 import '../pages/calculations_pages/calculations_page/calculations_page.dart';
+import '../pages/calculations_pages/manage_calculation_page/manage_calculation_page.dart';
 import '../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
+import '../pages/dashboard_pages/manage_company_page/manage_company_page.dart';
 import '../pages/main_page.dart';
+import '../pages/projects_pages/manage_project_page/manage_project_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
 import '../pages/team_pages/manage_user_page/manage_user_page.dart';
 import '../pages/team_pages/team_page/team_page.dart';
@@ -164,13 +170,38 @@ class AppRouter {
                 state: state,
                 child: DashboardPage(
                   state: state,
+                  navigateToManageCompanyPage: ([
+                    CompanyModel? company,
+                  ]) {
+                    context.go(
+                      ManageCompanyPage.routePath,
+                      extra: company,
+                    );
+                  },
                 ),
               ),
             ),
 
+            GoRoute(
+              path: ManageCompanyPage.routePath,
+              pageBuilder: (context, state) {
+                final CompanyModel? args = state.extra as CompanyModel?;
+
+                return _customTransition(
+                  state: state,
+                  child: ManageCompanyPage(
+                    company: args,
+                    navigateToDashboardPage: () => context.go(
+                      DashboardPage.routePath,
+                    ),
+                  ),
+                );
+              },
+            ),
+
             // [END] Dashboard pages
 
-            // [START] Team pages
+            // [START] Projects pages
 
             GoRoute(
               path: ProjectsPage.routePath,
@@ -178,8 +209,33 @@ class AppRouter {
                 state: state,
                 child: ProjectsPage(
                   state: state,
+                  navigateToManageProjectPage: ([
+                    ProjectModel? project,
+                  ]) {
+                    context.go(
+                      ManageProjectPage.routePath,
+                      extra: project,
+                    );
+                  },
                 ),
               ),
+            ),
+
+            GoRoute(
+              path: ManageProjectPage.routePath,
+              pageBuilder: (context, state) {
+                final ProjectModel? args = state.extra as ProjectModel?;
+
+                return _customTransition(
+                  state: state,
+                  child: ManageProjectPage(
+                    project: args,
+                    navigateToProjectsPage: () => context.go(
+                      ProjectsPage.routePath,
+                    ),
+                  ),
+                );
+              },
             ),
 
             // [END] Projects pages
@@ -192,10 +248,14 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
-                  navigateToManageUserPage: ([UserModel? user]) => context.go(
-                    ManageUserPage.routePath,
-                    extra: user,
-                  ),
+                  navigateToManageUserPage: ([
+                    UserModel? user,
+                  ]) {
+                    context.go(
+                      ManageUserPage.routePath,
+                      extra: user,
+                    );
+                  },
                 ),
               ),
             ),
@@ -227,8 +287,33 @@ class AppRouter {
                 state: state,
                 child: CalculationsPage(
                   state: state,
+                  navigateToManageCalculationPage: ([
+                    CalculationModel? calculation,
+                  ]) {
+                    context.go(
+                      ManageCalculationPage.routePath,
+                      extra: calculation,
+                    );
+                  },
                 ),
               ),
+            ),
+
+            GoRoute(
+              path: ManageCalculationPage.routePath,
+              pageBuilder: (context, state) {
+                final CalculationModel? args = state.extra as CalculationModel?;
+
+                return _customTransition(
+                  state: state,
+                  child: ManageCalculationPage(
+                    calculation: args,
+                    navigateToCalculationsPage: () => context.go(
+                      CalculationsPage.routePath,
+                    ),
+                  ),
+                );
+              },
             ),
 
             // [END] Calculations pages

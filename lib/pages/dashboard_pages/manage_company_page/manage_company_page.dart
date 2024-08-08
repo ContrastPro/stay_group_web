@@ -1,10 +1,10 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/users/user_model.dart';
+import '../../../models/companies/company_model.dart';
 import '../../../repositories/auth_repository.dart';
+import '../../../repositories/companies_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
@@ -17,38 +17,34 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/manage_preview_layout.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
-import 'blocs/manage_user_bloc/manage_user_bloc.dart';
+import 'blocs/manage_company_bloc/manage_company_bloc.dart';
 
-class ManageUserPage extends StatefulWidget {
-  const ManageUserPage({
+class ManageCompanyPage extends StatefulWidget {
+  const ManageCompanyPage({
     super.key,
-    this.user,
-    required this.navigateToTeamPage,
+    this.company,
+    required this.navigateToDashboardPage,
   });
 
-  static const routePath = '/team_pages/manage_user';
+  static const routePath = '/dashboard_pages/manage_company';
 
-  final UserModel? user;
-  final void Function() navigateToTeamPage;
+  final CompanyModel? company;
+  final void Function() navigateToDashboardPage;
 
   @override
-  State<ManageUserPage> createState() => _ManageUserPageState();
+  State<ManageCompanyPage> createState() => _ManageCompanyPageState();
 }
 
-class _ManageUserPageState extends State<ManageUserPage> {
+class _ManageCompanyPageState extends State<ManageCompanyPage> {
   final TextEditingController _controllerName = TextEditingController();
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerDescription = TextEditingController();
 
   bool _isLoading = false;
   bool _nameValid = false;
-  bool _emailValid = false;
-  bool _isObscurePassword = true;
-  bool _passwordValid = false;
+  bool _descriptionValid = false;
 
   String? _errorTextName;
-  String? _errorTextEmail;
-  String? _errorTextPassword;
+  String? _errorTextDescription;
 
   @override
   void initState() {
@@ -57,10 +53,11 @@ class _ManageUserPageState extends State<ManageUserPage> {
   }
 
   void _setInitialData() {
-    if (widget.user != null) {
-      _controllerName.text = widget.user!.info.name;
-      _validateName(widget.user!.info.name);
-      _controllerEmail.text = widget.user!.credential.email;
+    if (widget.company != null) {
+      _controllerName.text = widget.company!.info.name;
+      _validateName(widget.company!.info.name);
+      _controllerDescription.text = widget.company!.info.description;
+      _validateDescription(widget.company!.info.description);
     }
   }
 
@@ -76,19 +73,9 @@ class _ManageUserPageState extends State<ManageUserPage> {
     });
   }
 
-  void _validateEmail(String email) {
+  void _validateDescription(String description) {
     setState(() {
-      _emailValid = EmailValidator.validate(email);
-    });
-  }
-
-  void _switchObscurePassword() {
-    setState(() => _isObscurePassword = !_isObscurePassword);
-  }
-
-  void _validatePassword(String password) {
-    setState(() {
-      _passwordValid = password.length > 5;
+      _descriptionValid = description.length > 1;
     });
   }
 
@@ -96,69 +83,65 @@ class _ManageUserPageState extends State<ManageUserPage> {
     setState(() => _errorTextName = error);
   }
 
-  void _switchErrorEmail({String? error}) {
-    setState(() => _errorTextEmail = error);
+  void _switchErrorDescription({String? error}) {
+    setState(() => _errorTextDescription = error);
   }
 
-  void _switchErrorPassword({String? error}) {
-    setState(() => _errorTextPassword = error);
-  }
-
-  void _createUser(BuildContext context) {
+  void _createCompany(BuildContext context) {
     _switchErrorName();
-    _switchErrorEmail();
-    _switchErrorPassword();
+    _switchErrorDescription();
 
     final String name = _controllerName.text.trim();
-    final String email = _controllerEmail.text.trim();
-    final String password = _controllerPassword.text.trim();
+    final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'User name is too short';
+      const String errorName = 'Company name is too short';
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
-    if (email.isEmpty || !_emailValid) {
-      const String errorFormat = 'Wrong email format';
+    if (description.isEmpty || !_descriptionValid) {
+      const String errorFormat = 'Company description is too short';
 
-      _switchErrorEmail(error: errorFormat);
+      _switchErrorDescription(error: errorFormat);
       return _showErrorMessage(errorMessage: errorFormat);
     }
 
-    if (password.isEmpty || !_passwordValid) {
-      const String errorLength = 'User password is too short';
-
-      _switchErrorPassword(error: errorLength);
-      return _showErrorMessage(errorMessage: errorLength);
-    }
-
-    context.read<ManageUserBloc>().add(
-          CreateUser(
+    context.read<ManageCompanyBloc>().add(
+          CreateCompany(
             name: name,
-            email: email,
-            password: password,
+            description: description,
           ),
         );
   }
 
-  void _updateUser(BuildContext context) {
+  void _updateCompany(BuildContext context) {
     _switchErrorName();
+    _switchErrorDescription();
 
     final String name = _controllerName.text.trim();
+    final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'User name is too short';
+      const String errorName = 'Company name is too short';
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
-    context.read<ManageUserBloc>().add(
-          UpdateUser(
-            id: widget.user!.id,
+    if (description.isEmpty || !_descriptionValid) {
+      const String errorFormat = 'Company description is too short';
+
+      _switchErrorDescription(error: errorFormat);
+      return _showErrorMessage(errorMessage: errorFormat);
+    }
+
+    context.read<ManageCompanyBloc>().add(
+          UpdateCompany(
+            id: widget.company!.id,
             name: name,
+            description: description,
           ),
         );
   }
@@ -174,17 +157,17 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ManageUserBloc>(
-      create: (_) => ManageUserBloc(
+    return BlocProvider<ManageCompanyBloc>(
+      create: (_) => ManageCompanyBloc(
         authRepository: context.read<AuthRepository>(),
+        companiesRepository: context.read<CompaniesRepository>(),
         usersRepository: context.read<UsersRepository>(),
       ),
       child: Scaffold(
-        body: BlocConsumer<ManageUserBloc, ManageUserState>(
+        body: BlocConsumer<ManageCompanyBloc, ManageCompanyState>(
           listener: (_, state) {
             if (state.status == BlocStatus.loading) {
               _switchLoading(true);
-              _switchErrorEmail();
             }
 
             if (state.status == BlocStatus.loaded) {
@@ -193,18 +176,13 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
             if (state.status == BlocStatus.success) {
               InAppNotificationService.show(
-                title: widget.user == null
-                    ? 'User successfully created'
-                    : 'User successfully updated',
+                title: widget.company == null
+                    ? 'Company successfully created'
+                    : 'Company successfully updated',
                 type: InAppNotificationType.success,
               );
 
-              widget.navigateToTeamPage();
-            }
-
-            if (state.status == BlocStatus.failed) {
-              _switchErrorEmail(error: state.errorMessage);
-              _showErrorMessage(errorMessage: state.errorMessage!);
+              widget.navigateToDashboardPage();
             }
           },
           builder: (context, state) {
@@ -214,16 +192,16 @@ class _ManageUserPageState extends State<ManageUserPage> {
                 content: Column(
                   children: [
                     Text(
-                      widget.user == null
-                          ? 'Add new team member'
-                          : 'Edit team member',
+                      widget.company == null
+                          ? 'Add new company'
+                          : 'Edit company',
                       style: AppTextStyles.head5SemiBold,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      widget.user == null
-                          ? 'Create your team member'
-                          : 'Edit your team member info',
+                      widget.company == null
+                          ? 'Create your company'
+                          : 'Edit your company info',
                       style: AppTextStyles.paragraphSRegular.copyWith(
                         color: AppColors.iconPrimary,
                       ),
@@ -233,68 +211,49 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     BorderTextField(
                       controller: _controllerName,
                       labelText: 'Name',
-                      hintText: 'User name',
+                      hintText: 'Company name',
                       prefixIcon: AppIcons.user,
                       errorText: _errorTextName,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(32),
+                        LengthLimitingTextInputFormatter(128),
                       ],
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
                     BorderTextField(
-                      controller: _controllerEmail,
-                      labelText: 'Email',
-                      enabled: widget.user == null,
-                      hintText: 'Placeholder',
+                      controller: _controllerDescription,
+                      labelText: 'Description',
+                      hintText: 'Company description',
                       prefixIcon: AppIcons.mail,
-                      errorText: _errorTextEmail,
+                      errorText: _errorTextDescription,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(128),
+                        LengthLimitingTextInputFormatter(4096),
                       ],
-                      onChanged: _validateEmail,
+                      onChanged: _validateDescription,
                     ),
-                    if (widget.user == null) ...[
-                      const SizedBox(height: 16.0),
-                      BorderTextField(
-                        controller: _controllerPassword,
-                        labelText: 'Password',
-                        hintText: 'Password',
-                        isObscureText: _isObscurePassword,
-                        prefixIcon: AppIcons.lock,
-                        suffixIcon: _isObscurePassword
-                            ? AppIcons.visibilityOff
-                            : AppIcons.visibilityOn,
-                        errorText: _errorTextPassword,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(64),
-                        ],
-                        onSuffixTap: _switchObscurePassword,
-                        onChanged: _validatePassword,
-                      ),
-                      const SizedBox(height: 40.0),
+                    const SizedBox(height: 40.0),
+                    if (widget.company == null) ...[
                       CustomButton(
-                        text: 'Create user',
-                        onTap: () => _createUser(context),
+                        text: 'Create company',
+                        onTap: () => _createCompany(context),
                       ),
                     ] else ...[
-                      const SizedBox(height: 40.0),
                       CustomButton(
                         text: 'Save changes',
-                        onTap: () => _updateUser(context),
+                        onTap: () => _updateCompany(context),
                       ),
                     ],
                     const SizedBox(height: 12.0),
                     CustomTextButton(
                       prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Team page',
-                      onTap: widget.navigateToTeamPage,
+                      text: 'Back to Dashboard page',
+                      onTap: widget.navigateToDashboardPage,
                     ),
                   ],
                 ),
-                preview: _UserPreview(
+                preview: _CompanyPreview(
                   name: _controllerName.text,
-                  email: _controllerEmail.text,
+                  description: _controllerDescription.text,
                 ),
               ),
             );
@@ -305,14 +264,14 @@ class _ManageUserPageState extends State<ManageUserPage> {
   }
 }
 
-class _UserPreview extends StatelessWidget {
-  const _UserPreview({
+class _CompanyPreview extends StatelessWidget {
+  const _CompanyPreview({
     required this.name,
-    required this.email,
+    required this.description,
   });
 
   final String name;
-  final String email;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -359,7 +318,7 @@ class _UserPreview extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     getFirstLetter(
-                      name.isNotEmpty ? name : 'User Name',
+                      name.isNotEmpty ? name : 'Company Name',
                     ),
                     style: AppTextStyles.subtitleMedium.copyWith(
                       color: AppColors.scaffoldSecondary,
@@ -374,7 +333,7 @@ class _UserPreview extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          name.isNotEmpty ? name : 'User Name',
+                          name.isNotEmpty ? name : 'Company Name',
                           style: AppTextStyles.paragraphMRegular,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -382,7 +341,9 @@ class _UserPreview extends StatelessWidget {
                       ),
                       Flexible(
                         child: Text(
-                          email.isNotEmpty ? email : '@placeholder.com',
+                          description.isNotEmpty
+                              ? description
+                              : 'Company description',
                           style: AppTextStyles.paragraphSRegular,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

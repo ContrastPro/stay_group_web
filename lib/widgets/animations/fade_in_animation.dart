@@ -6,7 +6,7 @@ class FadeInAnimation extends StatefulWidget {
   const FadeInAnimation({
     super.key,
     this.curve = kCurveAnimations,
-    this.duration = kAnimationDuration,
+    this.duration = kFadeInDuration,
     this.placeholder,
     required this.child,
   });
