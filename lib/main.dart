@@ -12,6 +12,7 @@ import 'repositories/auth_repository.dart';
 import 'repositories/calculations_repository.dart';
 import 'repositories/companies_repository.dart';
 import 'repositories/projects_repository.dart';
+import 'repositories/storage_repository.dart';
 import 'repositories/users_repository.dart';
 import 'resources/app_themes.dart';
 import 'routes/app_router.dart';
@@ -61,6 +62,7 @@ class _App extends StatelessWidget {
       CalculationsRepository();
   static final CompaniesRepository _companiesRepository = CompaniesRepository();
   static final ProjectsRepository _projectsRepository = ProjectsRepository();
+  static final StorageRepository _storageRepository = StorageRepository();
   static final UsersRepository _usersRepository = UsersRepository();
 
   @override
@@ -78,6 +80,9 @@ class _App extends StatelessWidget {
         ),
         RepositoryProvider<ProjectsRepository>(
           create: (_) => _projectsRepository,
+        ),
+        RepositoryProvider<StorageRepository>(
+          create: (_) => _storageRepository,
         ),
         RepositoryProvider<UsersRepository>(
           create: (_) => _usersRepository,

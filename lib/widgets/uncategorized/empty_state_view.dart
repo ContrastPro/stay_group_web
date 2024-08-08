@@ -32,10 +32,10 @@ class EmptyStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isEmpty) {
       return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
-            height: 420.0,
+            height: 380.0,
             child: Lottie.asset(
               animation,
               fit: BoxFit.cover,
@@ -43,7 +43,7 @@ class EmptyStateView extends StatelessWidget {
           ),
           Text(
             title,
-            style: AppTextStyles.head5SemiBold,
+            style: AppTextStyles.subtitleBold,
           ),
           const SizedBox(height: 8.0),
           Text(
@@ -53,7 +53,7 @@ class EmptyStateView extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 28.0),
+          const SizedBox(height: 24.0),
           SizedBox(
             width: buttonWidth,
             child: CustomButton(

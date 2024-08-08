@@ -246,7 +246,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     const SizedBox(height: 12.0),
                     CustomTextButton(
                       prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to calculations page',
+                      text: 'Back to Calculations page',
                       onTap: widget.navigateToCalculationsPage,
                     ),
                   ],

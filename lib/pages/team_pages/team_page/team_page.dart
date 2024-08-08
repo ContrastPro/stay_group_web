@@ -10,6 +10,7 @@ import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -75,6 +76,8 @@ class _TeamPageContent extends StatelessWidget {
   final TeamState state;
   final void Function([UserModel?]) navigateToManageUserPage;
 
+  static const double _buttonWidth = 140.0;
+
   void _deleteUser({
     required BuildContext context,
     required String id,
@@ -104,30 +107,35 @@ class _TeamPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: EmptyStateView(
-        isEmpty: state.users.isEmpty,
-        animation: AppAnimations.addUser,
-        title: 'Add first user',
-        description: "You don't added your first user yet - let's get started!",
-        buttonWidth: 140.0,
-        buttonText: 'Add user',
-        onTap: navigateToManageUserPage,
-        content: TablesLayout(
-          header: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 140.0,
-                child: CustomButton(
-                  prefixIcon: AppIcons.add,
-                  text: 'Add user',
-                  backgroundColor: AppColors.info,
-                  onTap: navigateToManageUserPage,
-                ),
+      child: TablesLayout(
+        header: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Team',
+              style: AppTextStyles.head6Medium,
+            ),
+            SizedBox(
+              width: _buttonWidth,
+              child: CustomButton(
+                prefixIcon: AppIcons.add,
+                text: 'Add user',
+                backgroundColor: AppColors.info,
+                onTap: navigateToManageUserPage,
               ),
-            ],
-          ),
-          body: Column(
+            ),
+          ],
+        ),
+        body: EmptyStateView(
+          isEmpty: state.users.isEmpty,
+          animation: AppAnimations.addUser,
+          title: 'Add first user',
+          description:
+              "You don't added your first user yet.\nLet's get started!",
+          buttonWidth: _buttonWidth,
+          buttonText: 'Add user',
+          onTap: navigateToManageUserPage,
+          content: Column(
             children: [
               TableItem(
                 backgroundColor: AppColors.border,

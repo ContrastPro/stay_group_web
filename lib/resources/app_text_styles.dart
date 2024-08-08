@@ -23,7 +23,21 @@ class AppTextStyles {
 
   // [END] H5 - Heading
 
+  // [START] H6 - Heading
+
+  static TextStyle get head6Medium => const TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  // [END] H6 - Heading
+
   // [START] Subtitle
+
+  static TextStyle get subtitleBold => const TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.w700,
+      );
 
   static TextStyle get subtitleMedium => const TextStyle(
         fontSize: 18.0,

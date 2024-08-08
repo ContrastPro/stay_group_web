@@ -11,6 +11,7 @@ import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -76,6 +77,8 @@ class _ProjectsPageContent extends StatelessWidget {
   final ProjectsState state;
   final void Function([ProjectModel?]) navigateToManageProjectPage;
 
+  static const double _buttonWidth = 160.0;
+
   void _deleteProject({
     required BuildContext context,
     required String id,
@@ -88,31 +91,35 @@ class _ProjectsPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: EmptyStateView(
-        isEmpty: state.projects.isEmpty,
-        animation: AppAnimations.addProject,
-        title: 'Add first project',
-        description:
-            "You don't added your first project yet - let's get started!",
-        buttonWidth: 160.0,
-        buttonText: 'Add project',
-        onTap: navigateToManageProjectPage,
-        content: TablesLayout(
-          header: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 160.0,
-                child: CustomButton(
-                  prefixIcon: AppIcons.add,
-                  text: 'Add project',
-                  backgroundColor: AppColors.info,
-                  onTap: navigateToManageProjectPage,
-                ),
+      child: TablesLayout(
+        header: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Projects',
+              style: AppTextStyles.head6Medium,
+            ),
+            SizedBox(
+              width: _buttonWidth,
+              child: CustomButton(
+                prefixIcon: AppIcons.add,
+                text: 'Add project',
+                backgroundColor: AppColors.info,
+                onTap: navigateToManageProjectPage,
               ),
-            ],
-          ),
-          body: Column(
+            ),
+          ],
+        ),
+        body: EmptyStateView(
+          isEmpty: state.projects.isEmpty,
+          animation: AppAnimations.addProject,
+          title: 'Add first project',
+          description:
+              "You don't added your first project yet.\nLet's get started!",
+          buttonWidth: _buttonWidth,
+          buttonText: 'Add project',
+          onTap: navigateToManageProjectPage,
+          content: Column(
             children: [
               TableItem(
                 backgroundColor: AppColors.border,

@@ -148,7 +148,7 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to log in',
+                    text: 'Back to Log in',
                     onTap: widget.navigateToLogInPage,
                   ),
                 ],

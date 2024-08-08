@@ -246,7 +246,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                       controller: _controllerEmail,
                       labelText: 'Email',
                       enabled: widget.user == null,
-                      hintText: 'Placeholder',
+                      hintText: 'User email',
                       prefixIcon: AppIcons.mail,
                       errorText: _errorTextEmail,
                       inputFormatters: [
@@ -259,7 +259,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                       BorderTextField(
                         controller: _controllerPassword,
                         labelText: 'Password',
-                        hintText: 'Password',
+                        hintText: 'User password',
                         isObscureText: _isObscurePassword,
                         prefixIcon: AppIcons.lock,
                         suffixIcon: _isObscurePassword

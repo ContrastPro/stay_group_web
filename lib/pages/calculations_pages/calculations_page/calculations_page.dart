@@ -11,6 +11,7 @@ import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -77,6 +78,8 @@ class _CalculationsPageContent extends StatelessWidget {
   final CalculationsState state;
   final void Function([CalculationModel?]) navigateToManageCalculationPage;
 
+  static const double _buttonWidth = 200.0;
+
   void _deleteCalculation({
     required BuildContext context,
     required String id,
@@ -89,31 +92,35 @@ class _CalculationsPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: EmptyStateView(
-        isEmpty: state.calculations.isEmpty,
-        animation: AppAnimations.addCalculation,
-        title: 'Add first calculation',
-        description:
-            "You don't added your first calculation yet - let's get started!",
-        buttonWidth: 190.0,
-        buttonText: 'Add calculation',
-        onTap: navigateToManageCalculationPage,
-        content: TablesLayout(
-          header: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 190.0,
-                child: CustomButton(
-                  prefixIcon: AppIcons.add,
-                  text: 'Add calculation',
-                  backgroundColor: AppColors.info,
-                  onTap: navigateToManageCalculationPage,
-                ),
+      child: TablesLayout(
+        header: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Calculations',
+              style: AppTextStyles.head6Medium,
+            ),
+            SizedBox(
+              width: _buttonWidth,
+              child: CustomButton(
+                prefixIcon: AppIcons.add,
+                text: 'Add calculation',
+                backgroundColor: AppColors.info,
+                onTap: navigateToManageCalculationPage,
               ),
-            ],
-          ),
-          body: Column(
+            ),
+          ],
+        ),
+        body: EmptyStateView(
+          isEmpty: state.calculations.isEmpty,
+          animation: AppAnimations.addCalculation,
+          title: 'Add first calculation',
+          description:
+              "You don't added your first calculation yet.\nLet's get started!",
+          buttonWidth: _buttonWidth,
+          buttonText: 'Add calculation',
+          onTap: navigateToManageCalculationPage,
+          content: Column(
             children: [
               TableItem(
                 backgroundColor: AppColors.border,

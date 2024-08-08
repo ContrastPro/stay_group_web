@@ -11,6 +11,7 @@ import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
+import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -76,6 +77,8 @@ class _DashboardPageContent extends StatelessWidget {
   final DashboardState state;
   final void Function([CompanyModel?]) navigateToManageCompanyPage;
 
+  static const double _buttonWidth = 180.0;
+
   void _deleteCompany({
     required BuildContext context,
     required String id,
@@ -88,31 +91,35 @@ class _DashboardPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: EmptyStateView(
-        isEmpty: state.companies.isEmpty,
-        animation: AppAnimations.addCompany,
-        title: 'Add first company',
-        description:
-            "You don't added your first company yet - let's get started!",
-        buttonWidth: 180.0,
-        buttonText: 'Add company',
-        onTap: navigateToManageCompanyPage,
-        content: TablesLayout(
-          header: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 180.0,
-                child: CustomButton(
-                  prefixIcon: AppIcons.add,
-                  text: 'Add company',
-                  backgroundColor: AppColors.info,
-                  onTap: navigateToManageCompanyPage,
-                ),
+      child: TablesLayout(
+        header: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Dashboard',
+              style: AppTextStyles.head6Medium,
+            ),
+            SizedBox(
+              width: _buttonWidth,
+              child: CustomButton(
+                prefixIcon: AppIcons.add,
+                text: 'Add company',
+                backgroundColor: AppColors.info,
+                onTap: navigateToManageCompanyPage,
               ),
-            ],
-          ),
-          body: Column(
+            ),
+          ],
+        ),
+        body: EmptyStateView(
+          isEmpty: state.companies.isEmpty,
+          animation: AppAnimations.addCompany,
+          title: 'Add first company',
+          description:
+              "You don't added your first company yet.\nLet's get started!",
+          buttonWidth: _buttonWidth,
+          buttonText: 'Add company',
+          onTap: navigateToManageCompanyPage,
+          content: Column(
             children: [
               TableItem(
                 backgroundColor: AppColors.border,

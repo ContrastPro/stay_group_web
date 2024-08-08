@@ -246,7 +246,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     const SizedBox(height: 12.0),
                     CustomTextButton(
                       prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to projects page',
+                      text: 'Back to Projects page',
                       onTap: widget.navigateToProjectsPage,
                     ),
                   ],
