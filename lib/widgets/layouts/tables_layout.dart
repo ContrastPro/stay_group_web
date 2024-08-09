@@ -15,7 +15,7 @@ class TablesLayout extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 32.0,
-        vertical: 32.0,
+        vertical: 28.0,
       ),
       child: Column(
         children: [

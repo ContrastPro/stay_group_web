@@ -2,16 +2,20 @@ import 'dart:typed_data';
 
 class MediaResponseModel {
   const MediaResponseModel({
-    required this.data,
+    required this.id,
+    this.data,
+    this.dataUrl,
     this.thumbnail,
-    this.path,
+    this.thumbnailUrl,
     required this.format,
     required this.name,
   });
 
-  final Uint8List data;
+  final String id;
+  final Uint8List? data;
+  final String? dataUrl;
   final Uint8List? thumbnail;
-  final String? path;
+  final String? thumbnailUrl;
   final String format;
   final String name;
 }

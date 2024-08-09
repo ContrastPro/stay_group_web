@@ -108,23 +108,26 @@ class _TeamPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInAnimation(
       child: TablesLayout(
-        header: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Team',
-              style: AppTextStyles.head6Medium,
-            ),
-            SizedBox(
-              width: _buttonWidth,
-              child: CustomButton(
-                prefixIcon: AppIcons.add,
-                text: 'Add user',
-                backgroundColor: AppColors.info,
-                onTap: navigateToManageUserPage,
+        header: SizedBox(
+          height: 40.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Team',
+                style: AppTextStyles.head6Medium,
               ),
-            ),
-          ],
+              SizedBox(
+                width: _buttonWidth,
+                child: CustomButton(
+                  prefixIcon: AppIcons.add,
+                  text: 'Add user',
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageUserPage,
+                ),
+              ),
+            ],
+          ),
         ),
         body: EmptyStateView(
           isEmpty: state.users.isEmpty,

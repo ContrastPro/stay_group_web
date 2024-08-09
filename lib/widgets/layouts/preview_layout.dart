@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../resources/app_colors.dart';
 
-class ManagePreviewLayout extends StatelessWidget {
-  const ManagePreviewLayout({
+class PreviewLayout extends StatelessWidget {
+  const PreviewLayout({
     super.key,
     required this.content,
     required this.preview,

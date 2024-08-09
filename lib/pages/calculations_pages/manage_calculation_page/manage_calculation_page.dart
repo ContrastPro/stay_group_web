@@ -15,7 +15,7 @@ import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
-import '../../../widgets/layouts/manage_preview_layout.dart';
+import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
 
@@ -188,7 +188,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           builder: (context, state) {
             return ActionLoader(
               isLoading: _isLoading,
-              child: ManagePreviewLayout(
+              child: PreviewLayout(
                 content: Column(
                   children: [
                     Text(

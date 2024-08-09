@@ -4,6 +4,9 @@ enum BlocStatus { initial, loading, loaded, success, failed }
 
 enum DateDifference { seconds, minutes, days }
 
+// Max file weight 10 MB
+const int kFileWeightMax = 10485760;
+
 const BorderRadius kCircleRadius = BorderRadius.all(
   Radius.circular(100.0),
 );

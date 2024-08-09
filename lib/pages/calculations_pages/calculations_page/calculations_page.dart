@@ -78,7 +78,7 @@ class _CalculationsPageContent extends StatelessWidget {
   final CalculationsState state;
   final void Function([CalculationModel?]) navigateToManageCalculationPage;
 
-  static const double _buttonWidth = 200.0;
+  static const double _buttonWidth = 190.0;
 
   void _deleteCalculation({
     required BuildContext context,
@@ -93,23 +93,26 @@ class _CalculationsPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInAnimation(
       child: TablesLayout(
-        header: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Calculations',
-              style: AppTextStyles.head6Medium,
-            ),
-            SizedBox(
-              width: _buttonWidth,
-              child: CustomButton(
-                prefixIcon: AppIcons.add,
-                text: 'Add calculation',
-                backgroundColor: AppColors.info,
-                onTap: navigateToManageCalculationPage,
+        header: SizedBox(
+          height: 40.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Calculations',
+                style: AppTextStyles.head6Medium,
               ),
-            ),
-          ],
+              SizedBox(
+                width: _buttonWidth,
+                child: CustomButton(
+                  prefixIcon: AppIcons.add,
+                  text: 'Add calculation',
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageCalculationPage,
+                ),
+              ),
+            ],
+          ),
         ),
         body: EmptyStateView(
           isEmpty: state.calculations.isEmpty,

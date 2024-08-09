@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 
 import '../models/companies/company_response_model.dart';
+import '../models/medias/media_model.dart';
 import '../services/repository_logger_service.dart';
 import '../utils/helpers.dart';
 
@@ -27,6 +28,7 @@ class CompaniesRepository {
   Future<void> createCompany({
     required String spaceId,
     required String id,
+    List<MediaModel>? media,
     required String name,
     required String description,
   }) async {
@@ -38,6 +40,7 @@ class CompaniesRepository {
     await reference.set({
       'id': id,
       'info': {
+        'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
         'description': description,
       },
@@ -52,6 +55,7 @@ class CompaniesRepository {
   Future<void> updateCompanyInfo({
     required String spaceId,
     required String id,
+    List<MediaModel>? media,
     required String name,
     required String description,
   }) async {
@@ -62,6 +66,7 @@ class CompaniesRepository {
 
     await reference.update({
       'info': {
+        'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
         'description': description,
       },

@@ -92,23 +92,26 @@ class _ProjectsPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInAnimation(
       child: TablesLayout(
-        header: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Projects',
-              style: AppTextStyles.head6Medium,
-            ),
-            SizedBox(
-              width: _buttonWidth,
-              child: CustomButton(
-                prefixIcon: AppIcons.add,
-                text: 'Add project',
-                backgroundColor: AppColors.info,
-                onTap: navigateToManageProjectPage,
+        header: SizedBox(
+          height: 40.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Projects',
+                style: AppTextStyles.head6Medium,
               ),
-            ),
-          ],
+              SizedBox(
+                width: _buttonWidth,
+                child: CustomButton(
+                  prefixIcon: AppIcons.add,
+                  text: 'Add project',
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageProjectPage,
+                ),
+              ),
+            ],
+          ),
         ),
         body: EmptyStateView(
           isEmpty: state.projects.isEmpty,

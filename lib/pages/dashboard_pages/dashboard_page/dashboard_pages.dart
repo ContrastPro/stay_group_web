@@ -92,23 +92,26 @@ class _DashboardPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInAnimation(
       child: TablesLayout(
-        header: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Dashboard',
-              style: AppTextStyles.head6Medium,
-            ),
-            SizedBox(
-              width: _buttonWidth,
-              child: CustomButton(
-                prefixIcon: AppIcons.add,
-                text: 'Add company',
-                backgroundColor: AppColors.info,
-                onTap: navigateToManageCompanyPage,
+        header: SizedBox(
+          height: 40.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Dashboard',
+                style: AppTextStyles.head6Medium,
               ),
-            ),
-          ],
+              SizedBox(
+                width: _buttonWidth,
+                child: CustomButton(
+                  prefixIcon: AppIcons.add,
+                  text: 'Add company',
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageCompanyPage,
+                ),
+              ),
+            ],
+          ),
         ),
         body: EmptyStateView(
           isEmpty: state.companies.isEmpty,

@@ -5,6 +5,7 @@ class AppIcons {
 
   static const String add = '$_path/add.svg';
   static const String arrowBack = '$_path/arrow_back.svg';
+  static const String attachFile = '$_path/attach_file.svg';
   static const String calculation = '$_path/calculation.svg';
   static const String dashboard = '$_path/dashboard.svg';
   static const String delete = '$_path/delete.svg';
@@ -14,8 +15,8 @@ class AppIcons {
   static const String projects = '$_path/projects.svg';
   static const String settings = '$_path/settings.svg';
   static const String team = '$_path/team.svg';
+  static const String upload = '$_path/upload.svg';
   static const String user = '$_path/user.svg';
   static const String visibilityOff = '$_path/visibility_off.svg';
   static const String visibilityOn = '$_path/visibility_on.svg';
-
 }

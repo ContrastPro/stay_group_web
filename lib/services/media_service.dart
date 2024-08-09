@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../models/uncategorized/media_response_model.dart';
+import '../models/medias/media_response_model.dart';
+import '../utils/helpers.dart';
 
 class MediaService {
   const MediaService._();
@@ -22,17 +23,24 @@ class MediaService {
     if (pickedImage != null) {
       final Uint8List data = await pickedImage.readAsBytes();
 
-      final Uint8List? thumbnail = await compressQuality(
+      final String id = uuid();
+
+      final Uint8List optimizedData = await compressQuality(
         index: 4,
+        data: data,
+      );
+
+      final Uint8List thumbnail = await compressQuality(
+        index: 8,
         data: data,
       );
 
       final String format = pickedImage.name.split('.').last;
 
       return MediaResponseModel(
-        data: data,
+        id: id,
+        data: optimizedData,
         thumbnail: thumbnail,
-        path: pickedImage.path,
         format: format,
         name: pickedImage.name,
       );
@@ -52,7 +60,7 @@ class MediaService {
     return image;
   }
 
-  Future<Uint8List?> compressQuality({
+  Future<Uint8List> compressQuality({
     required Uint8List data,
     int index = 2,
     int quality = 80,
@@ -69,7 +77,7 @@ class MediaService {
 
       return thumbnail;
     } catch (e) {
-      return null;
+      return data;
     }
   }
 }

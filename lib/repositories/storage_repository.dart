@@ -12,39 +12,49 @@ class StorageRepository {
   static final FirebaseStorage _api = FirebaseStorage.instance;
 
   Reference _getRef({
+    required bool isThumbnail,
     required String spaceId,
     required String id,
   }) {
-    return _api.ref('$spaceId/$id');
+    if (isThumbnail) {
+      return _api.ref('$spaceId/thumbnails/$id');
+    }
+
+    return _api.ref('$spaceId/media/$id');
   }
 
-  Future<String?> saveMedia({
+  Future<String> uploadMedia({
+    required bool isThumbnail,
     required String spaceId,
     required String id,
     required Uint8List mediaData,
+    required String format,
   }) async {
-    try {
-      final Reference reference = _getRef(
-        spaceId: spaceId,
-        id: id,
-      );
+    final Reference reference = _getRef(
+      isThumbnail: isThumbnail,
+      spaceId: spaceId,
+      id: id,
+    );
 
-      await reference.putData(mediaData);
+    await reference.putData(
+      mediaData,
+      SettableMetadata(
+        contentType: 'image/$format',
+      ),
+    );
 
-      _logger.log('Successful', name: 'saveMedia');
+    _logger.log('Successful', name: 'uploadMedia');
 
-      return await reference.getDownloadURL();
-    } on FirebaseException catch (e) {
-      _logger.log(e.code, name: 'saveMedia');
-      return null;
-    }
+    return await reference.getDownloadURL();
   }
 
   Future<void> deleteMedia({
+    required bool isThumbnail,
     required String spaceId,
     required String id,
   }) async {
     final Reference reference = _getRef(
+      isThumbnail: isThumbnail,
       spaceId: spaceId,
       id: id,
     );
