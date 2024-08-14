@@ -31,37 +31,40 @@ class EmptyStateView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      return ListView(
         children: [
-          SizedBox(
-            height: 380.0,
-            child: Lottie.asset(
-              animation,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Text(
-            title,
-            style: AppTextStyles.subtitleBold,
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            description,
-            style: AppTextStyles.paragraphSRegular.copyWith(
-              color: AppColors.iconPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24.0),
-          SizedBox(
-            width: buttonWidth,
-            child: CustomButton(
-              prefixIcon: AppIcons.add,
-              text: buttonText,
-              backgroundColor: AppColors.info,
-              onTap: onTap,
-            ),
+          Column(
+            children: [
+              SizedBox(
+                height: 380.0,
+                child: Lottie.asset(
+                  animation,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Text(
+                title,
+                style: AppTextStyles.subtitleBold,
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                description,
+                style: AppTextStyles.paragraphSRegular.copyWith(
+                  color: AppColors.iconPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24.0),
+              SizedBox(
+                width: buttonWidth,
+                child: CustomButton(
+                  prefixIcon: AppIcons.add,
+                  text: buttonText,
+                  backgroundColor: AppColors.info,
+                  onTap: onTap,
+                ),
+              ),
+            ],
           ),
         ],
       );

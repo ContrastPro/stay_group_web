@@ -23,6 +23,13 @@ class AppColors {
   static const Color error = Color(0xFFFF4D4D);
   static const Color transparent = Color(0x00000000);
 
+  static const LinearGradient backgroundGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment(0.8, 1),
+    colors: [secondary, iconPrimary],
+    tileMode: TileMode.mirror,
+  );
+
   static List<BoxShadow> cardShadow = [
     BoxShadow(
       color: AppColors.primary.withOpacity(0.05),
@@ -49,11 +56,4 @@ class AppColors {
       spreadRadius: 0.0,
     ),
   ];
-
-  static const LinearGradient userGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment(0.8, 1),
-    colors: [secondary, iconPrimary],
-    tileMode: TileMode.mirror,
-  );
 }

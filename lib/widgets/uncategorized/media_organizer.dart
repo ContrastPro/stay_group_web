@@ -32,6 +32,13 @@ class MediaOrganizer extends StatelessWidget {
 
     if (response == null) return;
 
+    if (!kImageFormats.contains(response.format)) {
+      return InAppNotificationService.show(
+        title: 'Wrong file format',
+        type: InAppNotificationType.error,
+      );
+    }
+
     if (response.data!.lengthInBytes > kFileWeightMax) {
       return InAppNotificationService.show(
         title: 'File too large',

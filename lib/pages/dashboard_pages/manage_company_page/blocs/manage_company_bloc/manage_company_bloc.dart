@@ -52,7 +52,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
           isThumbnail: false,
           spaceId: spaceId,
           id: event.media[i].id,
-          mediaData: event.media[i].data!,
+          data: event.media[i].data!,
           format: event.media[i].format,
         );
 
@@ -60,7 +60,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
           isThumbnail: true,
           spaceId: spaceId,
           id: event.media[i].id,
-          mediaData: event.media[i].thumbnail!,
+          data: event.media[i].thumbnail!,
           format: event.media[i].format,
         );
 
@@ -126,7 +126,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
           isThumbnail: false,
           spaceId: spaceId,
           id: event.addedMedia[i].id,
-          mediaData: event.addedMedia[i].data!,
+          data: event.addedMedia[i].data!,
           format: event.addedMedia[i].format,
         );
 
@@ -134,7 +134,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
           isThumbnail: true,
           spaceId: spaceId,
           id: event.addedMedia[i].id,
-          mediaData: event.addedMedia[i].thumbnail!,
+          data: event.addedMedia[i].thumbnail!,
           format: event.addedMedia[i].format,
         );
 

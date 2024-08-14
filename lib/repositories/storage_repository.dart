@@ -27,7 +27,7 @@ class StorageRepository {
     required bool isThumbnail,
     required String spaceId,
     required String id,
-    required Uint8List mediaData,
+    required Uint8List data,
     required String format,
   }) async {
     final Reference reference = _getRef(
@@ -37,7 +37,7 @@ class StorageRepository {
     );
 
     await reference.putData(
-      mediaData,
+      data,
       SettableMetadata(
         contentType: 'image/$format',
       ),

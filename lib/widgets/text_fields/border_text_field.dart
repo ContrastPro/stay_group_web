@@ -100,7 +100,6 @@ class _BorderTextFieldState extends State<BorderTextField> {
           const SizedBox(height: 4.0),
         ],
         Container(
-          height: 40.0,
           decoration: BoxDecoration(
             color: AppColors.scaffoldSecondary,
             border: widget.errorText == null
@@ -141,12 +140,13 @@ class _BorderTextFieldState extends State<BorderTextField> {
                   cursorHeight: 16.0,
                   style: AppTextStyles.paragraphMRegular,
                   decoration: InputDecoration(
+                    isDense: true,
                     hintText: widget.hintText,
                     hintStyle: AppTextStyles.paragraphMRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
-                    contentPadding: const EdgeInsets.only(
-                      bottom: 10.0,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 11.0,
                     ),
                     border: InputBorder.none,
                   ),

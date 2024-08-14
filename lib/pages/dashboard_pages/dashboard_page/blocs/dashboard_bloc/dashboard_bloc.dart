@@ -8,6 +8,7 @@ import '../../../../../models/users/user_info_model.dart';
 import '../../../../../models/users/user_model.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/companies_repository.dart';
+import '../../../../../repositories/storage_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
 import '../../../../../utils/helpers.dart';
@@ -20,6 +21,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   DashboardBloc({
     required this.authRepository,
     required this.companiesRepository,
+    required this.storageRepository,
     required this.usersRepository,
   }) : super(const DashboardState()) {
     on<GetCompanies>((event, emit) async {
@@ -89,6 +91,22 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         (e) => e.id == event.id,
       );
 
+      if (companies[index].info.media != null) {
+        for (int i = 0; i < companies[index].info.media!.length; i++) {
+          await storageRepository.deleteMedia(
+            isThumbnail: false,
+            spaceId: spaceId,
+            id: companies[index].info.media![i].id,
+          );
+
+          await storageRepository.deleteMedia(
+            isThumbnail: true,
+            spaceId: spaceId,
+            id: companies[index].info.media![i].id,
+          );
+        }
+      }
+
       await companiesRepository.deleteCompany(
         spaceId: spaceId,
         id: event.id,
@@ -113,5 +131,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   final AuthRepository authRepository;
   final CompaniesRepository companiesRepository;
+  final StorageRepository storageRepository;
   final UsersRepository usersRepository;
 }

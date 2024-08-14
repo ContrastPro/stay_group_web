@@ -189,13 +189,14 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: Column(
+                content: ListView(
                   children: [
                     Text(
                       widget.project == null
                           ? 'Add new project'
                           : 'Edit project',
                       style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
@@ -287,7 +288,7 @@ class _ProjectPreview extends StatelessWidget {
                 topLeft: Radius.circular(8.0),
                 topRight: Radius.circular(8.0),
               ),
-              gradient: AppColors.userGradient,
+              gradient: AppColors.backgroundGradient,
             ),
           ),
           Container(

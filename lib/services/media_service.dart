@@ -26,16 +26,15 @@ class MediaService {
       final String id = uuid();
 
       final Uint8List optimizedData = await compressQuality(
-        index: 4,
         data: data,
       );
 
       final Uint8List thumbnail = await compressQuality(
-        index: 8,
+        index: 6,
         data: data,
       );
 
-      final String format = pickedImage.name.split('.').last;
+      final String format = pickedImage.name.split('.').last.toLowerCase();
 
       return MediaResponseModel(
         id: id,

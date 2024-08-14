@@ -211,13 +211,14 @@ class _ManageUserPageState extends State<ManageUserPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: Column(
+                content: ListView(
                   children: [
                     Text(
                       widget.user == null
                           ? 'Add new team member'
                           : 'Edit team member',
                       style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
@@ -328,7 +329,7 @@ class _UserPreview extends StatelessWidget {
                 topLeft: Radius.circular(8.0),
                 topRight: Radius.circular(8.0),
               ),
-              gradient: AppColors.userGradient,
+              gradient: AppColors.backgroundGradient,
             ),
           ),
           Container(

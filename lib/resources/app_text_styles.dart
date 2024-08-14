@@ -12,22 +12,139 @@ class AppTextStyles {
         fontWeight: FontWeight.w700,
       );
 
+  static TextStyle get head1SemiBold => const TextStyle(
+        fontSize: 72.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get head1Medium => const TextStyle(
+        fontSize: 72.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head1Regular => const TextStyle(
+        fontSize: 72.0,
+        fontWeight: FontWeight.w400,
+      );
+
   // [END] H1 - Heading
 
+  // [START] H2 - Heading
+
+  static TextStyle get head2Bold => const TextStyle(
+        fontSize: 60.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get head2SemiBold => const TextStyle(
+        fontSize: 60.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get head2Medium => const TextStyle(
+        fontSize: 60.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head2Regular => const TextStyle(
+        fontSize: 60.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  // [END] H2 - Heading
+
+  // [START] H3 - Heading
+
+  static TextStyle get head3Bold => const TextStyle(
+        fontSize: 48.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get head3SemiBold => const TextStyle(
+        fontSize: 48.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get head3Medium => const TextStyle(
+        fontSize: 48.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head3Regular => const TextStyle(
+        fontSize: 48.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  // [END] H3 - Heading
+
+  // [START] H4 - Heading
+
+  static TextStyle get head4Bold => const TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get head4SemiBold => const TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get head4Medium => const TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head4Regular => const TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  // [END] H4 - Heading
+
   // [START] H5 - Heading
+
+  static TextStyle get head5Bold => const TextStyle(
+        fontSize: 28.0,
+        fontWeight: FontWeight.w700,
+      );
 
   static TextStyle get head5SemiBold => const TextStyle(
         fontSize: 28.0,
         fontWeight: FontWeight.w600,
       );
 
+  static TextStyle get head5Medium => const TextStyle(
+        fontSize: 28.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head5Regular => const TextStyle(
+        fontSize: 28.0,
+        fontWeight: FontWeight.w400,
+      );
+
   // [END] H5 - Heading
 
   // [START] H6 - Heading
 
+  static TextStyle get head6Bold => const TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get head6SemiBold => const TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.w600,
+      );
+
   static TextStyle get head6Medium => const TextStyle(
         fontSize: 24.0,
         fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get head6Regular => const TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.w400,
       );
 
   // [END] H6 - Heading
@@ -35,16 +152,50 @@ class AppTextStyles {
   // [START] Subtitle
 
   static TextStyle get subtitleBold => const TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get subtitleSemiBold => const TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get subtitleMedium => const TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get subtitleRegular => const TextStyle(
+        fontSize: 20.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  // [END] Subtitle
+
+  // [START] Paragraph L
+
+  static TextStyle get paragraphLBold => const TextStyle(
         fontSize: 18.0,
         fontWeight: FontWeight.w700,
       );
 
-  static TextStyle get subtitleMedium => const TextStyle(
+  static TextStyle get paragraphLSemiBold => const TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get paragraphLMedium => const TextStyle(
         fontSize: 18.0,
         fontWeight: FontWeight.w500,
       );
 
-  // [END] Subtitle
+  static TextStyle get paragraphLRegular => const TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.w400,
+      );
+
+  // [END] Paragraph L
 
   // [START] Paragraph M
 
@@ -93,4 +244,28 @@ class AppTextStyles {
       );
 
 // [END] Paragraph S
+
+// [START] Caption
+
+  static TextStyle get captionBold => const TextStyle(
+        fontSize: 12.0,
+        fontWeight: FontWeight.w700,
+      );
+
+  static TextStyle get captionSemiBold => const TextStyle(
+        fontSize: 12.0,
+        fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get captionMedium => const TextStyle(
+        fontSize: 12.0,
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get captionRegular => const TextStyle(
+        fontSize: 12.0,
+        fontWeight: FontWeight.w400,
+      );
+
+// [END] Caption
 }

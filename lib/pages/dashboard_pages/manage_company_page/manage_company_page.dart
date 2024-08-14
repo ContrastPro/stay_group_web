@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../models/companies/company_info_model.dart';
 import '../../../models/companies/company_model.dart';
@@ -15,6 +16,7 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
@@ -289,13 +291,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: Column(
+                content: ListView(
                   children: [
                     Text(
                       widget.company == null
                           ? 'Add new company'
                           : 'Edit company',
                       style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8.0),
                     Text(
@@ -309,7 +312,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     ),
                     const SizedBox(height: 28.0),
                     MediaOrganizer(
-                      labelText: 'Upload logo',
+                      labelText: 'Upload banner',
                       maxLength: 1,
                       media: _media,
                       onPickMedia: _onPickMedia,
@@ -320,8 +323,8 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Company name',
-                      prefixIcon: AppIcons.user,
                       errorText: _errorTextName,
+                      maxLines: 2,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(64),
                       ],
@@ -332,8 +335,8 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       controller: _controllerDescription,
                       labelText: 'Description',
                       hintText: 'Company description',
-                      prefixIcon: AppIcons.mail,
                       errorText: _errorTextDescription,
+                      maxLines: 6,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(320),
                       ],
@@ -384,35 +387,31 @@ class _CompanyPreview extends StatelessWidget {
   final String name;
   final String description;
 
-  static const BorderRadiusGeometry _borderRadius = BorderRadius.only(
-    topLeft: Radius.circular(8.0),
-    topRight: Radius.circular(8.0),
-  );
-
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 360.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Container(
+      width: 512.0,
+      height: 360.0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 16.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldSecondary,
+        borderRadius: BorderRadius.circular(32.0),
+      ),
+      child: Row(
         children: [
-          Container(
-            width: double.infinity,
-            height: 180.0,
-            decoration: const BoxDecoration(
-              borderRadius: _borderRadius,
-              gradient: AppColors.userGradient,
-            ),
+          SizedBox(
+            width: 220.0,
+            height: double.infinity,
             child: media.isNotEmpty
                 ? FadeInAnimation(
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(7.0),
-                        topRight: Radius.circular(7.0),
-                      ),
+                      borderRadius: BorderRadius.circular(26.0),
                       child: media.first.dataUrl != null
                           ? CachedNetworkImageLoader(
-                              imageUrl: media.first.dataUrl,
+                              imageUrl: media.first.dataUrl!,
                             )
                           : Image.memory(
                               media.first.data!,
@@ -422,33 +421,47 @@ class _CompanyPreview extends StatelessWidget {
                             ),
                     ),
                   )
-                : null,
+                : Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(26.0),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppIcons.placeholder,
+                          width: 64.0,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.iconPrimary.withOpacity(0.4),
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Text(
+                          'Max file size: ${formatMediaSize(kFileWeightMax)}',
+                          style: AppTextStyles.captionBold.copyWith(
+                            color: AppColors.iconPrimary.withOpacity(0.6),
+                          ),
+                        ),
+                        Text(
+                          '.jpg .jpeg .png',
+                          style: AppTextStyles.captionRegular.copyWith(
+                            color: AppColors.iconPrimary.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
-          Container(
-            height: 4.0,
-            color: AppColors.border,
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-            ).copyWith(
-              top: 16.0,
-              bottom: 14.0,
-            ),
-            decoration: const BoxDecoration(
-              color: AppColors.scaffoldSecondary,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(width: 28.0),
+          Expanded(
+            child: ListView(
               children: [
+                const SizedBox(height: 16.0),
                 Text(
                   name.isNotEmpty ? name : 'Company Name',
-                  style: AppTextStyles.paragraphMSemiBold,
+                  style: AppTextStyles.paragraphLSemiBold,
                 ),
                 Text(
                   description.isNotEmpty

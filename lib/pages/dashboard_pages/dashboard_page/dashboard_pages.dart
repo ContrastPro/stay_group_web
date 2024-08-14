@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../models/companies/company_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/companies_repository.dart';
+import '../../../repositories/storage_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
@@ -41,6 +42,7 @@ class DashboardPage extends StatelessWidget {
       create: (_) => DashboardBloc(
         authRepository: context.read<AuthRepository>(),
         companiesRepository: context.read<CompaniesRepository>(),
+        storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
           const GetCompanies(),

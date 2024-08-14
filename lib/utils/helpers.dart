@@ -1,4 +1,5 @@
 import 'package:crypt/crypt.dart';
+import 'package:file_sizes/file_sizes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -95,6 +96,13 @@ String localToUtc(
   }
 
   return date.toUtc().toIso8601String();
+}
+
+String formatMediaSize(int fileSize) {
+  return FileSize.getMegaBytes(
+    fileSize,
+    value: PrecisionValue.None,
+  );
 }
 
 Future<void> requestDelay() async {
