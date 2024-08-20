@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../models/projects/project_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/projects_repository.dart';
+import '../../../repositories/storage_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
@@ -41,6 +42,7 @@ class ProjectsPage extends StatelessWidget {
       create: (_) => ProjectsBloc(
         authRepository: context.read<AuthRepository>(),
         projectsRepository: context.read<ProjectsRepository>(),
+        storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
           const GetProjects(),

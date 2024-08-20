@@ -4,10 +4,19 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../models/medias/media_model.dart';
+import '../models/medias/media_response_model.dart';
 import 'constants.dart';
 
 String getFirstLetter(String data) {
   return data[0].toUpperCase();
+}
+
+String formatMediaSize(int fileSize) {
+  return FileSize.getMegaBytes(
+    fileSize,
+    value: PrecisionValue.None,
+  );
 }
 
 DateTime currentTime() {
@@ -98,11 +107,63 @@ String localToUtc(
   return date.toUtc().toIso8601String();
 }
 
-String formatMediaSize(int fileSize) {
-  return FileSize.getMegaBytes(
-    fileSize,
-    value: PrecisionValue.None,
-  );
+List<MediaModel> getSavedMedia({
+  required List<MediaModel>? media,
+  required List<MediaResponseModel> localMedia,
+}) {
+  final List<MediaModel> savedMedia = [];
+
+  if (media != null) {
+    for (int i = 0; i < media.length; i++) {
+      final int index = localMedia.indexWhere((e) => e.id == media[i].id);
+
+      if (index != -1) {
+        savedMedia.add(media[i]);
+      }
+    }
+  }
+
+  return savedMedia;
+}
+
+List<MediaResponseModel> getAddedMedia({
+  required List<MediaModel>? media,
+  required List<MediaResponseModel> localMedia,
+}) {
+  final List<MediaResponseModel> addedMedia = [];
+
+  if (media != null) {
+    for (int i = 0; i < localMedia.length; i++) {
+      final int index = media.indexWhere((e) => e.id == localMedia[i].id);
+
+      if (index == -1) {
+        addedMedia.add(localMedia[i]);
+      }
+    }
+  } else {
+    addedMedia.addAll(localMedia);
+  }
+
+  return addedMedia;
+}
+
+List<MediaModel> getRemovedMedia({
+  required List<MediaModel>? media,
+  required List<MediaResponseModel> localMedia,
+}) {
+  final List<MediaModel> removedMedia = [];
+
+  if (media != null) {
+    for (int i = 0; i < media.length; i++) {
+      final int index = localMedia.indexWhere((e) => e.id == media[i].id);
+
+      if (index == -1) {
+        removedMedia.add(media[i]);
+      }
+    }
+  }
+
+  return removedMedia;
 }
 
 Future<void> requestDelay() async {

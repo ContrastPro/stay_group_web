@@ -32,12 +32,8 @@ class PreviewLayout extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 440.0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
-                  vertical: 32.0,
-                ),
+              SizedBox(
+                width: 512.0,
                 child: content,
               ),
               Expanded(
@@ -55,9 +51,7 @@ class PreviewLayout extends StatelessWidget {
                       bottomRight: Radius.circular(12.0),
                     ),
                   ),
-                  child: Center(
-                    child: preview,
-                  ),
+                  child: preview,
                 ),
               ),
             ],

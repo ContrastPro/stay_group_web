@@ -9,6 +9,7 @@ class AppIcons {
   static const String dashboard = '$_path/dashboard.svg';
   static const String delete = '$_path/delete.svg';
   static const String edit = '$_path/edit.svg';
+  static const String location = '$_path/location.svg';
   static const String lock = '$_path/lock.svg';
   static const String mail = '$_path/mail.svg';
   static const String placeholder = '$_path/placeholder.svg';

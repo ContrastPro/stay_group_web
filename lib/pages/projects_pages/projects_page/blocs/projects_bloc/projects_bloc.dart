@@ -8,6 +8,7 @@ import '../../../../../models/users/user_info_model.dart';
 import '../../../../../models/users/user_model.dart';
 import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/projects_repository.dart';
+import '../../../../../repositories/storage_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
 import '../../../../../utils/helpers.dart';
@@ -20,6 +21,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
   ProjectsBloc({
     required this.authRepository,
     required this.projectsRepository,
+    required this.storageRepository,
     required this.usersRepository,
   }) : super(const ProjectsState()) {
     on<GetProjects>((event, emit) async {
@@ -89,6 +91,22 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
         (e) => e.id == event.id,
       );
 
+      if (projects[index].info.media != null) {
+        for (int i = 0; i < projects[index].info.media!.length; i++) {
+          await storageRepository.deleteMedia(
+            isThumbnail: false,
+            spaceId: spaceId,
+            id: projects[index].info.media![i].id,
+          );
+
+          await storageRepository.deleteMedia(
+            isThumbnail: true,
+            spaceId: spaceId,
+            id: projects[index].info.media![i].id,
+          );
+        }
+      }
+
       await projectsRepository.deleteProject(
         spaceId: spaceId,
         id: event.id,
@@ -113,5 +131,6 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
 
   final AuthRepository authRepository;
   final ProjectsRepository projectsRepository;
+  final StorageRepository storageRepository;
   final UsersRepository usersRepository;
 }

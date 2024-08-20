@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 
+import '../models/medias/media_model.dart';
 import '../models/projects/project_response_model.dart';
 import '../services/repository_logger_service.dart';
 import '../utils/helpers.dart';
@@ -27,7 +28,9 @@ class ProjectsRepository {
   Future<void> createProject({
     required String spaceId,
     required String id,
+    List<MediaModel>? media,
     required String name,
+    required String location,
     required String description,
   }) async {
     final DatabaseReference reference = _getRef(
@@ -38,7 +41,9 @@ class ProjectsRepository {
     await reference.set({
       'id': id,
       'info': {
+        'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
+        'location': location,
         'description': description,
       },
       'metadata': {
@@ -52,7 +57,9 @@ class ProjectsRepository {
   Future<void> updateProjectInfo({
     required String spaceId,
     required String id,
+    List<MediaModel>? media,
     required String name,
+    required String location,
     required String description,
   }) async {
     final DatabaseReference reference = _getRef(
@@ -62,7 +69,9 @@ class ProjectsRepository {
 
     await reference.update({
       'info': {
+        'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
+        'location': location,
         'description': description,
       },
     });

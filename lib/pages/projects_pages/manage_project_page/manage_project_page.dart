@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../models/medias/media_model.dart';
+import '../../../models/medias/media_response_model.dart';
+import '../../../models/projects/project_info_model.dart';
 import '../../../models/projects/project_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/projects_repository.dart';
+import '../../../repositories/storage_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
@@ -13,10 +18,13 @@ import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
+import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/preview_layout.dart';
+import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/uncategorized/media_organizer.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
 
 class ManageProjectPage extends StatefulWidget {
@@ -36,14 +44,18 @@ class ManageProjectPage extends StatefulWidget {
 }
 
 class _ManageProjectPageState extends State<ManageProjectPage> {
+  final List<MediaResponseModel> _media = [];
   final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerLocation = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
 
   bool _isLoading = false;
   bool _nameValid = false;
+  bool _locationValid = false;
   bool _descriptionValid = false;
 
   String? _errorTextName;
+  String? _errorTextLocation;
   String? _errorTextDescription;
 
   @override
@@ -54,10 +66,30 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
   void _setInitialData() {
     if (widget.project != null) {
-      _controllerName.text = widget.project!.info.name;
-      _validateName(widget.project!.info.name);
-      _controllerDescription.text = widget.project!.info.description;
-      _validateDescription(widget.project!.info.description);
+      final ProjectInfoModel info = widget.project!.info;
+
+      if (info.media != null) {
+        for (int i = 0; i < info.media!.length; i++) {
+          final MediaModel media = info.media![i];
+
+          _media.add(
+            MediaResponseModel(
+              id: media.id,
+              dataUrl: media.data,
+              thumbnailUrl: media.thumbnail,
+              format: media.format,
+              name: media.name,
+            ),
+          );
+        }
+      }
+
+      _controllerName.text = info.name;
+      _validateName(info.name);
+      _controllerLocation.text = info.location;
+      _validateLocation(info.location);
+      _controllerDescription.text = info.description;
+      _validateDescription(info.description);
     }
   }
 
@@ -67,9 +99,25 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     }
   }
 
+  void _onPickMedia(MediaResponseModel media) {
+    setState(() => _media.add(media));
+  }
+
+  void _onDeleteMedia(MediaResponseModel media) {
+    setState(() {
+      _media.removeWhere((e) => e.id == media.id);
+    });
+  }
+
   void _validateName(String name) {
     setState(() {
       _nameValid = name.length > 1;
+    });
+  }
+
+  void _validateLocation(String location) {
+    setState(() {
+      _locationValid = location.length > 1;
     });
   }
 
@@ -83,15 +131,21 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     setState(() => _errorTextName = error);
   }
 
+  void _switchErrorLocation({String? error}) {
+    setState(() => _errorTextLocation = error);
+  }
+
   void _switchErrorDescription({String? error}) {
     setState(() => _errorTextDescription = error);
   }
 
   void _createProject(BuildContext context) {
     _switchErrorName();
+    _switchErrorLocation();
     _switchErrorDescription();
 
     final String name = _controllerName.text.trim();
+    final String location = _controllerLocation.text.trim();
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
@@ -101,16 +155,25 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
       return _showErrorMessage(errorMessage: errorName);
     }
 
-    if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Project description is too short';
+    if (location.isEmpty || !_locationValid) {
+      const String errorLocation = 'Location is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorLocation(error: errorLocation);
+      return _showErrorMessage(errorMessage: errorLocation);
+    }
+
+    if (description.isEmpty || !_descriptionValid) {
+      const String errorDescription = 'Project description is too short';
+
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
     }
 
     context.read<ManageProjectBloc>().add(
           CreateProject(
+            media: _media,
             name: name,
+            location: location,
             description: description,
           ),
         );
@@ -118,9 +181,11 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
   void _updateProject(BuildContext context) {
     _switchErrorName();
+    _switchErrorLocation();
     _switchErrorDescription();
 
     final String name = _controllerName.text.trim();
+    final String location = _controllerLocation.text.trim();
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
@@ -130,17 +195,45 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
       return _showErrorMessage(errorMessage: errorName);
     }
 
-    if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Project description is too short';
+    if (location.isEmpty || !_locationValid) {
+      const String errorLocation = 'Location is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorLocation(error: errorLocation);
+      return _showErrorMessage(errorMessage: errorLocation);
     }
+
+    if (description.isEmpty || !_descriptionValid) {
+      const String errorDescription = 'Project description is too short';
+
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
+    }
+
+    final List<MediaModel>? media = widget.project!.info.media;
+
+    final List<MediaModel> savedMedia = getSavedMedia(
+      media: media,
+      localMedia: _media,
+    );
+
+    final List<MediaResponseModel> addedMedia = getAddedMedia(
+      media: media,
+      localMedia: _media,
+    );
+
+    final List<MediaModel> removedMedia = getRemovedMedia(
+      media: media,
+      localMedia: _media,
+    );
 
     context.read<ManageProjectBloc>().add(
           UpdateProject(
             id: widget.project!.id,
+            savedMedia: savedMedia,
+            addedMedia: addedMedia,
+            removedMedia: removedMedia,
             name: name,
+            location: location,
             description: description,
           ),
         );
@@ -161,105 +254,128 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
       create: (_) => ManageProjectBloc(
         authRepository: context.read<AuthRepository>(),
         projectsRepository: context.read<ProjectsRepository>(),
+        storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       ),
-      child: Scaffold(
-        body: BlocConsumer<ManageProjectBloc, ManageProjectState>(
-          listener: (_, state) {
-            if (state.status == BlocStatus.loading) {
-              _switchLoading(true);
-            }
+      child: BlocConsumer<ManageProjectBloc, ManageProjectState>(
+        listener: (_, state) {
+          if (state.status == BlocStatus.loading) {
+            _switchLoading(true);
+          }
 
-            if (state.status == BlocStatus.loaded) {
-              _switchLoading(false);
-            }
+          if (state.status == BlocStatus.loaded) {
+            _switchLoading(false);
+          }
 
-            if (state.status == BlocStatus.success) {
-              InAppNotificationService.show(
-                title: widget.project == null
-                    ? 'Project successfully created'
-                    : 'Project successfully updated',
-                type: InAppNotificationType.success,
-              );
+          if (state.status == BlocStatus.success) {
+            InAppNotificationService.show(
+              title: widget.project == null
+                  ? 'Project successfully created'
+                  : 'Project successfully updated',
+              type: InAppNotificationType.success,
+            );
 
-              widget.navigateToProjectsPage();
-            }
-          },
-          builder: (context, state) {
-            return ActionLoader(
-              isLoading: _isLoading,
-              child: PreviewLayout(
-                content: ListView(
-                  children: [
-                    Text(
-                      widget.project == null
-                          ? 'Add new project'
-                          : 'Edit project',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
+            widget.navigateToProjectsPage();
+          }
+        },
+        builder: (context, state) {
+          return ActionLoader(
+            isLoading: _isLoading,
+            child: PreviewLayout(
+              content: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 42.0,
+                ),
+                children: [
+                  Text(
+                    widget.project == null ? 'Add new project' : 'Edit project',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    widget.project == null
+                        ? 'Create your project'
+                        : 'Edit your project info',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
                     ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      widget.project == null
-                          ? 'Create your project'
-                          : 'Edit your project info',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28.0),
-                    BorderTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Project name',
-                      prefixIcon: AppIcons.user,
-                      errorText: _errorTextName,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(128),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    BorderTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Project description',
-                      prefixIcon: AppIcons.mail,
-                      errorText: _errorTextDescription,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(4096),
-                      ],
-                      onChanged: _validateDescription,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (widget.project == null) ...[
-                      CustomButton(
-                        text: 'Create project',
-                        onTap: () => _createProject(context),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateProject(context),
-                      ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28.0),
+                  MediaOrganizer(
+                    labelText: 'Upload images',
+                    maxLength: 4,
+                    media: _media,
+                    onPickMedia: _onPickMedia,
+                    onDeleteMedia: _onDeleteMedia,
+                  ),
+                  const SizedBox(height: 8.0),
+                  BorderTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Project name',
+                    errorText: _errorTextName,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(128),
                     ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Projects page',
-                      onTap: widget.navigateToProjectsPage,
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  BorderTextField(
+                    controller: _controllerLocation,
+                    labelText: 'Location',
+                    hintText: 'Project location',
+                    errorText: _errorTextLocation,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(512),
+                    ],
+                    onChanged: _validateLocation,
+                  ),
+                  const SizedBox(height: 16.0),
+                  BorderTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Description',
+                    hintText: 'Project description',
+                    errorText: _errorTextDescription,
+                    maxLines: 6,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1024),
+                    ],
+                    onChanged: _validateDescription,
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (widget.project == null) ...[
+                    CustomButton(
+                      text: 'Create project',
+                      onTap: () => _createProject(context),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateProject(context),
                     ),
                   ],
-                ),
-                preview: _ProjectPreview(
-                  name: _controllerName.text,
-                  description: _controllerDescription.text,
-                ),
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Projects page',
+                    onTap: widget.navigateToProjectsPage,
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+              preview: _ProjectPreview(
+                media: _media,
+                name: _controllerName.text,
+                location: _controllerLocation.text,
+                description: _controllerDescription.text,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -267,84 +383,86 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
 class _ProjectPreview extends StatelessWidget {
   const _ProjectPreview({
+    required this.media,
     required this.name,
+    required this.location,
     required this.description,
   });
 
+  final List<MediaResponseModel> media;
   final String name;
+  final String location;
   final String description;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 360.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 120.0,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                topRight: Radius.circular(8.0),
-              ),
-              gradient: AppColors.backgroundGradient,
-            ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 512.0,
+          height: 640.0,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 16.0,
           ),
-          Container(
-            height: 4.0,
-            color: AppColors.border,
+          decoration: BoxDecoration(
+            color: AppColors.scaffoldSecondary,
+            borderRadius: BorderRadius.circular(32.0),
           ),
-          Container(
-            height: 100.0,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-            ),
-            decoration: const BoxDecoration(
-              color: AppColors.scaffoldSecondary,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 60.0,
-                  height: 60.0,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(14.0),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    getFirstLetter(
-                      name.isNotEmpty ? name : 'Project Name',
+          child: ListView(
+            children: [
+              SizedBox(
+                height: 384.0,
+                child: Row(
+                  children: [
+                    _BannerItem(
+                      media: media,
                     ),
-                    style: AppTextStyles.subtitleMedium.copyWith(
-                      color: AppColors.scaffoldSecondary,
+                    const SizedBox(width: 12.0),
+                    Column(
+                      children: [
+                        _ImageItem(
+                          index: 1,
+                          media: media,
+                        ),
+                        const SizedBox(height: 8.0),
+                        _ImageItem(
+                          index: 2,
+                          media: media,
+                        ),
+                        const SizedBox(height: 8.0),
+                        _ImageItem(
+                          index: 3,
+                          media: media,
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 12.0),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              const SizedBox(height: 28.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name.isNotEmpty ? name : 'Project Name',
+                    style: AppTextStyles.subtitleSemiBold,
+                  ),
+                  Row(
                     children: [
-                      Flexible(
-                        child: Text(
-                          name.isNotEmpty ? name : 'Project Name',
-                          style: AppTextStyles.paragraphMRegular,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      SvgPicture.asset(
+                        AppIcons.location,
+                        width: 16.0,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.textPrimary,
+                          BlendMode.srcIn,
                         ),
                       ),
+                      const SizedBox(width: 6.0),
                       Flexible(
                         child: Text(
-                          description.isNotEmpty
-                              ? description
-                              : 'Project description',
+                          location.isNotEmpty ? location : 'location',
                           style: AppTextStyles.paragraphSRegular,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -352,11 +470,149 @@ class _ProjectPreview extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
-              ],
+                  const SizedBox(height: 18.0),
+                  Text(
+                    'Project details',
+                    style: AppTextStyles.paragraphMSemiBold,
+                  ),
+                  Text(
+                    description.isNotEmpty
+                        ? description
+                        : 'Ownership, Date of construction, etc..',
+                    style: AppTextStyles.paragraphSRegular,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BannerItem extends StatelessWidget {
+  const _BannerItem({
+    required this.media,
+  });
+
+  final List<MediaResponseModel> media;
+
+  @override
+  Widget build(BuildContext context) {
+    if (media.isNotEmpty) {
+      return Expanded(
+        child: FadeInAnimation(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(26.0),
+            child: media.first.dataUrl != null
+                ? CachedNetworkImageLoader(
+                    imageUrl: media.first.dataUrl!,
+                  )
+                : Image.memory(
+                    media.first.data!,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.border,
+          borderRadius: BorderRadius.circular(26.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              AppIcons.placeholder,
+              width: 64.0,
+              colorFilter: ColorFilter.mode(
+                AppColors.iconPrimary.withOpacity(0.4),
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              'Max file size: ${formatMediaSize(kFileWeightMax)}',
+              style: AppTextStyles.captionBold.copyWith(
+                color: AppColors.iconPrimary.withOpacity(0.6),
+              ),
+            ),
+            Text(
+              '.jpg .jpeg .png',
+              style: AppTextStyles.captionRegular.copyWith(
+                color: AppColors.iconPrimary.withOpacity(0.6),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageItem extends StatelessWidget {
+  const _ImageItem({
+    required this.index,
+    required this.media,
+  });
+
+  final int index;
+  final List<MediaResponseModel> media;
+
+  @override
+  Widget build(BuildContext context) {
+    if (media.length > index) {
+      return Expanded(
+        child: SizedBox(
+          width: 128.0,
+          height: 128.0,
+          child: FadeInAnimation(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(26.0),
+              child: media[index].dataUrl != null
+                  ? CachedNetworkImageLoader(
+                      imageUrl: media[index].dataUrl!,
+                    )
+                  : Image.memory(
+                      media[index].data!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
-        ],
+        ),
+      );
+    }
+
+    return Expanded(
+      child: Container(
+        width: 128.0,
+        height: 128.0,
+        decoration: BoxDecoration(
+          color: AppColors.border,
+          borderRadius: BorderRadius.circular(26.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              AppIcons.placeholder,
+              width: 42.0,
+              colorFilter: ColorFilter.mode(
+                AppColors.iconPrimary.withOpacity(0.4),
+                BlendMode.srcIn,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

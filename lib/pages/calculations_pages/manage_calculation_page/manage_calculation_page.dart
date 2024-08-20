@@ -102,10 +102,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Calculation description is too short';
+      const String errorDescription = 'Calculation description is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
     }
 
     context.read<ManageCalculationBloc>().add(
@@ -131,10 +131,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Calculation description is too short';
+      const String errorDescription = 'Calculation description is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
     }
 
     context.read<ManageCalculationBloc>().add(
@@ -163,103 +163,105 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         calculationsRepository: context.read<CalculationsRepository>(),
         usersRepository: context.read<UsersRepository>(),
       ),
-      child: Scaffold(
-        body: BlocConsumer<ManageCalculationBloc, ManageCalculationState>(
-          listener: (_, state) {
-            if (state.status == BlocStatus.loading) {
-              _switchLoading(true);
-            }
+      child: BlocConsumer<ManageCalculationBloc, ManageCalculationState>(
+        listener: (_, state) {
+          if (state.status == BlocStatus.loading) {
+            _switchLoading(true);
+          }
 
-            if (state.status == BlocStatus.loaded) {
-              _switchLoading(false);
-            }
+          if (state.status == BlocStatus.loaded) {
+            _switchLoading(false);
+          }
 
-            if (state.status == BlocStatus.success) {
-              InAppNotificationService.show(
-                title: widget.calculation == null
-                    ? 'Calculation successfully created'
-                    : 'Calculation successfully updated',
-                type: InAppNotificationType.success,
-              );
+          if (state.status == BlocStatus.success) {
+            InAppNotificationService.show(
+              title: widget.calculation == null
+                  ? 'Calculation successfully created'
+                  : 'Calculation successfully updated',
+              type: InAppNotificationType.success,
+            );
 
-              widget.navigateToCalculationsPage();
-            }
-          },
-          builder: (context, state) {
-            return ActionLoader(
-              isLoading: _isLoading,
-              child: PreviewLayout(
-                content: ListView(
-                  children: [
-                    Text(
-                      widget.calculation == null
-                          ? 'Add new calculation'
-                          : 'Edit calculation',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
+            widget.navigateToCalculationsPage();
+          }
+        },
+        builder: (context, state) {
+          return ActionLoader(
+            isLoading: _isLoading,
+            child: PreviewLayout(
+              content: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 42.0,
+                ),
+                children: [
+                  Text(
+                    widget.calculation == null
+                        ? 'Add new calculation'
+                        : 'Edit calculation',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    widget.calculation == null
+                        ? 'Create your calculation'
+                        : 'Edit your calculation info',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
                     ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      widget.calculation == null
-                          ? 'Create your calculation'
-                          : 'Edit your calculation info',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28.0),
-                    BorderTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Calculation name',
-                      prefixIcon: AppIcons.user,
-                      errorText: _errorTextName,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(128),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    BorderTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Calculation description',
-                      prefixIcon: AppIcons.mail,
-                      errorText: _errorTextDescription,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(4096),
-                      ],
-                      onChanged: _validateDescription,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (widget.calculation == null) ...[
-                      CustomButton(
-                        text: 'Create calculation',
-                        onTap: () => _createCalculation(context),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateCalculation(context),
-                      ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28.0),
+                  BorderTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Calculation name',
+                    prefixIcon: AppIcons.user,
+                    errorText: _errorTextName,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(128),
                     ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Calculations page',
-                      onTap: widget.navigateToCalculationsPage,
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  BorderTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Description',
+                    hintText: 'Calculation description',
+                    prefixIcon: AppIcons.mail,
+                    errorText: _errorTextDescription,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(128),
+                    ],
+                    onChanged: _validateDescription,
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (widget.calculation == null) ...[
+                    CustomButton(
+                      text: 'Create calculation',
+                      onTap: () => _createCalculation(context),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateCalculation(context),
                     ),
                   ],
-                ),
-                preview: _CalculationPreview(
-                  name: _controllerName.text,
-                  description: _controllerDescription.text,
-                ),
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Calculations page',
+                    onTap: widget.navigateToCalculationsPage,
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+              preview: _CalculationPreview(
+                name: _controllerName.text,
+                description: _controllerDescription.text,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

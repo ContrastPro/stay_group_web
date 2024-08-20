@@ -139,10 +139,10 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Company description is too short';
+      const String errorDescription = 'Company description is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
     }
 
     context.read<ManageCompanyBloc>().add(
@@ -169,15 +169,28 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorFormat = 'Company description is too short';
+      const String errorDescription = 'Company description is too short';
 
-      _switchErrorDescription(error: errorFormat);
-      return _showErrorMessage(errorMessage: errorFormat);
+      _switchErrorDescription(error: errorDescription);
+      return _showErrorMessage(errorMessage: errorDescription);
     }
 
-    final List<MediaModel> savedMedia = _getSavedMedia();
-    final List<MediaResponseModel> addedMedia = _getAddedMedia();
-    final List<MediaModel> removedMedia = _getRemovedMedia();
+    final List<MediaModel>? media = widget.company!.info.media;
+
+    final List<MediaModel> savedMedia = getSavedMedia(
+      media: media,
+      localMedia: _media,
+    );
+
+    final List<MediaResponseModel> addedMedia = getAddedMedia(
+      media: media,
+      localMedia: _media,
+    );
+
+    final List<MediaModel> removedMedia = getRemovedMedia(
+      media: media,
+      localMedia: _media,
+    );
 
     context.read<ManageCompanyBloc>().add(
           UpdateCompany(
@@ -189,62 +202,6 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
             description: description,
           ),
         );
-  }
-
-  List<MediaModel> _getSavedMedia() {
-    final List<MediaModel> savedMedia = [];
-
-    final CompanyInfoModel info = widget.company!.info;
-
-    if (info.media != null) {
-      for (int i = 0; i < info.media!.length; i++) {
-        final int index = _media.indexWhere((e) => e.id == info.media![i].id);
-
-        if (index != -1) {
-          savedMedia.add(info.media![i]);
-        }
-      }
-    }
-
-    return savedMedia;
-  }
-
-  List<MediaResponseModel> _getAddedMedia() {
-    final List<MediaResponseModel> addedMedia = [];
-
-    final CompanyInfoModel info = widget.company!.info;
-
-    if (info.media != null) {
-      for (int i = 0; i < _media.length; i++) {
-        final int index = info.media!.indexWhere((e) => e.id == _media[i].id);
-
-        if (index == -1) {
-          addedMedia.add(_media[i]);
-        }
-      }
-    } else {
-      addedMedia.addAll(_media);
-    }
-
-    return addedMedia;
-  }
-
-  List<MediaModel> _getRemovedMedia() {
-    final List<MediaModel> removedMedia = [];
-
-    final CompanyInfoModel info = widget.company!.info;
-
-    if (info.media != null) {
-      for (int i = 0; i < info.media!.length; i++) {
-        final int index = _media.indexWhere((e) => e.id == info.media![i].id);
-
-        if (index == -1) {
-          removedMedia.add(info.media![i]);
-        }
-      }
-    }
-
-    return removedMedia;
   }
 
   void _showErrorMessage({
@@ -265,112 +222,112 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
         storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       ),
-      child: Scaffold(
-        body: BlocConsumer<ManageCompanyBloc, ManageCompanyState>(
-          listener: (_, state) {
-            if (state.status == BlocStatus.loading) {
-              _switchLoading(true);
-            }
+      child: BlocConsumer<ManageCompanyBloc, ManageCompanyState>(
+        listener: (_, state) {
+          if (state.status == BlocStatus.loading) {
+            _switchLoading(true);
+          }
 
-            if (state.status == BlocStatus.loaded) {
-              _switchLoading(false);
-            }
+          if (state.status == BlocStatus.loaded) {
+            _switchLoading(false);
+          }
 
-            if (state.status == BlocStatus.success) {
-              InAppNotificationService.show(
-                title: widget.company == null
-                    ? 'Company successfully created'
-                    : 'Company successfully updated',
-                type: InAppNotificationType.success,
-              );
+          if (state.status == BlocStatus.success) {
+            InAppNotificationService.show(
+              title: widget.company == null
+                  ? 'Company successfully created'
+                  : 'Company successfully updated',
+              type: InAppNotificationType.success,
+            );
 
-              widget.navigateToDashboardPage();
-            }
-          },
-          builder: (context, state) {
-            return ActionLoader(
-              isLoading: _isLoading,
-              child: PreviewLayout(
-                content: ListView(
-                  children: [
-                    Text(
-                      widget.company == null
-                          ? 'Add new company'
-                          : 'Edit company',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
+            widget.navigateToDashboardPage();
+          }
+        },
+        builder: (context, state) {
+          return ActionLoader(
+            isLoading: _isLoading,
+            child: PreviewLayout(
+              content: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40.0,
+                  vertical: 42.0,
+                ),
+                children: [
+                  Text(
+                    widget.company == null ? 'Add new company' : 'Edit company',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    widget.company == null
+                        ? 'Create building company card'
+                        : 'Edit building company card',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
                     ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      widget.company == null
-                          ? 'Create building company card'
-                          : 'Edit building company card',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28.0),
-                    MediaOrganizer(
-                      labelText: 'Upload banner',
-                      maxLength: 1,
-                      media: _media,
-                      onPickMedia: _onPickMedia,
-                      onDeleteMedia: _onDeleteMedia,
-                    ),
-                    const SizedBox(height: 8.0),
-                    BorderTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Company name',
-                      errorText: _errorTextName,
-                      maxLines: 2,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    BorderTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Company description',
-                      errorText: _errorTextDescription,
-                      maxLines: 6,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(320),
-                      ],
-                      onChanged: _validateDescription,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (widget.company == null) ...[
-                      CustomButton(
-                        text: 'Create company',
-                        onTap: () => _createCompany(context),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateCompany(context),
-                      ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28.0),
+                  MediaOrganizer(
+                    labelText: 'Upload banner',
+                    maxLength: 1,
+                    media: _media,
+                    onPickMedia: _onPickMedia,
+                    onDeleteMedia: _onDeleteMedia,
+                  ),
+                  const SizedBox(height: 8.0),
+                  BorderTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Company name',
+                    errorText: _errorTextName,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(128),
                     ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Dashboard page',
-                      onTap: widget.navigateToDashboardPage,
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  BorderTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Description',
+                    hintText: 'Company description',
+                    errorText: _errorTextDescription,
+                    maxLines: 6,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1024),
+                    ],
+                    onChanged: _validateDescription,
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (widget.company == null) ...[
+                    CustomButton(
+                      text: 'Create company',
+                      onTap: () => _createCompany(context),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateCompany(context),
                     ),
                   ],
-                ),
-                preview: _CompanyPreview(
-                  media: _media,
-                  name: _controllerName.text,
-                  description: _controllerDescription.text,
-                ),
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Dashboard page',
+                    onTap: widget.navigateToDashboardPage,
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+              preview: _CompanyPreview(
+                media: _media,
+                name: _controllerName.text,
+                description: _controllerDescription.text,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -389,91 +346,101 @@ class _CompanyPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 512.0,
-      height: 360.0,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 16.0,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.scaffoldSecondary,
-        borderRadius: BorderRadius.circular(32.0),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 220.0,
-            height: double.infinity,
-            child: media.isNotEmpty
-                ? FadeInAnimation(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(26.0),
-                      child: media.first.dataUrl != null
-                          ? CachedNetworkImageLoader(
-                              imageUrl: media.first.dataUrl!,
-                            )
-                          : Image.memory(
-                              media.first.data!,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.cover,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 640.0,
+          height: 384.0,
+          padding: const EdgeInsets.symmetric(
+            vertical: 16.0,
+          ).copyWith(
+            left: 16.0,
+            right: 22.0,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.scaffoldSecondary,
+            borderRadius: BorderRadius.circular(32.0),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 256.0,
+                height: double.infinity,
+                child: media.isNotEmpty
+                    ? FadeInAnimation(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(26.0),
+                          child: media.first.dataUrl != null
+                              ? CachedNetworkImageLoader(
+                                  imageUrl: media.first.dataUrl!,
+                                )
+                              : Image.memory(
+                                  media.first.data!,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.border,
+                          borderRadius: BorderRadius.circular(26.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppIcons.placeholder,
+                              width: 64.0,
+                              colorFilter: ColorFilter.mode(
+                                AppColors.iconPrimary.withOpacity(0.4),
+                                BlendMode.srcIn,
+                              ),
                             ),
-                    ),
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.border,
-                      borderRadius: BorderRadius.circular(26.0),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          AppIcons.placeholder,
-                          width: 64.0,
-                          colorFilter: ColorFilter.mode(
-                            AppColors.iconPrimary.withOpacity(0.4),
-                            BlendMode.srcIn,
-                          ),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Max file size: ${formatMediaSize(kFileWeightMax)}',
+                              style: AppTextStyles.captionBold.copyWith(
+                                color: AppColors.iconPrimary.withOpacity(0.6),
+                              ),
+                            ),
+                            Text(
+                              '.jpg .jpeg .png',
+                              style: AppTextStyles.captionRegular.copyWith(
+                                color: AppColors.iconPrimary.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16.0),
-                        Text(
-                          'Max file size: ${formatMediaSize(kFileWeightMax)}',
-                          style: AppTextStyles.captionBold.copyWith(
-                            color: AppColors.iconPrimary.withOpacity(0.6),
-                          ),
-                        ),
-                        Text(
-                          '.jpg .jpeg .png',
-                          style: AppTextStyles.captionRegular.copyWith(
-                            color: AppColors.iconPrimary.withOpacity(0.6),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+              ),
+              const SizedBox(width: 28.0),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.only(
+                    right: 12.0,
                   ),
-          ),
-          const SizedBox(width: 28.0),
-          Expanded(
-            child: ListView(
-              children: [
-                const SizedBox(height: 16.0),
-                Text(
-                  name.isNotEmpty ? name : 'Company Name',
-                  style: AppTextStyles.paragraphLSemiBold,
+                  children: [
+                    const SizedBox(height: 16.0),
+                    Text(
+                      name.isNotEmpty ? name : 'Company Name',
+                      style: AppTextStyles.subtitleSemiBold,
+                    ),
+                    Text(
+                      description.isNotEmpty
+                          ? description
+                          : 'Ownership, Location, etc..',
+                      style: AppTextStyles.paragraphSRegular,
+                    ),
+                  ],
                 ),
-                Text(
-                  description.isNotEmpty
-                      ? description
-                      : 'Ownership, Location, etc..',
-                  style: AppTextStyles.paragraphSRegular,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
