@@ -40,10 +40,6 @@ class PreviewLayout extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 32.0,
-                  ),
                   decoration: BoxDecoration(
                     color: AppColors.iconPrimary.withOpacity(0.04),
                     borderRadius: const BorderRadius.only(

@@ -25,18 +25,21 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import '../../../widgets/uncategorized/media_organizer.dart';
+import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
 
 class ManageProjectPage extends StatefulWidget {
   const ManageProjectPage({
     super.key,
     this.project,
+    required this.navigateToMediaViewerPage,
     required this.navigateToProjectsPage,
   });
 
   static const routePath = '/projects_pages/manage_project';
 
   final ProjectModel? project;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToProjectsPage;
 
   @override
@@ -343,7 +346,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     errorText: _errorTextDescription,
                     maxLines: 6,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(1024),
+                      LengthLimitingTextInputFormatter(2048),
                     ],
                     onChanged: _validateDescription,
                   ),
@@ -372,6 +375,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                 name: _controllerName.text,
                 location: _controllerLocation.text,
                 description: _controllerDescription.text,
+                navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
               ),
             ),
           );
@@ -387,106 +391,119 @@ class _ProjectPreview extends StatelessWidget {
     required this.name,
     required this.location,
     required this.description,
+    required this.navigateToMediaViewerPage,
   });
 
   final List<MediaResponseModel> media;
   final String name;
   final String location;
   final String description;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: 512.0,
-          height: 640.0,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: 16.0,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.scaffoldSecondary,
-            borderRadius: BorderRadius.circular(32.0),
-          ),
-          child: ListView(
-            children: [
-              SizedBox(
-                height: 384.0,
-                child: Row(
-                  children: [
-                    _BannerItem(
-                      media: media,
-                    ),
-                    const SizedBox(width: 12.0),
-                    Column(
-                      children: [
-                        _ImageItem(
-                          index: 1,
-                          media: media,
-                        ),
-                        const SizedBox(height: 8.0),
-                        _ImageItem(
-                          index: 2,
-                          media: media,
-                        ),
-                        const SizedBox(height: 8.0),
-                        _ImageItem(
-                          index: 3,
-                          media: media,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name.isNotEmpty ? name : 'Project Name',
-                    style: AppTextStyles.subtitleSemiBold,
-                  ),
-                  Row(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 40.0,
+        vertical: 42.0,
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 512.0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 16.0,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.scaffoldSecondary,
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 384.0,
+                  child: Row(
                     children: [
-                      SvgPicture.asset(
-                        AppIcons.location,
-                        width: 16.0,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.textPrimary,
-                          BlendMode.srcIn,
-                        ),
+                      _BannerItem(
+                        media: media,
+                        navigateToMediaViewerPage: navigateToMediaViewerPage,
                       ),
-                      const SizedBox(width: 6.0),
-                      Flexible(
-                        child: Text(
-                          location.isNotEmpty ? location : 'location',
-                          style: AppTextStyles.paragraphSRegular,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      const SizedBox(width: 12.0),
+                      Column(
+                        children: [
+                          _ImageItem(
+                            index: 1,
+                            media: media,
+                            navigateToMediaViewerPage:
+                                navigateToMediaViewerPage,
+                          ),
+                          const SizedBox(height: 8.0),
+                          _ImageItem(
+                            index: 2,
+                            media: media,
+                            navigateToMediaViewerPage:
+                                navigateToMediaViewerPage,
+                          ),
+                          const SizedBox(height: 8.0),
+                          _ImageItem(
+                            index: 3,
+                            media: media,
+                            navigateToMediaViewerPage:
+                                navigateToMediaViewerPage,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18.0),
-                  Text(
-                    'Project details',
-                    style: AppTextStyles.paragraphMSemiBold,
-                  ),
-                  Text(
-                    description.isNotEmpty
-                        ? description
-                        : 'Ownership, Date of construction, etc..',
-                    style: AppTextStyles.paragraphSRegular,
-                  ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 28.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name.isNotEmpty ? name : 'Project Name',
+                      style: AppTextStyles.subtitleSemiBold,
+                    ),
+                    Row(
+                      children: [
+                        SvgPicture.asset(
+                          AppIcons.location,
+                          width: 16.0,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.textPrimary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(width: 6.0),
+                        Flexible(
+                          child: Text(
+                            location.isNotEmpty ? location : 'location',
+                            style: AppTextStyles.paragraphSRegular,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18.0),
+                    Text(
+                      'Project details',
+                      style: AppTextStyles.paragraphMSemiBold,
+                    ),
+                    Text(
+                      description.isNotEmpty
+                          ? description
+                          : 'Ownership, Date of construction, etc..',
+                      style: AppTextStyles.paragraphSRegular,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -494,27 +511,38 @@ class _ProjectPreview extends StatelessWidget {
 class _BannerItem extends StatelessWidget {
   const _BannerItem({
     required this.media,
+    required this.navigateToMediaViewerPage,
   });
 
   final List<MediaResponseModel> media;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
 
   @override
   Widget build(BuildContext context) {
     if (media.isNotEmpty) {
       return Expanded(
-        child: FadeInAnimation(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(26.0),
-            child: media.first.dataUrl != null
-                ? CachedNetworkImageLoader(
-                    imageUrl: media.first.dataUrl!,
-                  )
-                : Image.memory(
-                    media.first.data!,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+        child: GestureDetector(
+          onTap: () => navigateToMediaViewerPage(
+            MediaViewerPageArguments(
+              index: 0,
+              media: media,
+            ),
+          ),
+          behavior: HitTestBehavior.opaque,
+          child: FadeInAnimation(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(26.0),
+              child: media.first.dataUrl != null
+                  ? CachedNetworkImageLoader(
+                      imageUrl: media.first.dataUrl!,
+                    )
+                  : Image.memory(
+                      media.first.data!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+            ),
           ),
         ),
       );
@@ -561,31 +589,42 @@ class _ImageItem extends StatelessWidget {
   const _ImageItem({
     required this.index,
     required this.media,
+    required this.navigateToMediaViewerPage,
   });
 
   final int index;
   final List<MediaResponseModel> media;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
 
   @override
   Widget build(BuildContext context) {
     if (media.length > index) {
       return Expanded(
-        child: SizedBox(
-          width: 128.0,
-          height: 128.0,
-          child: FadeInAnimation(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(26.0),
-              child: media[index].dataUrl != null
-                  ? CachedNetworkImageLoader(
-                      imageUrl: media[index].dataUrl!,
-                    )
-                  : Image.memory(
-                      media[index].data!,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+        child: GestureDetector(
+          onTap: () => navigateToMediaViewerPage(
+            MediaViewerPageArguments(
+              index: index,
+              media: media,
+            ),
+          ),
+          behavior: HitTestBehavior.opaque,
+          child: SizedBox(
+            width: 128.0,
+            height: 128.0,
+            child: FadeInAnimation(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(26.0),
+                child: media[index].dataUrl != null
+                    ? CachedNetworkImageLoader(
+                        imageUrl: media[index].dataUrl!,
+                      )
+                    : Image.memory(
+                        media[index].data!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
           ),
         ),

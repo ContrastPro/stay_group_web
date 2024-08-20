@@ -5,15 +5,17 @@ class CachedNetworkImageLoader extends StatelessWidget {
   const CachedNetworkImageLoader({
     super.key,
     required this.imageUrl,
+    this.fit = BoxFit.cover,
   });
 
   final String imageUrl;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      fit: BoxFit.cover,
+      fit: fit,
       progressIndicatorBuilder: (_, __, progress) {
         return Stack(
           alignment: Alignment.center,

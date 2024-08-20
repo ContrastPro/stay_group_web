@@ -25,18 +25,21 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import '../../../widgets/uncategorized/media_organizer.dart';
+import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
 
 class ManageCompanyPage extends StatefulWidget {
   const ManageCompanyPage({
     super.key,
     this.company,
+    required this.navigateToMediaViewerPage,
     required this.navigateToDashboardPage,
   });
 
   static const routePath = '/dashboard_pages/manage_company';
 
   final CompanyModel? company;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToDashboardPage;
 
   @override
@@ -296,7 +299,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     errorText: _errorTextDescription,
                     maxLines: 6,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(1024),
+                      LengthLimitingTextInputFormatter(2048),
                     ],
                     onChanged: _validateDescription,
                   ),
@@ -324,6 +327,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                 media: _media,
                 name: _controllerName.text,
                 description: _controllerDescription.text,
+                navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
               ),
             ),
           );
@@ -338,11 +342,13 @@ class _CompanyPreview extends StatelessWidget {
     required this.media,
     required this.name,
     required this.description,
+    required this.navigateToMediaViewerPage,
   });
 
   final List<MediaResponseModel> media;
   final String name;
   final String description;
+  final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
 
   @override
   Widget build(BuildContext context) {
@@ -358,6 +364,10 @@ class _CompanyPreview extends StatelessWidget {
             left: 16.0,
             right: 22.0,
           ),
+          margin: const EdgeInsets.symmetric(
+            horizontal: 40.0,
+            vertical: 42.0,
+          ),
           decoration: BoxDecoration(
             color: AppColors.scaffoldSecondary,
             borderRadius: BorderRadius.circular(32.0),
@@ -369,18 +379,27 @@ class _CompanyPreview extends StatelessWidget {
                 height: double.infinity,
                 child: media.isNotEmpty
                     ? FadeInAnimation(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(26.0),
-                          child: media.first.dataUrl != null
-                              ? CachedNetworkImageLoader(
-                                  imageUrl: media.first.dataUrl!,
-                                )
-                              : Image.memory(
-                                  media.first.data!,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
+                        child: GestureDetector(
+                          onTap: () => navigateToMediaViewerPage(
+                            MediaViewerPageArguments(
+                              index: 0,
+                              media: media,
+                            ),
+                          ),
+                          behavior: HitTestBehavior.opaque,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(26.0),
+                            child: media.first.dataUrl != null
+                                ? CachedNetworkImageLoader(
+                                    imageUrl: media.first.dataUrl!,
+                                  )
+                                : Image.memory(
+                                    media.first.data!,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
                         ),
                       )
                     : Container(

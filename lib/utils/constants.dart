@@ -17,8 +17,8 @@ const Duration kDebugRequestDuration = Duration(milliseconds: 50);
 
 const Duration kProdRequestDuration = Duration(milliseconds: 1400);
 
-const Duration kAnimationDuration = Duration(milliseconds: 800);
+const Duration kAnimationDuration = Duration(milliseconds: 250);
 
 const Duration kFadeInDuration = Duration(milliseconds: 350);
 
-const Curve kCurveAnimations = Curves.easeInBack;
+const Curve kCurveAnimations = Curves.linear;

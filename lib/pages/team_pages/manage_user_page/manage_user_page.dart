@@ -322,9 +322,13 @@ class _UserPreview extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        SizedBox(
-          width: 384.0,
+        Container(
+          width: 448.0,
           height: 256.0,
+          margin: const EdgeInsets.symmetric(
+            horizontal: 40.0,
+            vertical: 42.0,
+          ),
           child: Column(
             children: [
               Container(

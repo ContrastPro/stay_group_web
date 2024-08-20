@@ -21,6 +21,7 @@ import '../pages/projects_pages/manage_project_page/manage_project_page.dart';
 import '../pages/projects_pages/projects_page/projects_page.dart';
 import '../pages/team_pages/manage_user_page/manage_user_page.dart';
 import '../pages/team_pages/team_page/team_page.dart';
+import '../pages/uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import '../pages/uncategorized_pages/splash_page/splash_page.dart';
 
 class AppRouter {
@@ -191,6 +192,14 @@ class AppRouter {
                   state: state,
                   child: ManageCompanyPage(
                     company: args,
+                    navigateToMediaViewerPage: (
+                      MediaViewerPageArguments extra,
+                    ) {
+                      context.push(
+                        MediaViewerPage.routePath,
+                        extra: extra,
+                      );
+                    },
                     navigateToDashboardPage: () => context.go(
                       DashboardPage.routePath,
                     ),
@@ -230,6 +239,14 @@ class AppRouter {
                   state: state,
                   child: ManageProjectPage(
                     project: args,
+                    navigateToMediaViewerPage: (
+                      MediaViewerPageArguments extra,
+                    ) {
+                      context.push(
+                        MediaViewerPage.routePath,
+                        extra: extra,
+                      );
+                    },
                     navigateToProjectsPage: () => context.go(
                       ProjectsPage.routePath,
                     ),
@@ -335,6 +352,28 @@ class AppRouter {
         ),
 
         // [END] Main pages
+
+        // [START] Uncategorized pages
+
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: MediaViewerPage.routePath,
+          pageBuilder: (context, state) {
+            final MediaViewerPageArguments args =
+                state.extra as MediaViewerPageArguments;
+
+            return _customTransition(
+              state: state,
+              child: MediaViewerPage(
+                index: args.index,
+                media: args.media,
+                navigateBack: context.pop,
+              ),
+            );
+          },
+        ),
+
+        // [END] Uncategorized pages
       ],
     );
   }
