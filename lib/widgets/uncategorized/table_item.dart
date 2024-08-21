@@ -44,6 +44,7 @@ class TableCellItem extends StatelessWidget {
     ),
     this.alignment = Alignment.centerLeft,
     this.title,
+    this.textAlign = TextAlign.center,
     this.maxLines = 2,
     this.child,
   }) : assert(title != null || child != null);
@@ -52,6 +53,7 @@ class TableCellItem extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final AlignmentGeometry alignment;
   final String? title;
+  final TextAlign textAlign;
   final int maxLines;
   final Widget? child;
 
@@ -66,7 +68,7 @@ class TableCellItem extends StatelessWidget {
             ? Text(
                 title!,
                 style: AppTextStyles.paragraphSMedium,
-                textAlign: TextAlign.center,
+                textAlign: textAlign,
                 maxLines: maxLines,
                 overflow: TextOverflow.ellipsis,
               )

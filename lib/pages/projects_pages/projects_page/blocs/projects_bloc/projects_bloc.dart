@@ -50,6 +50,10 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
 
       if (savedProjects != null) {
         projects.addAll(savedProjects.projects);
+
+        projects.sort(
+          (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+        );
       }
 
       emit(

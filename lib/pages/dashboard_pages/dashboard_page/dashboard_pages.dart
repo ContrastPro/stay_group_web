@@ -131,7 +131,7 @@ class _DashboardPageContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
                   TableCellItem(
-                    flex: 70,
+                    flex: 25,
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
                     ).copyWith(
@@ -139,6 +139,10 @@ class _DashboardPageContent extends StatelessWidget {
                       right: 4.0,
                     ),
                     title: 'Company Name',
+                  ),
+                  const TableCellItem(
+                    flex: 45,
+                    title: 'Description',
                   ),
                   const TableCellItem(
                     flex: 15,
@@ -160,7 +164,7 @@ class _DashboardPageContent extends StatelessWidget {
                       height: 68.0,
                       cells: [
                         TableCellItem(
-                          flex: 70,
+                          flex: 25,
                           padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                           ).copyWith(
@@ -168,7 +172,12 @@ class _DashboardPageContent extends StatelessWidget {
                             right: 4.0,
                           ),
                           title: state.companies[i].info.name,
-                          maxLines: 1,
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 45,
+                          title: state.companies[i].info.description,
+                          textAlign: TextAlign.start,
                         ),
                         TableCellItem(
                           flex: 15,

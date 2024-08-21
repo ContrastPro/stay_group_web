@@ -131,7 +131,7 @@ class _ProjectsPageContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
                   TableCellItem(
-                    flex: 70,
+                    flex: 25,
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
                     ).copyWith(
@@ -139,6 +139,14 @@ class _ProjectsPageContent extends StatelessWidget {
                       right: 4.0,
                     ),
                     title: 'Project Name',
+                  ),
+                  const TableCellItem(
+                    flex: 20,
+                    title: 'Location',
+                  ),
+                  const TableCellItem(
+                    flex: 25,
+                    title: 'Description',
                   ),
                   const TableCellItem(
                     flex: 15,
@@ -160,7 +168,7 @@ class _ProjectsPageContent extends StatelessWidget {
                       height: 68.0,
                       cells: [
                         TableCellItem(
-                          flex: 70,
+                          flex: 25,
                           padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                           ).copyWith(
@@ -168,7 +176,17 @@ class _ProjectsPageContent extends StatelessWidget {
                             right: 4.0,
                           ),
                           title: state.projects[i].info.name,
-                          maxLines: 1,
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 20,
+                          title: state.projects[i].info.location,
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 25,
+                          title: state.projects[i].info.description,
+                          textAlign: TextAlign.start,
                         ),
                         TableCellItem(
                           flex: 15,

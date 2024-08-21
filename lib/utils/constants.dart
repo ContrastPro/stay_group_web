@@ -4,6 +4,9 @@ enum BlocStatus { initial, loading, loaded, success, failed }
 
 enum DateDifference { seconds, minutes, days }
 
+// Min file weight 1 MB
+const int kFileWeightMin = 1048576;
+
 // Max file weight 10 MB
 const int kFileWeightMax = 10485760;
 

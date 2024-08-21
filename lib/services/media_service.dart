@@ -6,6 +6,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/medias/media_response_model.dart';
+import '../utils/constants.dart';
 import '../utils/helpers.dart';
 
 class MediaService {
@@ -25,12 +26,18 @@ class MediaService {
 
       final String id = uuid();
 
-      final Uint8List optimizedData = await compressQuality(
-        data: data,
-      );
+      final Uint8List optimizedData;
+
+      if (data.lengthInBytes < kFileWeightMin) {
+        optimizedData = data;
+      } else {
+        optimizedData = await compressQuality(
+          data: data,
+        );
+      }
 
       final Uint8List thumbnail = await compressQuality(
-        index: 6,
+        index: 4,
         data: data,
       );
 

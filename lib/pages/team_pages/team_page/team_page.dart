@@ -145,7 +145,7 @@ class _TeamPageContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
                   TableCellItem(
-                    flex: 20,
+                    flex: 25,
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
                     ).copyWith(
@@ -155,7 +155,7 @@ class _TeamPageContent extends StatelessWidget {
                     title: 'Customer Full Name',
                   ),
                   const TableCellItem(
-                    flex: 25,
+                    flex: 20,
                     title: 'Email',
                   ),
                   const TableCellItem(
@@ -188,7 +188,7 @@ class _TeamPageContent extends StatelessWidget {
                       height: 68.0,
                       cells: [
                         TableCellItem(
-                          flex: 20,
+                          flex: 25,
                           padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                           ).copyWith(
@@ -199,7 +199,7 @@ class _TeamPageContent extends StatelessWidget {
                           maxLines: 1,
                         ),
                         TableCellItem(
-                          flex: 25,
+                          flex: 20,
                           title: state.users[i].credential.email,
                           maxLines: 1,
                         ),

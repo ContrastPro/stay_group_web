@@ -17,7 +17,7 @@ import 'repositories/users_repository.dart';
 import 'resources/app_themes.dart';
 import 'routes/app_router.dart';
 
-// todo: delete
+// todo: delete later
 // staygroup.io@gmail.com
 // glebon0202@gmail.com
 

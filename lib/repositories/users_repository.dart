@@ -145,17 +145,34 @@ class UsersRepository {
   }
 
   Future<void> activateUser({
+    required bool archived,
+    required bool blocked,
     required String id,
     required String userId,
+    required String spaceId,
     required String email,
+    required UserRole role,
+    required String name,
+    required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(id);
 
-    await reference.update({
+    await reference.set({
+      'archived': archived,
+      'blocked': blocked,
+      'id': id,
       'userId': userId,
+      'spaceId': spaceId,
       'credential': {
         'email': email,
       },
+      'info': {
+        'role': role.value,
+        'name': name,
+      },
+      'metadata': {
+        'createdAt': createdAt,
+      }
     });
 
     _logger.log('Successful', name: 'activateUser');

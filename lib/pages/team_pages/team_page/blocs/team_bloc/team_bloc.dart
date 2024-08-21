@@ -37,6 +37,10 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       if (response != null) {
         users.addAll(response.users);
+
+        users.sort(
+          (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+        );
       }
 
       emit(

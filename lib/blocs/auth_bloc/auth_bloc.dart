@@ -113,9 +113,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
 
           await usersRepository.activateUser(
+            archived: userData.archived,
+            blocked: userData.blocked,
             id: userData.id,
             userId: credential!.user!.uid,
+            spaceId: userData.spaceId!,
             email: userData.credential.email,
+            role: userData.info.role,
+            name: userData.info.name,
+            createdAt: userData.metadata.createdAt,
           );
 
           emit(

@@ -50,6 +50,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       if (savedCompanies != null) {
         companies.addAll(savedCompanies.companies);
+
+        companies.sort(
+          (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+        );
       }
 
       emit(
