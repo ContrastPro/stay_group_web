@@ -29,7 +29,7 @@ class AccountSettingsPage extends StatelessWidget {
         authRepository: context.read<AuthRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const GetAccountInfo(),
+          const Init(),
         ),
       child: FlexibleLayout(
         state: state,
@@ -49,10 +49,10 @@ class AccountSettingsPage extends StatelessWidget {
                         style: AppTextStyles.paragraphMBold,
                       ),
                       Text(
-                        '${state.user!.info.name} - ${state.user!.info.role.value}',
+                        '${state.userData!.info.name} - ${state.userData!.info.role.value}',
                       ),
                       Text(
-                        state.user!.credential.email,
+                        state.userData!.credential.email,
                       ),
                       const SizedBox(height: 32.0),
                       Text(
@@ -60,7 +60,7 @@ class AccountSettingsPage extends StatelessWidget {
                         style: AppTextStyles.paragraphMBold,
                       ),
                       Text(
-                        '${state.user!.spaceId}',
+                        '${state.userData!.spaceId}',
                       ),
                       const SizedBox(height: 32.0),
                       SizedBox(

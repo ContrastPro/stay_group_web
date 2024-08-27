@@ -271,7 +271,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                           : AppIcons.visibilityOn,
                       errorText: _errorTextPassword,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
+                        LengthLimitingTextInputFormatter(32),
                       ],
                       onSuffixTap: _switchObscurePassword,
                       onChanged: _validatePassword,

@@ -24,7 +24,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     required this.storageRepository,
     required this.usersRepository,
   }) : super(const ProjectsState()) {
-    on<GetProjects>((event, emit) async {
+    on<Init>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,

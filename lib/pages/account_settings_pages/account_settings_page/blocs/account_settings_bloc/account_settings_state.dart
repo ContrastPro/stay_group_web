@@ -4,19 +4,19 @@ part of 'account_settings_bloc.dart';
 class AccountSettingsState {
   const AccountSettingsState({
     this.status = BlocStatus.initial,
-    this.user,
+    this.userData,
   });
 
   final BlocStatus status;
-  final UserModel? user;
+  final UserModel? userData;
 
   AccountSettingsState copyWith({
     BlocStatus? status,
-    UserModel? user,
+    UserModel? userData,
   }) {
     return AccountSettingsState(
       status: status ?? this.status,
-      user: user ?? this.user,
+      userData: userData ?? this.userData,
     );
   }
 }

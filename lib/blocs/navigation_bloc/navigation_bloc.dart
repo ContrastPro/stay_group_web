@@ -116,7 +116,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       emit(
         state.copyWith(
-          user: response,
+          userData: response,
           userSubscription: userChanges,
           spaceSubscription: spaceChanges,
           timerDueDate: timerDueDate,
@@ -194,7 +194,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         state.copyWith(
           status: NavigationStatus.tab,
           routePath: event.routePath,
-          user: state.user,
+          userData: state.userData,
           userSubscription: state.userSubscription,
           spaceSubscription: state.spaceSubscription,
           timerDueDate: state.timerDueDate,

@@ -24,7 +24,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     required this.storageRepository,
     required this.usersRepository,
   }) : super(const DashboardState()) {
-    on<GetCompanies>((event, emit) async {
+    on<Init>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,

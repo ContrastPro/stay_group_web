@@ -19,8 +19,9 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/tables/table_cell_item.dart';
+import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../../../widgets/uncategorized/table_item.dart';
 import 'blocs/calculations_bloc/calculations_bloc.dart';
 
 class CalculationsPage extends StatelessWidget {
@@ -43,7 +44,7 @@ class CalculationsPage extends StatelessWidget {
         calculationsRepository: context.read<CalculationsRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const GetCalculations(),
+          const Init(),
         ),
       child: FlexibleLayout(
         state: state,

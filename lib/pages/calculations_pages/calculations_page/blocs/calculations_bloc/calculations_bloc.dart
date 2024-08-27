@@ -22,7 +22,7 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
     required this.calculationsRepository,
     required this.usersRepository,
   }) : super(const CalculationsState()) {
-    on<GetCalculations>((event, emit) async {
+    on<Init>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,

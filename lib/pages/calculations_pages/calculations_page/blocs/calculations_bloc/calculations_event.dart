@@ -5,8 +5,8 @@ abstract class CalculationsEvent {
   const CalculationsEvent();
 }
 
-class GetCalculations extends CalculationsEvent {
-  const GetCalculations();
+class Init extends CalculationsEvent {
+  const Init();
 }
 
 class DeleteCalculation extends CalculationsEvent {

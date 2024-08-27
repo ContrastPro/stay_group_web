@@ -5,8 +5,8 @@ abstract class TeamEvent {
   const TeamEvent();
 }
 
-class GetUsers extends TeamEvent {
-  const GetUsers();
+class Init extends TeamEvent {
+  const Init();
 }
 
 class DeleteUser extends TeamEvent {

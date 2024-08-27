@@ -5,8 +5,8 @@ abstract class DashboardEvent {
   const DashboardEvent();
 }
 
-class GetCompanies extends DashboardEvent {
-  const GetCompanies();
+class Init extends DashboardEvent {
+  const Init();
 }
 
 class DeleteCompany extends DashboardEvent {

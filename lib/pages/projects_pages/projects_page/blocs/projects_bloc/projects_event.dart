@@ -5,8 +5,8 @@ abstract class ProjectsEvent {
   const ProjectsEvent();
 }
 
-class GetProjects extends ProjectsEvent {
-  const GetProjects();
+class Init extends ProjectsEvent {
+  const Init();
 }
 
 class DeleteProject extends ProjectsEvent {

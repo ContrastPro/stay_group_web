@@ -20,8 +20,9 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/tables/table_cell_item.dart';
+import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../../../widgets/uncategorized/table_item.dart';
 import 'blocs/projects_bloc/projects_bloc.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -45,7 +46,7 @@ class ProjectsPage extends StatelessWidget {
         storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const GetProjects(),
+          const Init(),
         ),
       child: FlexibleLayout(
         state: state,

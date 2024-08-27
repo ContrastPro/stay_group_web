@@ -63,7 +63,7 @@ class MainPage extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            body: state.user != null
+            body: state.userData != null
                 ? FadeInAnimation(
                     child: body,
                   )

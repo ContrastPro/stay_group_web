@@ -5,6 +5,10 @@ abstract class ManageCalculationEvent {
   const ManageCalculationEvent();
 }
 
+class Init extends ManageCalculationEvent {
+  const Init();
+}
+
 class CreateCalculation extends ManageCalculationEvent {
   const CreateCalculation({
     required this.name,

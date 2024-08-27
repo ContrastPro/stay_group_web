@@ -166,8 +166,10 @@ List<MediaModel> getRemovedMedia({
   return removedMedia;
 }
 
-Future<void> requestDelay() async {
+Future<void> requestDelay({
+  Duration? duration,
+}) async {
   await Future.delayed(
-    kDebugMode ? kDebugRequestDuration : kProdRequestDuration,
+    duration ?? (kDebugMode ? kDebugRequestDuration : kProdRequestDuration),
   );
 }

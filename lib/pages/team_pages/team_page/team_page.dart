@@ -18,8 +18,9 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/tables/table_cell_item.dart';
+import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../../../widgets/uncategorized/table_item.dart';
 import '../../../widgets/uncategorized/user_status.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
@@ -42,7 +43,7 @@ class TeamPage extends StatelessWidget {
         authRepository: context.read<AuthRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const GetUsers(),
+          const Init(),
         ),
       child: FlexibleLayout(
         state: state,

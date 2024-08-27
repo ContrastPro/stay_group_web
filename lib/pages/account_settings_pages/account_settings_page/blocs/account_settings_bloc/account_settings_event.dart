@@ -5,8 +5,8 @@ abstract class AccountSettingsEvent {
   const AccountSettingsEvent();
 }
 
-class GetAccountInfo extends AccountSettingsEvent {
-  const GetAccountInfo();
+class Init extends AccountSettingsEvent {
+  const Init();
 }
 
 class SignOut extends AccountSettingsEvent {

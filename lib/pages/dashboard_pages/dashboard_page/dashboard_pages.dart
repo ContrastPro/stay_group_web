@@ -20,8 +20,9 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/tables/table_cell_item.dart';
+import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../../../widgets/uncategorized/table_item.dart';
 import 'blocs/dashboard_bloc/dashboard_bloc.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -45,7 +46,7 @@ class DashboardPage extends StatelessWidget {
         storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const GetCompanies(),
+          const Init(),
         ),
       child: FlexibleLayout(
         state: state,

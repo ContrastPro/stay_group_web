@@ -18,7 +18,7 @@ class AccountSettingsBloc
     required this.authRepository,
     required this.usersRepository,
   }) : super(const AccountSettingsState()) {
-    on<GetAccountInfo>((event, emit) async {
+    on<Init>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,
@@ -43,7 +43,7 @@ class AccountSettingsBloc
         emit(
           state.copyWith(
             status: BlocStatus.success,
-            user: userData,
+            userData: userData,
           ),
         );
       } else {

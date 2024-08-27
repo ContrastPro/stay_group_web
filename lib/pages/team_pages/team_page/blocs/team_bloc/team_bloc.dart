@@ -18,7 +18,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     required this.authRepository,
     required this.usersRepository,
   }) : super(const TeamState()) {
-    on<GetUsers>((event, emit) async {
+    on<Init>((event, emit) async {
       emit(
         state.copyWith(
           status: BlocStatus.loading,
@@ -72,7 +72,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       if (response!.userId != null) {
         return add(
-          const GetUsers(),
+          const Init(),
         );
       }
 
