@@ -13,7 +13,7 @@ class MediaOrganizer extends StatelessWidget {
   const MediaOrganizer({
     super.key,
     required this.labelText,
-    this.maxLength = 5,
+    this.maxLength = 3,
     required this.media,
     required this.onPickMedia,
     required this.onDeleteMedia,

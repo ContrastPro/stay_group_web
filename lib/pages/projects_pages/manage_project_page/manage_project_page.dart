@@ -299,8 +299,8 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 8.0),
                   Text(
                     widget.project == null
-                        ? 'Create your project'
-                        : 'Edit your project info',
+                        ? 'Create project card'
+                        : 'Edit project card',
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -309,7 +309,6 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 28.0),
                   MediaOrganizer(
                     labelText: 'Upload images',
-                    maxLength: 4,
                     media: _media,
                     onPickMedia: _onPickMedia,
                     onDeleteMedia: _onDeleteMedia,
@@ -410,7 +409,7 @@ class _ProjectPreview extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 512.0,
+            width: 640.0,
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
               vertical: 16.0,
@@ -441,13 +440,6 @@ class _ProjectPreview extends StatelessWidget {
                           const SizedBox(height: 8.0),
                           _ImageItem(
                             index: 2,
-                            media: media,
-                            navigateToMediaViewerPage:
-                                navigateToMediaViewerPage,
-                          ),
-                          const SizedBox(height: 8.0),
-                          _ImageItem(
-                            index: 3,
                             media: media,
                             navigateToMediaViewerPage:
                                 navigateToMediaViewerPage,
@@ -609,7 +601,7 @@ class _ImageItem extends StatelessWidget {
           ),
           behavior: HitTestBehavior.opaque,
           child: SizedBox(
-            width: 128.0,
+            width: 220.0,
             height: 128.0,
             child: FadeInAnimation(
               child: ClipRRect(
@@ -633,7 +625,7 @@ class _ImageItem extends StatelessWidget {
 
     return Expanded(
       child: Container(
-        width: 128.0,
+        width: 220.0,
         height: 128.0,
         decoration: BoxDecoration(
           color: AppColors.border,

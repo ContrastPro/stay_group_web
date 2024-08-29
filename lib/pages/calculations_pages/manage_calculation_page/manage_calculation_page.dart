@@ -108,6 +108,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final pdf.TtfFont fontBold = await fontFromAssetBundle(
       'assets/fonts/Inter-Medium.ttf',
     );
+
     final pdf.TtfFont fontRegular = await fontFromAssetBundle(
       'assets/fonts/Inter-Regular.ttf',
     );
@@ -195,7 +196,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             pdf.Expanded(
               child: pdf.Image(
                 companyImage,
-                height: 260.0,
+                height: 256.0,
                 fit: pdf.BoxFit.cover,
               ),
             ),
@@ -266,45 +267,37 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       build: (pdf.Context context) {
         return [
           if (projectImages.isNotEmpty) ...[
-            pdf.Expanded(
-              child: pdf.Image(
-                projectImages[0],
-                height: 220.0,
-                fit: pdf.BoxFit.cover,
-              ),
-            ),
-            pdf.SizedBox(height: 6.0),
             pdf.Row(
               children: [
-                if (projectImages.length > 1) ...[
-                  pdf.Expanded(
-                    child: pdf.Image(
-                      projectImages[1],
-                      height: 120.0,
-                      fit: pdf.BoxFit.cover,
-                    ),
+                pdf.Expanded(
+                  child: pdf.Image(
+                    projectImages[0],
+                    height: 320.0,
+                    fit: pdf.BoxFit.cover,
                   ),
-                ],
-                if (projectImages.length > 2) ...[
-                  pdf.SizedBox(width: 6.0),
-                  pdf.Expanded(
-                    child: pdf.Image(
-                      projectImages[2],
-                      height: 120.0,
-                      fit: pdf.BoxFit.cover,
-                    ),
-                  ),
-                ],
-                if (projectImages.length > 3) ...[
-                  pdf.SizedBox(width: 6.0),
-                  pdf.Expanded(
-                    child: pdf.Image(
-                      projectImages[3],
-                      height: 120.0,
-                      fit: pdf.BoxFit.cover,
-                    ),
-                  ),
-                ],
+                ),
+                pdf.SizedBox(width: 8.0),
+                pdf.Column(
+                  children: [
+                    if (projectImages.length > 1) ...[
+                      pdf.Image(
+                        projectImages[1],
+                        width: 180.0,
+                        height: 156.0,
+                        fit: pdf.BoxFit.cover,
+                      ),
+                    ],
+                    if (projectImages.length > 2) ...[
+                      pdf.SizedBox(height: 8.0),
+                      pdf.Image(
+                        projectImages[2],
+                        width: 180.0,
+                        height: 156.0,
+                        fit: pdf.BoxFit.cover,
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
             pdf.SizedBox(height: 22.0),
@@ -326,13 +319,15 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           width: 14.0,
                         ),
                         pdf.SizedBox(width: 4.0),
-                        pdf.Text(
-                          _project!.info.location,
-                          style: styleSecondary,
+                        pdf.Flexible(
+                          child: pdf.Text(
+                            _project!.info.location,
+                            style: styleSecondary,
+                          ),
                         ),
                       ],
                     ),
-                    pdf.SizedBox(height: 12.0),
+                    pdf.SizedBox(height: 10.0),
                     ...descriptionParts,
                   ],
                 ),
@@ -346,9 +341,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                 child: pdf.Column(
                   crossAxisAlignment: pdf.CrossAxisAlignment.start,
                   children: [
+                    pdf.SizedBox(height: 2.0),
                     pdf.Text(
                       'Feature House',
-                      style: stylePrimary,
+                      style: stylePrimary.copyWith(
+                        fontSize: 14.0,
+                      ),
                     ),
                   ],
                 ),
@@ -407,36 +405,165 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     const SizedBox(height: 8.0),
                     Text(
                       widget.calculation == null
-                          ? 'Create your calculation'
-                          : 'Edit your calculation info',
+                          ? 'Create calculation for your clients'
+                          : 'Edit calculation info',
                       style: AppTextStyles.paragraphSRegular.copyWith(
                         color: AppColors.iconPrimary,
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    if (state.companies.isNotEmpty &&
+                        state.projects.isNotEmpty) ...[
+                      const SizedBox(height: 28.0),
+                      Text(
+                        'Info for clients',
+                        style: AppTextStyles.paragraphLMedium,
+                      ),
+                      if (state.companies.isNotEmpty) ...[
+                        const SizedBox(height: 16.0),
+                        AnimatedDropdown(
+                          enabled: state.companies.isNotEmpty,
+                          labelText: 'Company',
+                          hintText: 'Select company',
+                          values:
+                              state.companies.map((e) => e.info.name).toList(),
+                          onChanged: (String? name) => _onSelectCompany(
+                            name: name,
+                            companies: state.companies,
+                          ),
+                        ),
+                      ],
+                      if (state.projects.isNotEmpty) ...[
+                        const SizedBox(height: 16.0),
+                        AnimatedDropdown(
+                          enabled: state.projects.isNotEmpty,
+                          labelText: 'Project',
+                          hintText: 'Select project',
+                          values:
+                              state.projects.map((e) => e.info.name).toList(),
+                          onChanged: (String? name) => _onSelectProject(
+                            name: name,
+                            projects: state.projects,
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Section',
+                                hintText: 'Block or section',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(32),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Floor',
+                                hintText: 'Floor apartment',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(3),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Unit number',
+                                hintText: 'Enter number',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(32),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Unit type',
+                                hintText: 'Enter type',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(32),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Rooms',
+                                hintText: 'Number of rooms',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(3),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Bathrooms',
+                                hintText: 'Number of bathrooms',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(3),
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Living area',
+                                hintText: 'Enter area',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(8),
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d*'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16.0),
+                            Expanded(
+                              child: BorderTextField(
+                                labelText: 'Kitchen area',
+                                hintText: 'Enter area',
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(8),
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d*'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
                     const SizedBox(height: 28.0),
-                    AnimatedDropdown(
-                      hintText: 'Select company',
-                      values: state.companies.map((e) => e.info.name).toList(),
-                      onChanged: (String? name) => _onSelectCompany(
-                        name: name,
-                        companies: state.companies,
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    AnimatedDropdown(
-                      hintText: 'Select project',
-                      values: state.projects.map((e) => e.info.name).toList(),
-                      onChanged: (String? name) => _onSelectProject(
-                        name: name,
-                        projects: state.projects,
-                      ),
+                    Text(
+                      'Calculation data',
+                      style: AppTextStyles.paragraphLMedium,
                     ),
                     const SizedBox(height: 16.0),
                     BorderTextField(
                       controller: _controllerName,
                       labelText: 'Name',
-                      hintText: 'Project name',
+                      hintText: 'Calculation name',
                       errorText: _errorTextName,
                       maxLines: 2,
                       inputFormatters: [
