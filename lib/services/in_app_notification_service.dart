@@ -47,7 +47,7 @@ class InAppNotificationService {
                     children: [
                       Icon(
                         _notificationIcon(type),
-                        color: AppColors.scaffoldPrimary,
+                        color: AppColors.scaffoldSecondary,
                       ),
                       const SizedBox(width: 8.0),
                       Text(

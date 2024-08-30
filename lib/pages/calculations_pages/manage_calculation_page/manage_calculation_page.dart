@@ -91,16 +91,22 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     });
   }
 
-  Future<void> _printPdf() async {
+  Future<void> _printPdf(ManageCalculationState state) async {
     await Printing.layoutPdf(
       format: PdfPageFormat.a4,
       onLayout: (PdfPageFormat format) {
-        return _generatePdf(format);
+        return _generatePdf(
+          format: format,
+          state: state,
+        );
       },
     );
   }
 
-  Future<Uint8List> _generatePdf(PdfPageFormat format) async {
+  Future<Uint8List> _generatePdf({
+    required PdfPageFormat format,
+    required ManageCalculationState state,
+  }) async {
     _switchLoading(true);
 
     final pdf.Document document = pdf.Document();
@@ -125,19 +131,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       color: const PdfColor.fromInt(0xFF344051),
     );
 
-    if (_company != null) {
-      final pdf.MultiPage companyInfo = await _getCompanyInfo(
-        format: format,
-        stylePrimary: stylePrimary,
-        styleSecondary: styleSecondary,
-      );
-
-      document.addPage(companyInfo);
-    }
-
     if (_project != null) {
-      final pdf.MultiPage projectInfo = await _getProjectInfo(
+      final pdf.Page projectInfo = await _getProjectInfo(
         format: format,
+        state: state,
         stylePrimary: stylePrimary,
         styleSecondary: styleSecondary,
       );
@@ -153,77 +150,15 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   //todo: 1
-  Future<pdf.MultiPage> _getCompanyInfo({
+  Future<pdf.Page> _getProjectInfo({
     required PdfPageFormat format,
+    required ManageCalculationState state,
     required pdf.TextStyle stylePrimary,
     required pdf.TextStyle styleSecondary,
   }) async {
-    pdf.ImageProvider? companyImage;
+    const PdfColor scaffoldSecondary = PdfColor.fromInt(0xFFFCFEFF);
+    const PdfColor iconPrimary = PdfColor.fromInt(0xFF637083);
 
-    if (_company!.info.media != null) {
-      companyImage = await networkImage(
-        _company!.info.media!.first.data,
-      );
-    }
-
-    final List<String> description = _company!.info.description.split('\n');
-
-    final List<pdf.Widget> descriptionParts = [];
-
-    for (int i = 0; i < description.length; i++) {
-      final String value;
-
-      if (i == description.length - 1) {
-        value = description[i];
-      } else {
-        value = '${description[i]}\n';
-      }
-
-      descriptionParts.add(
-        pdf.Text(value, style: styleSecondary),
-      );
-    }
-
-    return pdf.MultiPage(
-      pageFormat: format,
-      margin: const pdf.EdgeInsets.symmetric(
-        horizontal: 42.0,
-        vertical: 72.0,
-      ),
-      build: (pdf.Context context) {
-        return [
-          if (companyImage != null) ...[
-            pdf.Expanded(
-              child: pdf.Image(
-                companyImage,
-                height: 256.0,
-                fit: pdf.BoxFit.cover,
-              ),
-            ),
-            pdf.SizedBox(height: 22.0),
-          ],
-          pdf.Column(
-            crossAxisAlignment: pdf.CrossAxisAlignment.start,
-            children: [
-              pdf.Text(
-                _company!.info.name,
-                style: stylePrimary,
-              ),
-              pdf.SizedBox(height: 8.0),
-              ...descriptionParts,
-            ],
-          )
-        ];
-      },
-    );
-  }
-
-  //todo: 2
-  Future<pdf.MultiPage> _getProjectInfo({
-    required PdfPageFormat format,
-    required pdf.TextStyle stylePrimary,
-    required pdf.TextStyle styleSecondary,
-  }) async {
     final List<pdf.ImageProvider> projectImages = [];
 
     if (_project!.info.media != null) {
@@ -236,124 +171,202 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       }
     }
 
-    final List<String> description = _project!.info.description.split('\n');
-
-    final List<pdf.Widget> descriptionParts = [];
-
-    for (int i = 0; i < description.length; i++) {
-      final String value;
-
-      if (i == description.length - 1) {
-        value = description[i];
-      } else {
-        value = '${description[i]}\n';
-      }
-
-      descriptionParts.add(
-        pdf.Text(value, style: styleSecondary),
-      );
-    }
-
     final pdf.ImageProvider imageLocation = await imageFromAssetBundle(
       AppImages.location,
     );
 
-    return pdf.MultiPage(
+    return pdf.Page(
       pageFormat: format,
       margin: const pdf.EdgeInsets.symmetric(
         horizontal: 42.0,
         vertical: 72.0,
       ),
       build: (pdf.Context context) {
-        return [
-          if (projectImages.isNotEmpty) ...[
-            pdf.Row(
-              children: [
-                pdf.Expanded(
-                  child: pdf.Image(
-                    projectImages[0],
-                    height: 320.0,
-                    fit: pdf.BoxFit.cover,
-                  ),
-                ),
-                pdf.SizedBox(width: 8.0),
-                pdf.Column(
-                  children: [
-                    if (projectImages.length > 1) ...[
-                      pdf.Image(
-                        projectImages[1],
-                        width: 180.0,
-                        height: 156.0,
-                        fit: pdf.BoxFit.cover,
-                      ),
-                    ],
-                    if (projectImages.length > 2) ...[
-                      pdf.SizedBox(height: 8.0),
-                      pdf.Image(
-                        projectImages[2],
-                        width: 180.0,
-                        height: 156.0,
-                        fit: pdf.BoxFit.cover,
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-            pdf.SizedBox(height: 22.0),
-          ],
-          pdf.Partitions(
-            children: [
-              pdf.Partition(
-                child: pdf.Column(
-                  crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                  children: [
-                    pdf.Text(
-                      _project!.info.name,
-                      style: stylePrimary,
-                    ),
-                    pdf.Row(
-                      children: [
-                        pdf.Image(
-                          imageLocation,
-                          width: 14.0,
-                        ),
-                        pdf.SizedBox(width: 4.0),
-                        pdf.Flexible(
-                          child: pdf.Text(
-                            _project!.info.location,
-                            style: styleSecondary,
+        return pdf.Column(
+          children: [
+            pdf.Container(
+              width: double.infinity,
+              height: 72.0,
+              padding: const pdf.EdgeInsets.symmetric(
+                horizontal: 22.0,
+              ),
+              color: iconPrimary,
+              child: pdf.Row(
+                children: [
+                  if (state.spaceData != null) ...[
+                    pdf.Expanded(
+                      child: pdf.Column(
+                        mainAxisAlignment: pdf.MainAxisAlignment.center,
+                        crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                        children: [
+                          pdf.Text(
+                            state.spaceData!.info.name,
+                            style: stylePrimary.copyWith(
+                              color: scaffoldSecondary,
+                            ),
+                            maxLines: 2,
                           ),
+                        ],
+                      ),
+                    ),
+                    pdf.Expanded(
+                      child: pdf.Column(
+                        mainAxisAlignment: pdf.MainAxisAlignment.center,
+                        crossAxisAlignment: pdf.CrossAxisAlignment.end,
+                        children: [
+                          pdf.Text(
+                            state.userData!.info.name,
+                            style: stylePrimary.copyWith(
+                              color: scaffoldSecondary,
+                            ),
+                            maxLines: 2,
+                          ),
+                          pdf.Text(
+                            state.userData!.credential.email,
+                            style: styleSecondary.copyWith(
+                              color: scaffoldSecondary,
+                            ),
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    pdf.Column(
+                      mainAxisAlignment: pdf.MainAxisAlignment.center,
+                      crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                      children: [
+                        pdf.Text(
+                          state.userData!.info.name,
+                          style: stylePrimary.copyWith(
+                            color: scaffoldSecondary,
+                          ),
+                          maxLines: 1,
+                        ),
+                        pdf.Text(
+                          state.userData!.credential.email,
+                          style: styleSecondary.copyWith(
+                            color: scaffoldSecondary,
+                          ),
+                          maxLines: 1,
                         ),
                       ],
                     ),
-                    pdf.SizedBox(height: 10.0),
-                    ...descriptionParts,
                   ],
-                ),
+                ],
               ),
-              pdf.Partition(
-                width: 42.0,
-                child: pdf.SizedBox.shrink(),
+            ),
+            pdf.Expanded(
+              child: pdf.Column(
+                crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                children: [
+                  pdf.SizedBox(height: 8.0),
+                  if (projectImages.isNotEmpty) ...[
+                    pdf.Row(
+                      children: [
+                        pdf.Expanded(
+                          child: pdf.Image(
+                            projectImages[0],
+                            height: 256.0,
+                            fit: pdf.BoxFit.cover,
+                          ),
+                        ),
+                        pdf.SizedBox(width: 8.0),
+                        pdf.Column(
+                          children: [
+                            if (projectImages.length > 1) ...[
+                              pdf.Image(
+                                projectImages[1],
+                                width: 180.0,
+                                height: 124.0,
+                                fit: pdf.BoxFit.cover,
+                              ),
+                            ],
+                            if (projectImages.length > 2) ...[
+                              pdf.SizedBox(height: 8.0),
+                              pdf.Image(
+                                projectImages[2],
+                                width: 180.0,
+                                height: 124.0,
+                                fit: pdf.BoxFit.cover,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                    pdf.SizedBox(height: 16.0),
+                  ],
+                  pdf.Text(
+                    _project!.info.name,
+                    style: stylePrimary,
+                    maxLines: 1,
+                  ),
+                  pdf.Row(
+                    children: [
+                      pdf.Image(
+                        imageLocation,
+                        width: 14.0,
+                      ),
+                      pdf.SizedBox(width: 4.0),
+                      pdf.Text(
+                        _project!.info.location,
+                        style: styleSecondary,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                  pdf.SizedBox(height: 10.0),
+                  pdf.Text(
+                    _project!.info.description,
+                    style: styleSecondary,
+                    maxLines: 7,
+                  ),
+                ],
               ),
-              pdf.Partition(
-                width: 180.0,
-                child: pdf.Column(
-                  crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                  children: [
-                    pdf.SizedBox(height: 2.0),
+            ),
+            pdf.Container(
+              width: double.infinity,
+              height: 72.0,
+              padding: const pdf.EdgeInsets.symmetric(
+                horizontal: 22.0,
+              ),
+              color: iconPrimary,
+              child: pdf.Column(
+                mainAxisAlignment: pdf.MainAxisAlignment.center,
+                crossAxisAlignment: pdf.CrossAxisAlignment.start,
+                children: [
+                  if (_company != null) ...[
                     pdf.Text(
-                      'Feature House',
+                      'About company',
                       style: stylePrimary.copyWith(
-                        fontSize: 14.0,
+                        fontSize: 10.0,
+                        color: scaffoldSecondary,
+                      ),
+                    ),
+                    pdf.SizedBox(height: 1.5),
+                    pdf.Text(
+                      '${_company!.info.name}. ${_company!.info.description}',
+                      style: styleSecondary.copyWith(
+                        fontSize: 8.0,
+                        color: scaffoldSecondary,
+                      ),
+                      maxLines: 3,
+                    ),
+                  ] else ...[
+                    pdf.Text(
+                      'www.staygroup.space',
+                      style: stylePrimary.copyWith(
+                        fontSize: 10.0,
+                        color: scaffoldSecondary,
                       ),
                     ),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
-        ];
+            ),
+          ],
+        );
       },
     );
   }
@@ -412,15 +425,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (state.companies.isNotEmpty &&
-                        state.projects.isNotEmpty) ...[
+                    if (state.projects.isNotEmpty) ...[
                       const SizedBox(height: 28.0),
                       Text(
                         'Info for clients',
                         style: AppTextStyles.paragraphLMedium,
                       ),
+                      const SizedBox(height: 16.0),
                       if (state.companies.isNotEmpty) ...[
-                        const SizedBox(height: 16.0),
                         AnimatedDropdown(
                           enabled: state.companies.isNotEmpty,
                           labelText: 'Company',
@@ -432,127 +444,123 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             companies: state.companies,
                           ),
                         ),
-                      ],
-                      if (state.projects.isNotEmpty) ...[
                         const SizedBox(height: 16.0),
-                        AnimatedDropdown(
-                          enabled: state.projects.isNotEmpty,
-                          labelText: 'Project',
-                          hintText: 'Select project',
-                          values:
-                              state.projects.map((e) => e.info.name).toList(),
-                          onChanged: (String? name) => _onSelectProject(
-                            name: name,
-                            projects: state.projects,
+                      ],
+                      AnimatedDropdown(
+                        enabled: state.projects.isNotEmpty,
+                        labelText: 'Project',
+                        hintText: 'Select project',
+                        values: state.projects.map((e) => e.info.name).toList(),
+                        onChanged: (String? name) => _onSelectProject(
+                          name: name,
+                          projects: state.projects,
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Section',
+                              hintText: 'Block or section',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(32),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Section',
-                                hintText: 'Block or section',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(32),
-                                ],
-                              ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Floor',
+                              hintText: 'Floor apartment',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(3),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Floor',
-                                hintText: 'Floor apartment',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(3),
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                              ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Unit number',
+                              hintText: 'Enter number',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(32),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Unit number',
-                                hintText: 'Enter number',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(32),
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                              ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Unit type',
+                              hintText: 'Enter type',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(32),
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Unit type',
-                                hintText: 'Enter type',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(32),
-                                ],
-                              ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Rooms',
+                              hintText: 'Number of rooms',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(3),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Rooms',
-                                hintText: 'Number of rooms',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(3),
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                              ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Bathrooms',
+                              hintText: 'Number of bathrooms',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(3),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Bathrooms',
-                                hintText: 'Number of bathrooms',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(3),
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                              ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Total area',
+                              hintText: 'Enter area',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(8),
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+\.?\d*'),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Living area',
-                                hintText: 'Enter area',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(8),
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(r'^\d+\.?\d*'),
-                                  ),
-                                ],
-                              ),
+                          ),
+                          const SizedBox(width: 16.0),
+                          Expanded(
+                            child: BorderTextField(
+                              labelText: 'Living area',
+                              hintText: 'Enter area',
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(8),
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+\.?\d*'),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: BorderTextField(
-                                labelText: 'Kitchen area',
-                                hintText: 'Enter area',
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(8),
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(r'^\d+\.?\d*'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ],
                     const SizedBox(height: 28.0),
                     Text(
@@ -575,12 +583,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     if (widget.calculation == null) ...[
                       CustomButton(
                         text: 'Create calculation',
-                        onTap: _printPdf,
+                        onTap: () => _printPdf(state),
                       ),
                     ] else ...[
                       CustomButton(
                         text: 'Save changes',
-                        onTap: _printPdf,
+                        onTap: () => _printPdf(state),
                       ),
                     ],
                     const SizedBox(height: 12.0),

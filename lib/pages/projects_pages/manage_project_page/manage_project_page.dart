@@ -333,7 +333,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     errorText: _errorTextLocation,
                     maxLines: 2,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(256),
+                      LengthLimitingTextInputFormatter(128),
                     ],
                     onChanged: _validateLocation,
                   ),
@@ -345,7 +345,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     errorText: _errorTextDescription,
                     maxLines: 6,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(1024),
+                      LengthLimitingTextInputFormatter(640),
                     ],
                     onChanged: _validateDescription,
                   ),

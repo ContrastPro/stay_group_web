@@ -42,6 +42,16 @@ class ManageCalculationBloc
           ? response.userId!
           : response.spaceId!;
 
+      final UserModel? spaceData;
+
+      if (response.info.role == UserRole.manager) {
+        spaceData = null;
+      } else {
+        spaceData = await usersRepository.getUserById(
+          userId: spaceId,
+        );
+      }
+
       final List<CompanyModel> companies = [];
       final List<ProjectModel> projects = [];
 
@@ -77,6 +87,7 @@ class ManageCalculationBloc
         state.copyWith(
           status: BlocStatus.success,
           userData: response,
+          spaceData: spaceData,
           companies: companies,
           projects: projects,
         ),

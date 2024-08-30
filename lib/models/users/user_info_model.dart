@@ -1,7 +1,7 @@
 import '../medias/media_model.dart';
 
 enum UserRole {
-  admin('root_admin'),
+  //admin('root_admin'),
   manager('client_manager'),
   worker('client_worker');
 

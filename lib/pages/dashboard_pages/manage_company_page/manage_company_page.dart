@@ -299,7 +299,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     errorText: _errorTextDescription,
                     maxLines: 6,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(1024),
+                      LengthLimitingTextInputFormatter(320),
                     ],
                     onChanged: _validateDescription,
                   ),
