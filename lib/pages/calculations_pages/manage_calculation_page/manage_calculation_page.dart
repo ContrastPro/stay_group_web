@@ -44,6 +44,14 @@ class ManageCalculationPage extends StatefulWidget {
 }
 
 class _ManageCalculationPageState extends State<ManageCalculationPage> {
+  final TextEditingController _controllerSection = TextEditingController();
+  final TextEditingController _controllerFloor = TextEditingController();
+  final TextEditingController _controllerNumber = TextEditingController();
+  final TextEditingController _controllerType = TextEditingController();
+  final TextEditingController _controllerRooms = TextEditingController();
+  final TextEditingController _controllerBathrooms = TextEditingController();
+  final TextEditingController _controllerTotal = TextEditingController();
+  final TextEditingController _controllerLiving = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
 
   bool _isLoading = false;
@@ -158,6 +166,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }) async {
     const PdfColor scaffoldSecondary = PdfColor.fromInt(0xFFFCFEFF);
     const PdfColor iconPrimary = PdfColor.fromInt(0xFF637083);
+    final pdf.ImageProvider imageLocation = await imageFromAssetBundle(
+      AppImages.location,
+    );
 
     final List<pdf.ImageProvider> projectImages = [];
 
@@ -171,9 +182,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       }
     }
 
-    final pdf.ImageProvider imageLocation = await imageFromAssetBundle(
-      AppImages.location,
-    );
+    final String section = _controllerSection.text.trim();
+    final String floor = _controllerFloor.text.trim();
+    final String number = _controllerNumber.text.trim();
+    final String type = _controllerType.text.trim();
+    final String rooms = _controllerRooms.text.trim();
+    final String bathrooms = _controllerBathrooms.text.trim();
+    final String total = _controllerTotal.text.trim();
+    final String living = _controllerLiving.text.trim();
 
     return pdf.Page(
       pageFormat: format,
@@ -241,7 +257,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           style: stylePrimary.copyWith(
                             color: scaffoldSecondary,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                         ),
                         pdf.Text(
                           state.userData!.credential.email,
@@ -322,6 +338,78 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     style: styleSecondary,
                     maxLines: 7,
                   ),
+                  pdf.SizedBox(height: 22.0),
+                  pdf.Expanded(
+                    child: pdf.GridView(
+                      crossAxisCount: 4,
+                      children: [
+                        if (section.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Section',
+                            data: section,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (floor.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Floor',
+                            data: floor,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (number.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Unit number',
+                            data: number,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (type.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Unit type',
+                            data: type,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (rooms.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Rooms',
+                            data: rooms,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (bathrooms.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Bathrooms',
+                            data: bathrooms,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (total.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Total area',
+                            data: total,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                        if (living.isNotEmpty) ...[
+                          _getProjectFeatureItem(
+                            title: 'Living area',
+                            data: living,
+                            stylePrimary: stylePrimary,
+                            styleSecondary: styleSecondary,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -368,6 +456,37 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           ],
         );
       },
+    );
+  }
+
+  pdf.Padding _getProjectFeatureItem({
+    required String title,
+    required String data,
+    required pdf.TextStyle stylePrimary,
+    required pdf.TextStyle styleSecondary,
+  }) {
+    return pdf.Padding(
+      padding: const pdf.EdgeInsets.only(
+        right: 16.0,
+      ),
+      child: pdf.Column(
+        crossAxisAlignment: pdf.CrossAxisAlignment.start,
+        children: [
+          pdf.Text(
+            title,
+            style: stylePrimary.copyWith(
+              fontSize: 10.0,
+            ),
+          ),
+          pdf.Text(
+            data,
+            style: styleSecondary.copyWith(
+              fontSize: 8.0,
+            ),
+            maxLines: 2,
+          ),
+        ],
+      ),
     );
   }
 
@@ -461,6 +580,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         children: [
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerSection,
                               labelText: 'Section',
                               hintText: 'Block or section',
                               inputFormatters: [
@@ -471,6 +591,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           const SizedBox(width: 16.0),
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerFloor,
                               labelText: 'Floor',
                               hintText: 'Floor apartment',
                               inputFormatters: [
@@ -486,6 +607,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         children: [
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerNumber,
                               labelText: 'Unit number',
                               hintText: 'Enter number',
                               inputFormatters: [
@@ -496,6 +618,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           const SizedBox(width: 16.0),
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerType,
                               labelText: 'Unit type',
                               hintText: 'Enter type',
                               inputFormatters: [
@@ -510,6 +633,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         children: [
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerRooms,
                               labelText: 'Rooms',
                               hintText: 'Number of rooms',
                               inputFormatters: [
@@ -521,6 +645,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           const SizedBox(width: 16.0),
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerBathrooms,
                               labelText: 'Bathrooms',
                               hintText: 'Number of bathrooms',
                               inputFormatters: [
@@ -536,6 +661,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         children: [
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerTotal,
                               labelText: 'Total area',
                               hintText: 'Enter area',
                               inputFormatters: [
@@ -549,6 +675,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           const SizedBox(width: 16.0),
                           Expanded(
                             child: BorderTextField(
+                              controller: _controllerLiving,
                               labelText: 'Living area',
                               hintText: 'Enter area',
                               inputFormatters: [
