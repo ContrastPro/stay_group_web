@@ -186,6 +186,7 @@ class _TeamPageContent extends StatelessWidget {
                   itemCount: state.users.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      addBorder: i != state.users.length - 1,
                       height: 68.0,
                       cells: [
                         TableCellItem(

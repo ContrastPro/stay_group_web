@@ -321,7 +321,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     errorText: _errorTextName,
                     maxLines: 2,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(128),
+                      LengthLimitingTextInputFormatter(64),
                     ],
                     onChanged: _validateName,
                   ),
@@ -333,7 +333,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     errorText: _errorTextLocation,
                     maxLines: 2,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(128),
+                      LengthLimitingTextInputFormatter(64),
                     ],
                     onChanged: _validateLocation,
                   ),
@@ -456,6 +456,7 @@ class _ProjectPreview extends StatelessWidget {
                     Text(
                       name.isNotEmpty ? name : 'Project Name',
                       style: AppTextStyles.subtitleSemiBold,
+                      maxLines: 2,
                     ),
                     Row(
                       children: [

@@ -162,6 +162,7 @@ class _DashboardPageContent extends StatelessWidget {
                   itemCount: state.companies.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      addBorder: i != state.companies.length - 1,
                       height: 68.0,
                       cells: [
                         TableCellItem(

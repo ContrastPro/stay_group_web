@@ -241,7 +241,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     prefixIcon: AppIcons.user,
                     errorText: _errorTextName,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(128),
+                      LengthLimitingTextInputFormatter(64),
                     ],
                     onChanged: _validateName,
                   ),

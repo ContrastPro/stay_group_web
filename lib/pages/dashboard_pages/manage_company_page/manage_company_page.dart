@@ -287,7 +287,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     errorText: _errorTextName,
                     maxLines: 2,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(128),
+                      LengthLimitingTextInputFormatter(64),
                     ],
                     onChanged: _validateName,
                   ),
@@ -299,7 +299,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     errorText: _errorTextDescription,
                     maxLines: 6,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(320),
+                      LengthLimitingTextInputFormatter(256),
                     ],
                     onChanged: _validateDescription,
                   ),
@@ -446,6 +446,7 @@ class _CompanyPreview extends StatelessWidget {
                     Text(
                       name.isNotEmpty ? name : 'Company Name',
                       style: AppTextStyles.subtitleSemiBold,
+                      maxLines: 3,
                     ),
                     Text(
                       description.isNotEmpty

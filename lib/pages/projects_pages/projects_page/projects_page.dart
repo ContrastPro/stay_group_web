@@ -166,6 +166,7 @@ class _ProjectsPageContent extends StatelessWidget {
                   itemCount: state.projects.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      addBorder: i != state.projects.length - 1,
                       height: 68.0,
                       cells: [
                         TableCellItem(

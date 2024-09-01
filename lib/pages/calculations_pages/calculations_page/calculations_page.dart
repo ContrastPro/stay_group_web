@@ -157,6 +157,7 @@ class _CalculationsPageContent extends StatelessWidget {
                   itemCount: state.calculations.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      addBorder: i != state.calculations.length - 1,
                       height: 68.0,
                       cells: [
                         TableCellItem(

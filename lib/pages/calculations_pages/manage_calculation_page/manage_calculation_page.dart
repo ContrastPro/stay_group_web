@@ -150,6 +150,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       document.addPage(projectInfo);
     }
 
+    final pdf.MultiPage calculationInfo = await _getCalculationInfo(
+      format: format,
+      stylePrimary: stylePrimary,
+      styleSecondary: styleSecondary,
+    );
+
+    document.addPage(calculationInfo);
+
     final Uint8List savedDocument = await document.save();
 
     _switchLoading(false);
@@ -283,7 +291,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         pdf.Expanded(
                           child: pdf.Image(
                             projectImages[0],
-                            height: 256.0,
+                            height: 280.0,
                             fit: pdf.BoxFit.cover,
                           ),
                         ),
@@ -294,7 +302,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               pdf.Image(
                                 projectImages[1],
                                 width: 180.0,
-                                height: 124.0,
+                                height: 136.0,
                                 fit: pdf.BoxFit.cover,
                               ),
                             ],
@@ -303,7 +311,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               pdf.Image(
                                 projectImages[2],
                                 width: 180.0,
-                                height: 124.0,
+                                height: 136.0,
                                 fit: pdf.BoxFit.cover,
                               ),
                             ],
@@ -336,9 +344,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   pdf.Text(
                     _project!.info.description,
                     style: styleSecondary,
-                    maxLines: 7,
+                    maxLines: 8,
                   ),
-                  pdf.SizedBox(height: 22.0),
+                  pdf.SizedBox(height: 18.0),
                   pdf.Expanded(
                     child: pdf.GridView(
                       crossAxisCount: 4,
@@ -487,6 +495,24 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           ),
         ],
       ),
+    );
+  }
+
+  //todo: 2
+  Future<pdf.MultiPage> _getCalculationInfo({
+    required PdfPageFormat format,
+    required pdf.TextStyle stylePrimary,
+    required pdf.TextStyle styleSecondary,
+  }) async {
+    return pdf.MultiPage(
+      pageFormat: format,
+      margin: const pdf.EdgeInsets.symmetric(
+        horizontal: 42.0,
+        vertical: 72.0,
+      ),
+      build: (pdf.Context context) {
+        return [];
+      },
     );
   }
 
