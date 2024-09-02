@@ -12,7 +12,9 @@ class Init extends AccountSettingsEvent {
 class UpdateAccountInfo extends AccountSettingsEvent {
   const UpdateAccountInfo({
     required this.name,
+    required this.phone,
   });
 
   final String name;
+  final String phone;
 }

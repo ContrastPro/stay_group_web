@@ -17,24 +17,27 @@ enum UserRole {
 class UserInfoModel {
   const UserInfoModel({
     required this.role,
-    required this.name,
     this.billingPlan,
     this.media,
+    required this.name,
+    this.phone,
   });
 
   factory UserInfoModel.fromJson(Map<Object?, dynamic> json) {
     return UserInfoModel(
       role: UserRole.fromValue(json['role']),
-      name: json['name'],
       billingPlan: json['billingPlan'],
       media: json['media'] != null
           ? (json['media'] as List).map((e) => MediaModel.fromJson(e)).toList()
           : null,
+      name: json['name'],
+      phone: json['phone'],
     );
   }
 
   final UserRole role;
-  final String name;
   final int? billingPlan;
   final List<MediaModel>? media;
+  final String name;
+  final String? phone;
 }

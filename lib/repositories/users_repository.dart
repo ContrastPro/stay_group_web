@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 
+import '../models/medias/media_model.dart';
 import '../models/users/user_info_model.dart';
 import '../models/users/user_model.dart';
 import '../models/users/user_response_model.dart';
@@ -194,16 +195,20 @@ class UsersRepository {
   Future<void> updateUserInfo({
     required String id,
     required UserRole role,
-    required String name,
     int? billingPlan,
+    List<MediaModel>? media,
+    required String name,
+    String? phone,
   }) async {
     final DatabaseReference reference = _getRef(id);
 
     await reference.update({
       'info': {
         'role': role.value,
-        'name': name,
         'billingPlan': billingPlan,
+        'media': media?.map((e) => e.toJson()).toList(),
+        'name': name,
+        'phone': phone,
       },
     });
 

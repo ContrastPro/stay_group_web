@@ -247,7 +247,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             maxLines: 2,
                           ),
                           pdf.Text(
-                            state.userData!.credential.email,
+                            state.userData!.info.phone ??
+                                state.userData!.credential.email,
                             style: styleSecondary.copyWith(
                               color: scaffoldSecondary,
                             ),

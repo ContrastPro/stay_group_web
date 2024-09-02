@@ -62,8 +62,9 @@ class AccountSettingsBloc
       await usersRepository.updateUserInfo(
         id: state.userData!.id,
         role: state.userData!.info.role,
-        name: event.name,
         billingPlan: state.userData!.info.billingPlan,
+        name: event.name,
+        phone: event.phone.isNotEmpty ? event.phone : null,
       );
 
       emit(

@@ -35,6 +35,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   final TextEditingController _controllerWorkspace = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPhone = TextEditingController();
 
   bool _dataLoaded = false;
   bool _isLoading = false;
@@ -71,6 +72,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     _switchErrorName();
 
     final String name = _controllerName.text.trim();
+    final String phone = _controllerPhone.text.trim();
 
     if (name.isEmpty || !_nameValid) {
       final String errorName = state.spaceData != null
@@ -84,6 +86,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     context.read<AccountSettingsBloc>().add(
           UpdateAccountInfo(
             name: name,
+            phone: phone,
           ),
         );
   }
@@ -120,6 +123,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   _controllerName.text = state.userData!.info.name;
                   _validateName(state.userData!.info.name);
                   _controllerEmail.text = state.userData!.credential.email;
+
+                  if (state.userData!.info.phone != null) {
+                    _controllerPhone.text = state.userData!.info.phone!;
+                  }
 
                   _switchDataLoaded(true);
                 }
@@ -159,45 +166,66 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         ),
                       ),
                       body: SizedBox(
-                        width: 360.0,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (state.spaceData != null) ...[
-                              BorderTextField(
-                                controller: _controllerWorkspace,
-                                labelText: 'Workspace name',
-                                enabled: false,
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 360.0,
+                                child: Column(
+                                  children: [
+                                    if (state.spaceData != null) ...[
+                                      BorderTextField(
+                                        controller: _controllerWorkspace,
+                                        labelText: 'Workspace name',
+                                        enabled: false,
+                                      ),
+                                      const SizedBox(height: 16.0),
+                                    ],
+                                    BorderTextField(
+                                      controller: _controllerName,
+                                      labelText: 'Name',
+                                      hintText: state.spaceData != null
+                                          ? 'User name'
+                                          : 'Workspace name',
+                                      errorText: _errorTextName,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(64),
+                                      ],
+                                      onChanged: _validateName,
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    BorderTextField(
+                                      controller: _controllerEmail,
+                                      labelText: 'Email',
+                                      enabled: false,
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    BorderTextField(
+                                      controller: _controllerPhone,
+                                      labelText: 'Phone',
+                                      hintText: 'Contact phone',
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'^\+?\d{0,15}$'),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 40.0),
+                                    CustomButton(
+                                      text: 'Save changes',
+                                      onTap: () => _updateAccountInfo(
+                                        context: context,
+                                        state: state,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 16.0),
                             ],
-                            BorderTextField(
-                              controller: _controllerName,
-                              labelText: 'Name',
-                              hintText: state.spaceData != null
-                                  ? 'User name'
-                                  : 'Workspace name',
-                              errorText: _errorTextName,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(64),
-                              ],
-                              onChanged: _validateName,
-                            ),
-                            const SizedBox(height: 16.0),
-                            BorderTextField(
-                              controller: _controllerEmail,
-                              labelText: 'Email',
-                              enabled: false,
-                            ),
-                            const SizedBox(height: 40.0),
-                            CustomButton(
-                              text: 'Save changes',
-                              onTap: () => _updateAccountInfo(
-                                context: context,
-                                state: state,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
