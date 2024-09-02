@@ -51,6 +51,11 @@ class CustomDrawer extends StatelessWidget {
       title: 'Account settings',
       routePath: AccountSettingsPage.routePath,
     ),
+    BottomNavigationBarItemModel(
+      icon: AppIcons.signOut,
+      title: 'Logout',
+      routePath: 'sign_out',
+    ),
   ];
 
   static const List<BottomNavigationBarItemModel> _tabsWorker = [
@@ -74,6 +79,11 @@ class CustomDrawer extends StatelessWidget {
       title: 'Account settings',
       routePath: AccountSettingsPage.routePath,
     ),
+    BottomNavigationBarItemModel(
+      icon: AppIcons.signOut,
+      title: 'Logout',
+      routePath: 'sign_out',
+    ),
   ];
 
   List<BottomNavigationBarItemModel> _getTabs(UserModel user) {
@@ -88,6 +98,12 @@ class CustomDrawer extends StatelessWidget {
     required BuildContext context,
     required String routePath,
   }) {
+    if (routePath == 'sign_out') {
+      return context.read<NavigationBloc>().add(
+            const SignOut(),
+          );
+    }
+
     if (fullPath != routePath) {
       context.read<NavigationBloc>().add(
             NavigateTab(

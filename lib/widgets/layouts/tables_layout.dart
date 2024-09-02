@@ -18,6 +18,7 @@ class TablesLayout extends StatelessWidget {
         vertical: 28.0,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: double.infinity,

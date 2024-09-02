@@ -17,6 +17,7 @@ class AppIcons {
   static const String placeholder = '$_path/placeholder.svg';
   static const String projects = '$_path/projects.svg';
   static const String settings = '$_path/settings.svg';
+  static const String signOut = '$_path/sign_out.svg';
   static const String team = '$_path/team.svg';
   static const String upload = '$_path/upload.svg';
   static const String user = '$_path/user.svg';

@@ -17,6 +17,7 @@ import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_images.dart';
 import '../../../resources/app_text_styles.dart';
+import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
@@ -531,15 +532,22 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       child: BlocConsumer<ManageCalculationBloc, ManageCalculationState>(
         listener: (_, state) {
           if (state.status == BlocStatus.loading) {
-            //
+            _switchLoading(true);
           }
 
           if (state.status == BlocStatus.loaded) {
-            //
+            _switchLoading(false);
           }
 
           if (state.status == BlocStatus.success) {
-            //
+            InAppNotificationService.show(
+              title: widget.calculation == null
+                  ? 'Calculation successfully created'
+                  : 'Calculation successfully updated',
+              type: InAppNotificationType.success,
+            );
+
+            widget.navigateToCalculationsPage();
           }
         },
         builder: (context, state) {

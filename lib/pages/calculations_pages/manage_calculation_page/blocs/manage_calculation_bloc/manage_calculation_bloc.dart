@@ -79,13 +79,6 @@ class ManageCalculationBloc
 
       emit(
         state.copyWith(
-          status: BlocStatus.loaded,
-        ),
-      );
-
-      emit(
-        state.copyWith(
-          status: BlocStatus.success,
           userData: response,
           spaceData: spaceData,
           companies: companies,

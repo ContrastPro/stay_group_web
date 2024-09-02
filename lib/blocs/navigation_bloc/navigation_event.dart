@@ -25,6 +25,18 @@ class DueDateTick extends NavigationEvent {
   final UserModel userData;
 }
 
+class NavigateTab extends NavigationEvent {
+  const NavigateTab({
+    required this.routePath,
+  });
+
+  final String routePath;
+}
+
+class SignOut extends NavigationEvent {
+  const SignOut();
+}
+
 class StopSubscription extends NavigationEvent {
   const StopSubscription({
     required this.status,
@@ -33,12 +45,4 @@ class StopSubscription extends NavigationEvent {
 
   final NavigationStatus status;
   final String? errorMessage;
-}
-
-class NavigateTab extends NavigationEvent {
-  const NavigateTab({
-    required this.routePath,
-  });
-
-  final String routePath;
 }

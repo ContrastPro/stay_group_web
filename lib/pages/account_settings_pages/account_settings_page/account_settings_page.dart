@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_text_styles.dart';
+import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/account_settings_bloc/account_settings_bloc.dart';
 
-class AccountSettingsPage extends StatelessWidget {
+class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({
     super.key,
     required this.state,
@@ -21,6 +26,76 @@ class AccountSettingsPage extends StatelessWidget {
   static const routePath = '/account_settings_pages/account_settings';
 
   final GoRouterState state;
+
+  @override
+  State<AccountSettingsPage> createState() => _AccountSettingsPageState();
+}
+
+class _AccountSettingsPageState extends State<AccountSettingsPage> {
+  final TextEditingController _controllerWorkspace = TextEditingController();
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+
+  bool _dataLoaded = false;
+  bool _isLoading = false;
+  bool _nameValid = false;
+
+  String? _errorTextName;
+
+  void _switchDataLoaded(bool status) {
+    if (_dataLoaded != status) {
+      setState(() => _dataLoaded = status);
+    }
+  }
+
+  void _switchLoading(bool status) {
+    if (_isLoading != status) {
+      setState(() => _isLoading = status);
+    }
+  }
+
+  void _validateName(String name) {
+    setState(() {
+      _nameValid = name.length > 1;
+    });
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _updateAccountInfo({
+    required BuildContext context,
+    required AccountSettingsState state,
+  }) {
+    _switchErrorName();
+
+    final String name = _controllerName.text.trim();
+
+    if (name.isEmpty || !_nameValid) {
+      final String errorName = state.spaceData != null
+          ? 'User name is too short'
+          : 'Workspace name is too short';
+
+      _switchErrorName(error: errorName);
+      return _showErrorMessage(errorMessage: errorName);
+    }
+
+    context.read<AccountSettingsBloc>().add(
+          UpdateAccountInfo(
+            name: name,
+          ),
+        );
+  }
+
+  void _showErrorMessage({
+    required String errorMessage,
+  }) {
+    InAppNotificationService.show(
+      title: errorMessage,
+      type: InAppNotificationType.error,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,47 +107,100 @@ class AccountSettingsPage extends StatelessWidget {
           const Init(),
         ),
       child: FlexibleLayout(
-        state: state,
+        state: widget.state,
         builder: (Size size) {
           return BlocConsumer<AccountSettingsBloc, AccountSettingsState>(
             listener: (_, state) {
-              //
+              if (state.userData != null) {
+                if (!_dataLoaded) {
+                  if (state.spaceData != null) {
+                    _controllerWorkspace.text = state.spaceData!.info.name;
+                  }
+
+                  _controllerName.text = state.userData!.info.name;
+                  _validateName(state.userData!.info.name);
+                  _controllerEmail.text = state.userData!.credential.email;
+
+                  _switchDataLoaded(true);
+                }
+              }
+
+              if (state.status == BlocStatus.loading) {
+                _switchLoading(true);
+              }
+
+              if (state.status == BlocStatus.loaded) {
+                _switchLoading(false);
+              }
+
+              if (state.status == BlocStatus.success) {
+                InAppNotificationService.show(
+                  title: 'Profile successfully updated',
+                  type: InAppNotificationType.success,
+                );
+              }
             },
             builder: (context, state) {
-              if (state.status == BlocStatus.success) {
+              if (state.userData != null) {
                 return FadeInAnimation(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Account info',
-                        style: AppTextStyles.paragraphMBold,
-                      ),
-                      Text(
-                        '${state.userData!.info.name} - ${state.userData!.info.role.value}',
-                      ),
-                      Text(
-                        state.userData!.credential.email,
-                      ),
-                      const SizedBox(height: 32.0),
-                      Text(
-                        'User space',
-                        style: AppTextStyles.paragraphMBold,
-                      ),
-                      Text(
-                        '${state.userData!.spaceId}',
-                      ),
-                      const SizedBox(height: 32.0),
-                      SizedBox(
-                        width: 260.0,
-                        child: CustomButton(
-                          text: 'Sign out',
-                          onTap: () => context.read<AccountSettingsBloc>().add(
-                                const SignOut(),
-                              ),
+                  child: ActionLoader(
+                    isLoading: _isLoading,
+                    child: TablesLayout(
+                      header: SizedBox(
+                        height: 40.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Account settings',
+                              style: AppTextStyles.head6Medium,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                      body: SizedBox(
+                        width: 360.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (state.spaceData != null) ...[
+                              BorderTextField(
+                                controller: _controllerWorkspace,
+                                labelText: 'Workspace name',
+                                enabled: false,
+                              ),
+                              const SizedBox(height: 16.0),
+                            ],
+                            BorderTextField(
+                              controller: _controllerName,
+                              labelText: 'Name',
+                              hintText: state.spaceData != null
+                                  ? 'User name'
+                                  : 'Workspace name',
+                              errorText: _errorTextName,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(64),
+                              ],
+                              onChanged: _validateName,
+                            ),
+                            const SizedBox(height: 16.0),
+                            BorderTextField(
+                              controller: _controllerEmail,
+                              labelText: 'Email',
+                              enabled: false,
+                            ),
+                            const SizedBox(height: 40.0),
+                            CustomButton(
+                              text: 'Save changes',
+                              onTap: () => _updateAccountInfo(
+                                context: context,
+                                state: state,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 );
               }

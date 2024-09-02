@@ -162,6 +162,24 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       }
     });
 
+    on<NavigateTab>((event, emit) {
+      emit(
+        state.copyWith(
+          status: NavigationStatus.tab,
+          routePath: event.routePath,
+          userData: state.userData,
+          userSubscription: state.userSubscription,
+          spaceSubscription: state.spaceSubscription,
+          timerDueDate: state.timerDueDate,
+          authSubscription: state.authSubscription,
+        ),
+      );
+    });
+
+    on<SignOut>((event, emit) async {
+      await authRepository.signOut();
+    });
+
     on<StopSubscription>((event, emit) async {
       if (state.userSubscription != null) {
         await state.userSubscription!.cancel();
@@ -185,20 +203,6 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
         state.copyWith(
           status: event.status,
           errorMessage: event.errorMessage,
-        ),
-      );
-    });
-
-    on<NavigateTab>((event, emit) {
-      emit(
-        state.copyWith(
-          status: NavigationStatus.tab,
-          routePath: event.routePath,
-          userData: state.userData,
-          userSubscription: state.userSubscription,
-          spaceSubscription: state.spaceSubscription,
-          timerDueDate: state.timerDueDate,
-          authSubscription: state.authSubscription,
         ),
       );
     });

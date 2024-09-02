@@ -9,6 +9,10 @@ class Init extends AccountSettingsEvent {
   const Init();
 }
 
-class SignOut extends AccountSettingsEvent {
-  const SignOut();
+class UpdateAccountInfo extends AccountSettingsEvent {
+  const UpdateAccountInfo({
+    required this.name,
+  });
+
+  final String name;
 }
