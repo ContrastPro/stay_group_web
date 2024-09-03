@@ -6,6 +6,7 @@ import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
 
 import '../../../models/calculations/calculation_model.dart';
+import '../../../models/calculations/calculation_period_model.dart';
 import '../../../models/companies/company_model.dart';
 import '../../../models/projects/project_model.dart';
 import '../../../repositories/auth_repository.dart';
@@ -45,6 +46,21 @@ class ManageCalculationPage extends StatefulWidget {
 }
 
 class _ManageCalculationPageState extends State<ManageCalculationPage> {
+  static const List<CalculationPeriodModel> _calculationPeriods = [
+    CalculationPeriodModel(
+      days: 30,
+      name: 'Every month',
+    ),
+    CalculationPeriodModel(
+      days: 90,
+      name: 'Every quarter',
+    ),
+    CalculationPeriodModel(
+      days: 180,
+      name: 'Every six months',
+    ),
+  ];
+
   final TextEditingController _controllerSection = TextEditingController();
   final TextEditingController _controllerFloor = TextEditingController();
   final TextEditingController _controllerNumber = TextEditingController();
@@ -53,14 +69,20 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   final TextEditingController _controllerBathrooms = TextEditingController();
   final TextEditingController _controllerTotal = TextEditingController();
   final TextEditingController _controllerLiving = TextEditingController();
+
   final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerPrice = TextEditingController();
+  final TextEditingController _controllerDepositVal = TextEditingController();
+  final TextEditingController _controllerDepositPct = TextEditingController();
 
   bool _isLoading = false;
   bool _nameValid = false;
+  bool _priceValid = false;
+  bool _depositValid = false;
 
-  String? _errorTextName;
   CompanyModel? _company;
   ProjectModel? _project;
+  CalculationPeriodModel? _calculationPeriod;
 
   void _switchLoading(bool status) {
     if (_isLoading != status) {
@@ -100,8 +122,78 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     });
   }
 
+  void _validatePrice(String price) {
+    setState(() {
+      _priceValid = price.length > 5;
+      _controllerDepositVal.clear();
+      _controllerDepositPct.clear();
+    });
+  }
+
+  String _getDepositValTitle() {
+    final String price = _controllerPrice.text;
+    final String symbol;
+
+    if (price.isNotEmpty) {
+      symbol = price[0];
+    } else {
+      symbol = '€';
+    }
+
+    return 'First deposit in ($symbol)';
+  }
+
+  double _stringToDouble(String value) {
+    final String formatValue = value.replaceAll(RegExp(r'[€£¥₽₹$]'), '');
+    return double.parse(formatValue);
+  }
+
+  void _validateDepositVal(String depositVal) {
+    final bool isValid = depositVal.length > 3;
+
+    if (isValid) {
+      final double price = _stringToDouble(_controllerPrice.text);
+      final double deposit = _stringToDouble(depositVal);
+
+      final double depositPct = (deposit * 100) / price;
+
+      _controllerDepositPct.text = depositPct.toStringAsFixed(0);
+    } else {
+      _controllerDepositPct.clear();
+    }
+
+    setState(() => _depositValid = isValid);
+  }
+
+  void _validateDepositPct(String depositPct) {
+    final bool isValid = depositPct.isNotEmpty;
+
+    if (isValid) {
+      final double price = _stringToDouble(_controllerPrice.text);
+      final double deposit = _stringToDouble(depositPct);
+
+      final double depositVal = (price * deposit) / 100;
+
+      _controllerDepositVal.text = depositVal.toStringAsFixed(0);
+    } else {
+      _controllerDepositVal.clear();
+    }
+
+    setState(() => _depositValid = isValid);
+  }
+
+  void _onSelectCalculationPeriod(String? name) {
+    if (name == null) return;
+
+    final CalculationPeriodModel period = _calculationPeriods.firstWhere(
+      (e) => e.name == name,
+    );
+
+    setState(() => _calculationPeriod = period);
+  }
+
   Future<void> _printPdf(ManageCalculationState state) async {
-    await Printing.layoutPdf(
+    final bool isPrinted = await Printing.layoutPdf(
       format: PdfPageFormat.a4,
       onLayout: (PdfPageFormat format) {
         return _generatePdf(
@@ -110,6 +202,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         );
       },
     );
+
+    if (isPrinted) {
+      // update counter
+    }
   }
 
   Future<Uint8List> _generatePdf({
@@ -700,10 +796,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               labelText: 'Total area',
                               hintText: 'Enter area',
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(8),
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+\.?\d*'),
-                                ),
+                                LengthLimitingTextInputFormatter(32),
                               ],
                             ),
                           ),
@@ -714,10 +807,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               labelText: 'Living area',
                               hintText: 'Enter area',
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(8),
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+\.?\d*'),
-                                ),
+                                LengthLimitingTextInputFormatter(32),
                               ],
                             ),
                           ),
@@ -734,12 +824,63 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Calculation name',
-                      errorText: _errorTextName,
                       maxLines: 2,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(128),
+                        LengthLimitingTextInputFormatter(64),
                       ],
                       onChanged: _validateName,
+                    ),
+                    const SizedBox(height: 16.0),
+                    BorderTextField(
+                      controller: _controllerPrice,
+                      labelText: 'Unit price (without extra costs)',
+                      hintText: 'Example: €100000',
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(11),
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^[€£¥₽₹$]\d*$'),
+                        ),
+                      ],
+                      onChanged: _validatePrice,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: BorderTextField(
+                            controller: _controllerDepositVal,
+                            enabled: _priceValid,
+                            labelText: _getDepositValTitle(),
+                            hintText: 'Enter value',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: _validateDepositVal,
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: BorderTextField(
+                            controller: _controllerDepositPct,
+                            enabled: _priceValid,
+                            labelText: 'First deposit in (%)',
+                            hintText: 'Enter percent',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(3),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: _validateDepositPct,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16.0),
+                    AnimatedDropdown(
+                      labelText: 'Calculation period',
+                      hintText: 'Select period',
+                      values: _calculationPeriods.map((e) => e.name).toList(),
+                      onChanged: _onSelectCalculationPeriod,
                     ),
                     const SizedBox(height: 40.0),
                     if (widget.calculation == null) ...[

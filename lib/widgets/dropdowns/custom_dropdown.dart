@@ -29,7 +29,9 @@ class AnimatedDropdown extends StatelessWidget {
           Text(
             labelText!,
             style: AppTextStyles.paragraphSMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: enabled
+                  ? AppColors.textSecondary
+                  : AppColors.textSecondary.withOpacity(0.40),
             ),
             textAlign: TextAlign.start,
           ),

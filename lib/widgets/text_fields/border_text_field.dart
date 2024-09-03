@@ -143,7 +143,9 @@ class _BorderTextFieldState extends State<BorderTextField> {
                     isDense: true,
                     hintText: widget.hintText,
                     hintStyle: AppTextStyles.paragraphMRegular.copyWith(
-                      color: AppColors.iconPrimary,
+                      color: widget.enabled
+                          ? AppColors.iconPrimary
+                          : AppColors.iconPrimary.withOpacity(0.40),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 11.0,
