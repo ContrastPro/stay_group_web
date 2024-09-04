@@ -12,6 +12,7 @@ import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
+import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -81,6 +82,18 @@ class _CalculationsPageContent extends StatelessWidget {
 
   static const double _buttonWidth = 190.0;
 
+  void _checkAccountLimits() {
+    if (state.calculations.length < 18) {
+      return navigateToManageCalculationPage();
+    }
+
+    InAppNotificationService.show(
+      title:
+          'The limit for creating calculations for the workspace has been reached',
+      type: InAppNotificationType.error,
+    );
+  }
+
   void _deleteCalculation({
     required BuildContext context,
     required String id,
@@ -109,7 +122,7 @@ class _CalculationsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add calculation',
                   backgroundColor: AppColors.info,
-                  onTap: navigateToManageCalculationPage,
+                  onTap: _checkAccountLimits,
                 ),
               ),
             ],
@@ -200,22 +213,24 @@ class _CalculationsPageContent extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12.0),
-                              GestureDetector(
-                                onTap: () => _deleteCalculation(
-                                  context: context,
-                                  id: state.calculations[i].id,
-                                ),
-                                behavior: HitTestBehavior.opaque,
-                                child: SvgPicture.asset(
-                                  AppIcons.delete,
-                                  width: 22.0,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.iconPrimary,
-                                    BlendMode.srcIn,
+                              if (state.userData!.spaceId == null) ...[
+                                const SizedBox(width: 12.0),
+                                GestureDetector(
+                                  onTap: () => _deleteCalculation(
+                                    context: context,
+                                    id: state.calculations[i].id,
+                                  ),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: SvgPicture.asset(
+                                    AppIcons.delete,
+                                    width: 22.0,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.iconPrimary,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                         ),

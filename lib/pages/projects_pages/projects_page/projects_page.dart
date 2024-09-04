@@ -13,6 +13,7 @@ import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
+import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -82,6 +83,18 @@ class _ProjectsPageContent extends StatelessWidget {
 
   static const double _buttonWidth = 160.0;
 
+  void _checkAccountLimits() {
+    if (state.projects.length < 9) {
+      return navigateToManageProjectPage();
+    }
+
+    InAppNotificationService.show(
+      title:
+          'The limit for creating projects for the workspace has been reached',
+      type: InAppNotificationType.error,
+    );
+  }
+
   void _deleteProject({
     required BuildContext context,
     required String id,
@@ -110,7 +123,7 @@ class _ProjectsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add project',
                   backgroundColor: AppColors.info,
-                  onTap: navigateToManageProjectPage,
+                  onTap: _checkAccountLimits,
                 ),
               ),
             ],
@@ -219,22 +232,24 @@ class _ProjectsPageContent extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12.0),
-                              GestureDetector(
-                                onTap: () => _deleteProject(
-                                  context: context,
-                                  id: state.projects[i].id,
-                                ),
-                                behavior: HitTestBehavior.opaque,
-                                child: SvgPicture.asset(
-                                  AppIcons.delete,
-                                  width: 22.0,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.iconPrimary,
-                                    BlendMode.srcIn,
+                              if (state.userData!.spaceId == null) ...[
+                                const SizedBox(width: 12.0),
+                                GestureDetector(
+                                  onTap: () => _deleteProject(
+                                    context: context,
+                                    id: state.projects[i].id,
+                                  ),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: SvgPicture.asset(
+                                    AppIcons.delete,
+                                    width: 22.0,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.iconPrimary,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                         ),

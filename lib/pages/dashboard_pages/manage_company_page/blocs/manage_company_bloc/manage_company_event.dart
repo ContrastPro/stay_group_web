@@ -25,6 +25,7 @@ class UpdateCompany extends ManageCompanyEvent {
     required this.removedMedia,
     required this.name,
     required this.description,
+    required this.createdAt,
   });
 
   final String id;
@@ -33,4 +34,5 @@ class UpdateCompany extends ManageCompanyEvent {
   final List<MediaModel> removedMedia;
   final String name;
   final String description;
+  final String createdAt;
 }

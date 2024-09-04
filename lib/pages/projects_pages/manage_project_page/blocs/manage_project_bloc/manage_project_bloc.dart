@@ -160,13 +160,14 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
         );
       }
 
-      await projectsRepository.updateProjectInfo(
+      await projectsRepository.updateProject(
         spaceId: spaceId,
         id: event.id,
         media: media.isNotEmpty ? media : null,
         name: event.name,
         location: event.location,
         description: event.description,
+        createdAt: event.createdAt,
       );
 
       emit(

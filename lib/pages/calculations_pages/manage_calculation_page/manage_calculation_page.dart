@@ -143,17 +143,17 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return 'First deposit in ($symbol)';
   }
 
-  double _stringToDouble(String value) {
-    final String formatValue = value.replaceAll(RegExp(r'[€£¥₽₹$]'), '');
-    return double.parse(formatValue);
+  int _parseString(String value) {
+    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+    return int.parse(formatValue);
   }
 
   void _validateDepositVal(String depositVal) {
     final bool isValid = depositVal.length > 3;
 
     if (isValid) {
-      final double price = _stringToDouble(_controllerPrice.text);
-      final double deposit = _stringToDouble(depositVal);
+      final int price = _parseString(_controllerPrice.text);
+      final int deposit = _parseString(depositVal);
 
       final double depositPct = (deposit * 100) / price;
 
@@ -169,8 +169,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final bool isValid = depositPct.isNotEmpty;
 
     if (isValid) {
-      final double price = _stringToDouble(_controllerPrice.text);
-      final double deposit = _stringToDouble(depositPct);
+      final int price = _parseString(_controllerPrice.text);
+      final int deposit = _parseString(depositPct);
 
       final double depositVal = (price * deposit) / 100;
 
@@ -500,7 +500,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         if (total.isNotEmpty) ...[
                           _getProjectFeatureItem(
                             title: 'Total area',
-                            data: total,
+                            data: '$total m2',
                             stylePrimary: stylePrimary,
                             styleSecondary: styleSecondary,
                           ),
@@ -508,7 +508,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         if (living.isNotEmpty) ...[
                           _getProjectFeatureItem(
                             title: 'Living area',
-                            data: living,
+                            data: '$living m2',
                             stylePrimary: stylePrimary,
                             styleSecondary: styleSecondary,
                           ),
@@ -793,10 +793,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           Expanded(
                             child: BorderTextField(
                               controller: _controllerTotal,
-                              labelText: 'Total area',
+                              labelText: 'Total area (m2)',
                               hintText: 'Enter area',
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(32),
+                                LengthLimitingTextInputFormatter(10),
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+\.?\d*'),
+                                ),
                               ],
                             ),
                           ),
@@ -804,10 +807,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           Expanded(
                             child: BorderTextField(
                               controller: _controllerLiving,
-                              labelText: 'Living area',
+                              labelText: 'Living area (m2)',
                               hintText: 'Enter area',
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(32),
+                                LengthLimitingTextInputFormatter(10),
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d+\.?\d*'),
+                                ),
                               ],
                             ),
                           ),
@@ -837,9 +843,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       hintText: 'Example: €100000',
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(11),
-                        FilteringTextInputFormatter.allow(
+                        //todo: uncomment
+                        /*FilteringTextInputFormatter.allow(
                           RegExp(r'^[€£¥₽₹$]\d*$'),
-                        ),
+                        ),*/
                       ],
                       onChanged: _validatePrice,
                     ),
@@ -930,6 +937,6 @@ class _CalculationPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return const SizedBox();
   }
 }

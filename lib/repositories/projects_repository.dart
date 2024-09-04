@@ -54,13 +54,14 @@ class ProjectsRepository {
     _logger.log('Successful', name: 'createProject');
   }
 
-  Future<void> updateProjectInfo({
+  Future<void> updateProject({
     required String spaceId,
     required String id,
     List<MediaModel>? media,
     required String name,
     required String location,
     required String description,
+    required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -68,15 +69,19 @@ class ProjectsRepository {
     );
 
     await reference.update({
+      'id': id,
       'info': {
         'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
         'location': location,
         'description': description,
       },
+      'metadata': {
+        'createdAt': createdAt,
+      },
     });
 
-    _logger.log('Successful', name: 'updateProjectInfo');
+    _logger.log('Successful', name: 'updateProject');
   }
 
   Future<void> deleteProject({

@@ -179,13 +179,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                     if (state.spaceData != null) ...[
                                       BorderTextField(
                                         controller: _controllerWorkspace,
-                                        labelText: 'Workspace name',
                                         enabled: false,
+                                        labelText: 'Workspace name',
                                       ),
                                       const SizedBox(height: 16.0),
                                     ],
                                     BorderTextField(
                                       controller: _controllerName,
+                                      enabled: state.spaceData == null,
                                       labelText: 'Name',
                                       hintText: state.spaceData != null
                                           ? 'User name'
@@ -199,8 +200,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                     const SizedBox(height: 16.0),
                                     BorderTextField(
                                       controller: _controllerEmail,
-                                      labelText: 'Email',
                                       enabled: false,
+                                      labelText: 'Email',
                                     ),
                                     const SizedBox(height: 16.0),
                                     BorderTextField(

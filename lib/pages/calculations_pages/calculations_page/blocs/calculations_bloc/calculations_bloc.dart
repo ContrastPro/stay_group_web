@@ -59,6 +59,7 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
       emit(
         state.copyWith(
           status: BlocStatus.success,
+          userData: response,
           calculations: calculations,
         ),
       );

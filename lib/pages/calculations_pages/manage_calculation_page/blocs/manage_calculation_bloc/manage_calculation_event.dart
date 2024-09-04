@@ -24,9 +24,11 @@ class UpdateCalculation extends ManageCalculationEvent {
     required this.id,
     required this.name,
     required this.description,
+    required this.createdAt,
   });
 
   final String id;
   final String name;
   final String description;
+  final String createdAt;
 }

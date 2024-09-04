@@ -248,8 +248,8 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   const SizedBox(height: 16.0),
                   BorderTextField(
                     controller: _controllerEmail,
-                    labelText: 'Email',
                     enabled: widget.user == null,
+                    labelText: 'Email',
                     hintText: 'User email',
                     prefixIcon: AppIcons.mail,
                     errorText: _errorTextEmail,

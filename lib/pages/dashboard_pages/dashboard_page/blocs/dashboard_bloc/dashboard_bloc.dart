@@ -65,6 +65,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       emit(
         state.copyWith(
           status: BlocStatus.success,
+          userData: response,
           companies: companies,
         ),
       );

@@ -52,12 +52,13 @@ class CompaniesRepository {
     _logger.log('Successful', name: 'createCompany');
   }
 
-  Future<void> updateCompanyInfo({
+  Future<void> updateCompany({
     required String spaceId,
     required String id,
     List<MediaModel>? media,
     required String name,
     required String description,
+    required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -65,14 +66,18 @@ class CompaniesRepository {
     );
 
     await reference.update({
+      'id': id,
       'info': {
         'media': media?.map((e) => e.toJson()).toList(),
         'name': name,
         'description': description,
       },
+      'metadata': {
+        'createdAt': createdAt,
+      },
     });
 
-    _logger.log('Successful', name: 'updateCompanyInfo');
+    _logger.log('Successful', name: 'updateCompany');
   }
 
   Future<void> deleteCompany({

@@ -163,12 +163,13 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
         );
       }
 
-      await companiesRepository.updateCompanyInfo(
+      await companiesRepository.updateCompany(
         spaceId: spaceId,
         id: event.id,
         media: media.isNotEmpty ? media : null,
         name: event.name,
         description: event.description,
+        createdAt: event.createdAt,
       );
 
       emit(

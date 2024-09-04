@@ -101,21 +101,6 @@ class AuthRepository {
     );
   }
 
-  Future<bool?> updatePassword({
-    required String password,
-  }) async {
-    try {
-      await _api.currentUser!.updatePassword(password);
-
-      _logger.log('Successful', name: 'updatePassword');
-
-      return true;
-    } on FirebaseAuthException catch (e) {
-      _logger.log(e.code, name: 'updatePassword');
-      return null;
-    }
-  }
-
   Future<bool?> signOut() async {
     try {
       await _api.signOut();
@@ -125,19 +110,6 @@ class AuthRepository {
       return true;
     } on FirebaseAuthException catch (e) {
       _logger.log(e.code, name: 'signOut');
-      return null;
-    }
-  }
-
-  Future<bool?> deleteAccount() async {
-    try {
-      await _api.currentUser!.delete();
-
-      _logger.log('Successful', name: 'deleteAccount');
-
-      return true;
-    } on FirebaseAuthException catch (e) {
-      _logger.log(e.code, name: 'deleteAccount');
       return null;
     }
   }

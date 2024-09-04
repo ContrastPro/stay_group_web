@@ -238,6 +238,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
             name: name,
             location: location,
             description: description,
+            createdAt: widget.project!.metadata.createdAt,
           ),
         );
   }

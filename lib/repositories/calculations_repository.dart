@@ -49,11 +49,12 @@ class CalculationsRepository {
     _logger.log('Successful', name: 'createCalculation');
   }
 
-  Future<void> updateCalculationInfo({
+  Future<void> updateCalculation({
     required String spaceId,
     required String id,
     required String name,
     required String description,
+    required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -61,13 +62,17 @@ class CalculationsRepository {
     );
 
     await reference.update({
+      'id': id,
       'info': {
         'name': name,
         'description': description,
       },
+      'metadata': {
+        'createdAt': createdAt,
+      },
     });
 
-    _logger.log('Successful', name: 'updateCalculationInfo');
+    _logger.log('Successful', name: 'updateCalculation');
   }
 
   Future<void> deleteCalculation({

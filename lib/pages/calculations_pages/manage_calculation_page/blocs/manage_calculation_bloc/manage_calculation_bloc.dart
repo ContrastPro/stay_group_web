@@ -147,11 +147,12 @@ class ManageCalculationBloc
           ? response.userId!
           : response.spaceId!;
 
-      await calculationsRepository.updateCalculationInfo(
+      await calculationsRepository.updateCalculation(
         spaceId: spaceId,
         id: event.id,
         name: event.name,
         description: event.description,
+        createdAt: event.createdAt,
       );
 
       emit(

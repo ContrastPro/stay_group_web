@@ -28,6 +28,7 @@ class UpdateProject extends ManageProjectEvent {
     required this.name,
     required this.location,
     required this.description,
+    required this.createdAt,
   });
 
   final String id;
@@ -37,4 +38,5 @@ class UpdateProject extends ManageProjectEvent {
   final String name;
   final String location;
   final String description;
+  final String createdAt;
 }

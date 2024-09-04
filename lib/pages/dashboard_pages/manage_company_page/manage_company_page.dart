@@ -203,6 +203,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
             removedMedia: removedMedia,
             name: name,
             description: description,
+            createdAt: widget.company!.metadata.createdAt,
           ),
         );
   }
