@@ -112,7 +112,7 @@ class ManageCalculationBloc
         spaceId: spaceId,
         id: id,
         name: event.name,
-        description: event.description,
+        description: event.description.isNotEmpty ? event.description : null,
       );
 
       emit(
@@ -151,7 +151,7 @@ class ManageCalculationBloc
         spaceId: spaceId,
         id: event.id,
         name: event.name,
-        description: event.description,
+        description: event.description.isNotEmpty ? event.description : null,
         createdAt: event.createdAt,
       );
 

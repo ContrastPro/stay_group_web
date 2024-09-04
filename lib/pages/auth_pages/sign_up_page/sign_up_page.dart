@@ -81,18 +81,6 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _switchErrorEmail({String? error}) {
-    setState(() => _errorTextEmail = error);
-  }
-
-  void _switchErrorPassword({String? error}) {
-    setState(() => _errorTextPassword = error);
-  }
-
-  void _switchErrorConfirm({String? error}) {
-    setState(() => _errorTextConfirm = error);
-  }
-
   void _emailSignUp(BuildContext context) {
     _switchErrorEmail();
     _switchErrorPassword();
@@ -129,6 +117,18 @@ class _SignUpPageState extends State<SignUpPage> {
             password: password,
           ),
         );
+  }
+
+  void _switchErrorEmail({String? error}) {
+    setState(() => _errorTextEmail = error);
+  }
+
+  void _switchErrorPassword({String? error}) {
+    setState(() => _errorTextPassword = error);
+  }
+
+  void _switchErrorConfirm({String? error}) {
+    setState(() => _errorTextConfirm = error);
   }
 
   void _showErrorMessage({

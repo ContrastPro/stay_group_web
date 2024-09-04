@@ -10,6 +10,7 @@ import '../../utils/helpers.dart';
 class CustomDatePicker extends StatelessWidget {
   const CustomDatePicker({
     super.key,
+    required this.addDay,
     this.initialDate,
     this.firstDate,
     this.lastDate,
@@ -18,6 +19,7 @@ class CustomDatePicker extends StatelessWidget {
     required this.onChanged,
   });
 
+  final bool addDay;
   final DateTime? initialDate;
   final DateTime? firstDate;
   final DateTime? lastDate;
@@ -25,19 +27,17 @@ class CustomDatePicker extends StatelessWidget {
   final String hintText;
   final void Function(DateTime) onChanged;
 
-  Future<void> _showDatePicker(BuildContext context) async {
-    const Duration day = Duration(days: 1);
-    final DateTime now = currentTime();
-    final DateTime maxYears = DateTime(now.year + 30);
+  static const Duration _day = Duration(days: 1);
 
-    final DateTime first = firstDate != null ? firstDate!.add(day) : now;
-    final DateTime last = lastDate != null ? lastDate!.subtract(day) : maxYears;
+  Future<void> _showDatePicker(BuildContext context) async {
+    final DateTime firstDate = _getFirstDate();
+    final DateTime lastDate = _getLastDate();
 
     final DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: first,
-      lastDate: last,
+      firstDate: firstDate,
+      lastDate: lastDate,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDatePickerMode: DatePickerMode.year,
     );
@@ -45,6 +45,31 @@ class CustomDatePicker extends StatelessWidget {
     if (selectedDate != null) {
       onChanged(selectedDate);
     }
+  }
+
+  DateTime _getFirstDate() {
+    final DateTime now = currentTime();
+
+    if (firstDate != null) {
+      return firstDate!.add(_day);
+    }
+
+    if (addDay) {
+      return now.add(_day);
+    }
+
+    return now;
+  }
+
+  DateTime _getLastDate() {
+    final DateTime now = currentTime();
+    final DateTime maxYears = DateTime(now.year + 30);
+
+    if (lastDate != null) {
+      return lastDate!.subtract(_day);
+    }
+
+    return maxYears;
   }
 
   String _getFormatDate() {

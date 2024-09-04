@@ -4,8 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/companies/company_model.dart';
-import '../../../models/users/user_info_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/companies_repository.dart';
 import '../../../repositories/storage_repository.dart';
@@ -14,7 +12,6 @@ import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
-import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -25,6 +22,7 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../manage_company_page/manage_company_page.dart';
 import 'blocs/dashboard_bloc/dashboard_bloc.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -37,7 +35,7 @@ class DashboardPage extends StatelessWidget {
   static const routePath = '/dashboard_pages/dashboard';
 
   final GoRouterState state;
-  final void Function([CompanyModel?]) navigateToManageCompanyPage;
+  final void Function(ManageCompanyPageArguments) navigateToManageCompanyPage;
 
   @override
   Widget build(BuildContext context) {
@@ -80,21 +78,9 @@ class _DashboardPageContent extends StatelessWidget {
   });
 
   final DashboardState state;
-  final void Function([CompanyModel?]) navigateToManageCompanyPage;
+  final void Function(ManageCompanyPageArguments) navigateToManageCompanyPage;
 
   static const double _buttonWidth = 180.0;
-
-  void _checkAccountLimits() {
-    if (state.companies.length < 3) {
-      return navigateToManageCompanyPage();
-    }
-
-    InAppNotificationService.show(
-      title:
-          'The limit for creating companies for the workspace has been reached',
-      type: InAppNotificationType.error,
-    );
-  }
 
   void _deleteCompany({
     required BuildContext context,
@@ -124,7 +110,11 @@ class _DashboardPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add company',
                   backgroundColor: AppColors.info,
-                  onTap: _checkAccountLimits,
+                  onTap: () => navigateToManageCompanyPage(
+                    ManageCompanyPageArguments(
+                      count: state.companies.length,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -138,7 +128,11 @@ class _DashboardPageContent extends StatelessWidget {
               "You don't added your first company yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add company',
-          onTap: navigateToManageCompanyPage,
+          onTap: () => navigateToManageCompanyPage(
+            ManageCompanyPageArguments(
+              count: state.companies.length,
+            ),
+          ),
           content: Column(
             children: [
               TableItem(
@@ -212,7 +206,10 @@ class _DashboardPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageCompanyPage(
-                                  state.companies[i],
+                                  ManageCompanyPageArguments(
+                                    count: state.companies.length,
+                                    company: state.companies[i],
+                                  ),
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

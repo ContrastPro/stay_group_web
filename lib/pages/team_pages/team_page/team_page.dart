@@ -4,14 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/users/user_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
-import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -23,6 +21,7 @@ import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
 import '../../../widgets/uncategorized/user_status.dart';
+import '../manage_user_page/manage_user_page.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
 class TeamPage extends StatelessWidget {
@@ -35,7 +34,7 @@ class TeamPage extends StatelessWidget {
   static const routePath = '/team_pages/team';
 
   final GoRouterState state;
-  final void Function([UserModel?]) navigateToManageUserPage;
+  final void Function(ManageUserPageArguments) navigateToManageUserPage;
 
   @override
   Widget build(BuildContext context) {
@@ -76,20 +75,9 @@ class _TeamPageContent extends StatelessWidget {
   });
 
   final TeamState state;
-  final void Function([UserModel?]) navigateToManageUserPage;
+  final void Function(ManageUserPageArguments) navigateToManageUserPage;
 
   static const double _buttonWidth = 140.0;
-
-  void _checkAccountLimits() {
-    if (state.users.length < 6) {
-      return navigateToManageUserPage();
-    }
-
-    InAppNotificationService.show(
-      title: 'The limit for creating users for the workspace has been reached',
-      type: InAppNotificationType.error,
-    );
-  }
 
   void _deleteUser({
     required BuildContext context,
@@ -136,7 +124,11 @@ class _TeamPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add user',
                   backgroundColor: AppColors.info,
-                  onTap: _checkAccountLimits,
+                  onTap: () => navigateToManageUserPage(
+                    ManageUserPageArguments(
+                      count: state.users.length,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -150,7 +142,11 @@ class _TeamPageContent extends StatelessWidget {
               "You don't added your first user yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add user',
-          onTap: navigateToManageUserPage,
+          onTap: () => navigateToManageUserPage(
+            ManageUserPageArguments(
+              count: state.users.length,
+            ),
+          ),
           content: Column(
             children: [
               TableItem(
@@ -247,7 +243,10 @@ class _TeamPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageUserPage(
-                                  state.users[i],
+                                  ManageUserPageArguments(
+                                    count: state.users.length,
+                                    userData: state.users[i],
+                                  ),
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

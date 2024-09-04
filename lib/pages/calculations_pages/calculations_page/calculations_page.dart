@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/calculations/calculation_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/calculations_repository.dart';
 import '../../../repositories/users_repository.dart';
@@ -12,7 +11,6 @@ import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
-import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -23,6 +21,7 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../manage_calculation_page/manage_calculation_page.dart';
 import 'blocs/calculations_bloc/calculations_bloc.dart';
 
 class CalculationsPage extends StatelessWidget {
@@ -35,7 +34,8 @@ class CalculationsPage extends StatelessWidget {
   static const routePath = '/calculations_pages/calculations';
 
   final GoRouterState state;
-  final void Function([CalculationModel?]) navigateToManageCalculationPage;
+  final void Function(ManageCalculationPageArguments)
+      navigateToManageCalculationPage;
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +78,10 @@ class _CalculationsPageContent extends StatelessWidget {
   });
 
   final CalculationsState state;
-  final void Function([CalculationModel?]) navigateToManageCalculationPage;
+  final void Function(ManageCalculationPageArguments)
+      navigateToManageCalculationPage;
 
   static const double _buttonWidth = 190.0;
-
-  void _checkAccountLimits() {
-    if (state.calculations.length < 18) {
-      return navigateToManageCalculationPage();
-    }
-
-    InAppNotificationService.show(
-      title:
-          'The limit for creating calculations for the workspace has been reached',
-      type: InAppNotificationType.error,
-    );
-  }
 
   void _deleteCalculation({
     required BuildContext context,
@@ -122,7 +111,11 @@ class _CalculationsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add calculation',
                   backgroundColor: AppColors.info,
-                  onTap: _checkAccountLimits,
+                  onTap: () => navigateToManageCalculationPage(
+                    ManageCalculationPageArguments(
+                      count: state.calculations.length,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -136,7 +129,11 @@ class _CalculationsPageContent extends StatelessWidget {
               "You don't added your first calculation yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add calculation',
-          onTap: navigateToManageCalculationPage,
+          onTap: () => navigateToManageCalculationPage(
+            ManageCalculationPageArguments(
+              count: state.calculations.length,
+            ),
+          ),
           content: Column(
             children: [
               TableItem(
@@ -201,7 +198,10 @@ class _CalculationsPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageCalculationPage(
-                                  state.calculations[i],
+                                  ManageCalculationPageArguments(
+                                    count: state.calculations.length,
+                                    calculation: state.calculations[i],
+                                  ),
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

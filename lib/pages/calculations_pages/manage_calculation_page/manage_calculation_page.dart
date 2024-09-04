@@ -31,15 +31,27 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
 
+class ManageCalculationPageArguments {
+  const ManageCalculationPageArguments({
+    required this.count,
+    this.calculation,
+  });
+
+  final int count;
+  final CalculationModel? calculation;
+}
+
 class ManageCalculationPage extends StatefulWidget {
   const ManageCalculationPage({
     super.key,
+    required this.count,
     this.calculation,
     required this.navigateToCalculationsPage,
   });
 
   static const routePath = '/calculations_pages/manage_calculation';
 
+  final int count;
   final CalculationModel? calculation;
   final void Function() navigateToCalculationsPage;
 
@@ -73,16 +85,19 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   final TextEditingController _controllerLiving = TextEditingController();
 
   final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerDescription = TextEditingController();
   final TextEditingController _controllerPrice = TextEditingController();
   final TextEditingController _controllerDepositVal = TextEditingController();
   final TextEditingController _controllerDepositPct = TextEditingController();
 
   bool _dataLoaded = false;
   bool _isLoading = false;
+  bool _nameValid = false;
   bool _priceValid = false;
 
   CompanyModel? _company;
   ProjectModel? _project;
+  String? _errorTextName;
   CalculationPeriodModel? _calculationPeriod;
   DateTime? _startInstallments;
   DateTime? _endInstallments;
@@ -97,6 +112,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final CalculationInfoModel info = widget.calculation!.info;
 
     _controllerName.text = info.name;
+    _validateName(info.name);
+
+    if (info.description != null) {
+      _controllerDescription.text = info.description!;
+    }
 
     _switchDataLoaded(true);
   }
@@ -133,6 +153,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
 
     setState(() => _project = project);
+  }
+
+  void _validateName(String name) {
+    setState(() {
+      _nameValid = name.length > 1;
+    });
   }
 
   void _validatePrice(String price) {
@@ -629,6 +655,69 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
   }
 
+  void _createCalculation(BuildContext context) {
+    _switchErrorName();
+
+    if (widget.count > 18) {
+      const String errorLimit =
+          'The limit for creating calculations for the workspace has been reached';
+      return _showErrorMessage(errorMessage: errorLimit);
+    }
+
+    final String name = _controllerName.text.trim();
+    final String description = _controllerDescription.text.trim();
+
+    if (name.isEmpty || !_nameValid) {
+      const String errorName = 'Calculation name is too short';
+
+      _switchErrorName(error: errorName);
+      return _showErrorMessage(errorMessage: errorName);
+    }
+
+    context.read<ManageCalculationBloc>().add(
+          CreateCalculation(
+            name: name,
+            description: description,
+          ),
+        );
+  }
+
+  void _updateCalculation(BuildContext context) {
+    _switchErrorName();
+
+    final String name = _controllerName.text.trim();
+    final String description = _controllerDescription.text.trim();
+
+    if (name.isEmpty || !_nameValid) {
+      const String errorName = 'Calculation name is too short';
+
+      _switchErrorName(error: errorName);
+      return _showErrorMessage(errorMessage: errorName);
+    }
+
+    context.read<ManageCalculationBloc>().add(
+          UpdateCalculation(
+            id: widget.calculation!.id,
+            name: name,
+            description: description,
+            createdAt: widget.calculation!.metadata.createdAt,
+          ),
+        );
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _showErrorMessage({
+    required String errorMessage,
+  }) {
+    InAppNotificationService.show(
+      title: errorMessage,
+      type: InAppNotificationType.error,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ManageCalculationBloc>(
@@ -849,9 +938,21 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Calculation name',
+                      errorText: _errorTextName,
                       maxLines: 2,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(64),
+                      ],
+                      onChanged: _validateName,
+                    ),
+                    const SizedBox(height: 16.0),
+                    BorderTextField(
+                      controller: _controllerDescription,
+                      labelText: 'Description',
+                      hintText: 'Field for notes, explanations, etc..',
+                      maxLines: 6,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(640),
                       ],
                     ),
                     const SizedBox(height: 16.0),
@@ -913,6 +1014,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       children: [
                         Expanded(
                           child: CustomDatePicker(
+                            addDay: false,
                             initialDate: _startInstallments,
                             lastDate: _endInstallments,
                             labelText: 'Start of installments',
@@ -923,6 +1025,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         const SizedBox(width: 16.0),
                         Expanded(
                           child: CustomDatePicker(
+                            addDay: true,
                             initialDate: _endInstallments,
                             firstDate: _startInstallments,
                             labelText: 'End of installments',
@@ -933,15 +1036,20 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       ],
                     ),
                     const SizedBox(height: 40.0),
+                    CustomTextButton(
+                      text: 'Print Pdf',
+                      onTap: () => _printPdf(state),
+                    ),
+                    const SizedBox(height: 12.0),
                     if (widget.calculation == null) ...[
                       CustomButton(
                         text: 'Create calculation',
-                        onTap: () => _printPdf(state),
+                        onTap: () => _createCalculation(context),
                       ),
                     ] else ...[
                       CustomButton(
                         text: 'Save changes',
-                        onTap: () => _printPdf(state),
+                        onTap: () => _updateCalculation(context),
                       ),
                     ],
                     const SizedBox(height: 12.0),

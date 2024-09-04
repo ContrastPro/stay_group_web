@@ -21,16 +21,27 @@ import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
+import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
-import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
+
+class ManageCompanyPageArguments {
+  const ManageCompanyPageArguments({
+    required this.count,
+    this.company,
+  });
+
+  final int count;
+  final CompanyModel? company;
+}
 
 class ManageCompanyPage extends StatefulWidget {
   const ManageCompanyPage({
     super.key,
+    required this.count,
     this.company,
     required this.navigateToMediaViewerPage,
     required this.navigateToDashboardPage,
@@ -38,6 +49,7 @@ class ManageCompanyPage extends StatefulWidget {
 
   static const routePath = '/dashboard_pages/manage_company';
 
+  final int count;
   final CompanyModel? company;
   final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToDashboardPage;
@@ -119,17 +131,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     });
   }
 
-  void _switchErrorName({String? error}) {
-    setState(() => _errorTextName = error);
-  }
-
-  void _switchErrorDescription({String? error}) {
-    setState(() => _errorTextDescription = error);
-  }
-
   void _createCompany(BuildContext context) {
     _switchErrorName();
     _switchErrorDescription();
+
+    if (widget.count > 2) {
+      const String errorLimit = 'The limit for creating companies for the workspace has been reached';
+      return _showErrorMessage(errorMessage: errorLimit);
+    }
 
     final String name = _controllerName.text.trim();
     final String description = _controllerDescription.text.trim();
@@ -206,6 +215,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
             createdAt: widget.company!.metadata.createdAt,
           ),
         );
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _switchErrorDescription({String? error}) {
+    setState(() => _errorTextDescription = error);
   }
 
   void _showErrorMessage({

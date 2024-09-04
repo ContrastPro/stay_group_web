@@ -28,7 +28,7 @@ class CalculationsRepository {
     required String spaceId,
     required String id,
     required String name,
-    required String description,
+    String? description,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -53,7 +53,7 @@ class CalculationsRepository {
     required String spaceId,
     required String id,
     required String name,
-    required String description,
+    String? description,
     required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(

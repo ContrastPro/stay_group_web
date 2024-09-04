@@ -21,16 +21,27 @@ import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
+import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
-import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
+
+class ManageProjectPageArguments {
+  const ManageProjectPageArguments({
+    required this.count,
+    this.project,
+  });
+
+  final int count;
+  final ProjectModel? project;
+}
 
 class ManageProjectPage extends StatefulWidget {
   const ManageProjectPage({
     super.key,
+    required this.count,
     this.project,
     required this.navigateToMediaViewerPage,
     required this.navigateToProjectsPage,
@@ -38,6 +49,7 @@ class ManageProjectPage extends StatefulWidget {
 
   static const routePath = '/projects_pages/manage_project';
 
+  final int count;
   final ProjectModel? project;
   final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToProjectsPage;
@@ -130,22 +142,15 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     });
   }
 
-  void _switchErrorName({String? error}) {
-    setState(() => _errorTextName = error);
-  }
-
-  void _switchErrorLocation({String? error}) {
-    setState(() => _errorTextLocation = error);
-  }
-
-  void _switchErrorDescription({String? error}) {
-    setState(() => _errorTextDescription = error);
-  }
-
   void _createProject(BuildContext context) {
     _switchErrorName();
     _switchErrorLocation();
     _switchErrorDescription();
+
+    if (widget.count > 9) {
+      const String errorLimit = 'The limit for creating projects for the workspace has been reached';
+      return _showErrorMessage(errorMessage: errorLimit);
+    }
 
     final String name = _controllerName.text.trim();
     final String location = _controllerLocation.text.trim();
@@ -241,6 +246,18 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
             createdAt: widget.project!.metadata.createdAt,
           ),
         );
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _switchErrorLocation({String? error}) {
+    setState(() => _errorTextLocation = error);
+  }
+
+  void _switchErrorDescription({String? error}) {
+    setState(() => _errorTextDescription = error);
   }
 
   void _showErrorMessage({

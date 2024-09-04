@@ -19,16 +19,28 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_user_bloc/manage_user_bloc.dart';
 
+class ManageUserPageArguments {
+  const ManageUserPageArguments({
+    required this.count,
+    this.userData,
+  });
+
+  final int count;
+  final UserModel? userData;
+}
+
 class ManageUserPage extends StatefulWidget {
   const ManageUserPage({
     super.key,
-    this.user,
+    required this.count,
+    this.userData,
     required this.navigateToTeamPage,
   });
 
   static const routePath = '/team_pages/manage_user';
 
-  final UserModel? user;
+  final int count;
+  final UserModel? userData;
   final void Function() navigateToTeamPage;
 
   @override
@@ -57,10 +69,10 @@ class _ManageUserPageState extends State<ManageUserPage> {
   }
 
   void _setInitialData() {
-    if (widget.user != null) {
-      _controllerName.text = widget.user!.info.name;
-      _validateName(widget.user!.info.name);
-      _controllerEmail.text = widget.user!.credential.email;
+    if (widget.userData != null) {
+      _controllerName.text = widget.userData!.info.name;
+      _validateName(widget.userData!.info.name);
+      _controllerEmail.text = widget.userData!.credential.email;
     }
   }
 
@@ -92,22 +104,16 @@ class _ManageUserPageState extends State<ManageUserPage> {
     });
   }
 
-  void _switchErrorName({String? error}) {
-    setState(() => _errorTextName = error);
-  }
-
-  void _switchErrorEmail({String? error}) {
-    setState(() => _errorTextEmail = error);
-  }
-
-  void _switchErrorPassword({String? error}) {
-    setState(() => _errorTextPassword = error);
-  }
-
   void _createUser(BuildContext context) {
     _switchErrorName();
     _switchErrorEmail();
     _switchErrorPassword();
+
+    if (widget.count > 3) {
+      const String errorLimit =
+          'The limit for creating users for the workspace has been reached';
+      return _showErrorMessage(errorMessage: errorLimit);
+    }
 
     final String name = _controllerName.text.trim();
     final String email = _controllerEmail.text.trim();
@@ -157,10 +163,22 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
     context.read<ManageUserBloc>().add(
           UpdateUser(
-            id: widget.user!.id,
+            id: widget.userData!.id,
             name: name,
           ),
         );
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
+  }
+
+  void _switchErrorEmail({String? error}) {
+    setState(() => _errorTextEmail = error);
+  }
+
+  void _switchErrorPassword({String? error}) {
+    setState(() => _errorTextPassword = error);
   }
 
   void _showErrorMessage({
@@ -192,7 +210,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: widget.user == null
+              title: widget.userData == null
                   ? 'User successfully created'
                   : 'User successfully updated',
               type: InAppNotificationType.success,
@@ -217,7 +235,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                 ),
                 children: [
                   Text(
-                    widget.user == null
+                    widget.userData == null
                         ? 'Add new team member'
                         : 'Edit team member',
                     style: AppTextStyles.head5SemiBold,
@@ -225,7 +243,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    widget.user == null
+                    widget.userData == null
                         ? 'Create your team member'
                         : 'Edit your team member info',
                     style: AppTextStyles.paragraphSRegular.copyWith(
@@ -248,7 +266,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   const SizedBox(height: 16.0),
                   BorderTextField(
                     controller: _controllerEmail,
-                    enabled: widget.user == null,
+                    enabled: widget.userData == null,
                     labelText: 'Email',
                     hintText: 'User email',
                     prefixIcon: AppIcons.mail,
@@ -258,7 +276,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     ],
                     onChanged: _validateEmail,
                   ),
-                  if (widget.user == null) ...[
+                  if (widget.userData == null) ...[
                     const SizedBox(height: 16.0),
                     BorderTextField(
                       controller: _controllerPassword,

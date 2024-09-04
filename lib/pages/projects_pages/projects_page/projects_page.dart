@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/projects/project_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/projects_repository.dart';
 import '../../../repositories/storage_repository.dart';
@@ -13,7 +12,6 @@ import '../../../resources/app_animations.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
-import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
@@ -24,6 +22,7 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../manage_project_page/manage_project_page.dart';
 import 'blocs/projects_bloc/projects_bloc.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -36,7 +35,7 @@ class ProjectsPage extends StatelessWidget {
   static const routePath = '/projects_pages/projects';
 
   final GoRouterState state;
-  final void Function([ProjectModel?]) navigateToManageProjectPage;
+  final void Function(ManageProjectPageArguments) navigateToManageProjectPage;
 
   @override
   Widget build(BuildContext context) {
@@ -79,21 +78,9 @@ class _ProjectsPageContent extends StatelessWidget {
   });
 
   final ProjectsState state;
-  final void Function([ProjectModel?]) navigateToManageProjectPage;
+  final void Function(ManageProjectPageArguments) navigateToManageProjectPage;
 
   static const double _buttonWidth = 160.0;
-
-  void _checkAccountLimits() {
-    if (state.projects.length < 9) {
-      return navigateToManageProjectPage();
-    }
-
-    InAppNotificationService.show(
-      title:
-          'The limit for creating projects for the workspace has been reached',
-      type: InAppNotificationType.error,
-    );
-  }
 
   void _deleteProject({
     required BuildContext context,
@@ -123,7 +110,11 @@ class _ProjectsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add project',
                   backgroundColor: AppColors.info,
-                  onTap: _checkAccountLimits,
+                  onTap: () => navigateToManageProjectPage(
+                    ManageProjectPageArguments(
+                      count: state.projects.length,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -137,7 +128,11 @@ class _ProjectsPageContent extends StatelessWidget {
               "You don't added your first project yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add project',
-          onTap: navigateToManageProjectPage,
+          onTap: () => navigateToManageProjectPage(
+            ManageProjectPageArguments(
+              count: state.projects.length,
+            ),
+          ),
           content: Column(
             children: [
               TableItem(
@@ -220,7 +215,10 @@ class _ProjectsPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageProjectPage(
-                                  state.projects[i],
+                                  ManageProjectPageArguments(
+                                    count: state.projects.length,
+                                    project: state.projects[i],
+                                  ),
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

@@ -2,10 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../models/calculations/calculation_model.dart';
-import '../models/companies/company_model.dart';
-import '../models/projects/project_model.dart';
-import '../models/users/user_model.dart';
 import '../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../pages/auth_pages/log_in_page/log_in_page.dart';
 import '../pages/auth_pages/restore_email_page/restore_email_page.dart';
@@ -171,12 +167,12 @@ class AppRouter {
                 state: state,
                 child: DashboardPage(
                   state: state,
-                  navigateToManageCompanyPage: ([
-                    CompanyModel? company,
-                  ]) {
+                  navigateToManageCompanyPage: (
+                    ManageCompanyPageArguments extra,
+                  ) {
                     context.go(
                       ManageCompanyPage.routePath,
-                      extra: company,
+                      extra: extra,
                     );
                   },
                 ),
@@ -186,12 +182,14 @@ class AppRouter {
             GoRoute(
               path: ManageCompanyPage.routePath,
               pageBuilder: (context, state) {
-                final CompanyModel? args = state.extra as CompanyModel?;
+                final ManageCompanyPageArguments args =
+                    state.extra as ManageCompanyPageArguments;
 
                 return _customTransition(
                   state: state,
                   child: ManageCompanyPage(
-                    company: args,
+                    count: args.count,
+                    company: args.company,
                     navigateToMediaViewerPage: (
                       MediaViewerPageArguments extra,
                     ) {
@@ -218,12 +216,12 @@ class AppRouter {
                 state: state,
                 child: ProjectsPage(
                   state: state,
-                  navigateToManageProjectPage: ([
-                    ProjectModel? project,
-                  ]) {
+                  navigateToManageProjectPage: (
+                    ManageProjectPageArguments extra,
+                  ) {
                     context.go(
                       ManageProjectPage.routePath,
-                      extra: project,
+                      extra: extra,
                     );
                   },
                 ),
@@ -233,12 +231,14 @@ class AppRouter {
             GoRoute(
               path: ManageProjectPage.routePath,
               pageBuilder: (context, state) {
-                final ProjectModel? args = state.extra as ProjectModel?;
+                final ManageProjectPageArguments args =
+                    state.extra as ManageProjectPageArguments;
 
                 return _customTransition(
                   state: state,
                   child: ManageProjectPage(
-                    project: args,
+                    count: args.count,
+                    project: args.project,
                     navigateToMediaViewerPage: (
                       MediaViewerPageArguments extra,
                     ) {
@@ -265,12 +265,12 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
-                  navigateToManageUserPage: ([
-                    UserModel? user,
-                  ]) {
+                  navigateToManageUserPage: (
+                    ManageUserPageArguments extra,
+                  ) {
                     context.go(
                       ManageUserPage.routePath,
-                      extra: user,
+                      extra: extra,
                     );
                   },
                 ),
@@ -280,12 +280,14 @@ class AppRouter {
             GoRoute(
               path: ManageUserPage.routePath,
               pageBuilder: (context, state) {
-                final UserModel? args = state.extra as UserModel?;
+                final ManageUserPageArguments args =
+                    state.extra as ManageUserPageArguments;
 
                 return _customTransition(
                   state: state,
                   child: ManageUserPage(
-                    user: args,
+                    count: args.count,
+                    userData: args.userData,
                     navigateToTeamPage: () => context.go(
                       TeamPage.routePath,
                     ),
@@ -304,12 +306,12 @@ class AppRouter {
                 state: state,
                 child: CalculationsPage(
                   state: state,
-                  navigateToManageCalculationPage: ([
-                    CalculationModel? calculation,
-                  ]) {
+                  navigateToManageCalculationPage: (
+                    ManageCalculationPageArguments extra,
+                  ) {
                     context.go(
                       ManageCalculationPage.routePath,
-                      extra: calculation,
+                      extra: extra,
                     );
                   },
                 ),
@@ -319,12 +321,14 @@ class AppRouter {
             GoRoute(
               path: ManageCalculationPage.routePath,
               pageBuilder: (context, state) {
-                final CalculationModel? args = state.extra as CalculationModel?;
+                final ManageCalculationPageArguments args =
+                    state.extra as ManageCalculationPageArguments;
 
                 return _customTransition(
                   state: state,
                   child: ManageCalculationPage(
-                    calculation: args,
+                    count: args.count,
+                    calculation: args.calculation,
                     navigateToCalculationsPage: () => context.go(
                       CalculationsPage.routePath,
                     ),
