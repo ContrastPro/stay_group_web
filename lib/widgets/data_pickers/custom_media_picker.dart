@@ -9,17 +9,17 @@ import '../../services/in_app_notification_service.dart';
 import '../../services/media_service.dart';
 import '../../utils/constants.dart';
 
-class MediaOrganizer extends StatelessWidget {
-  const MediaOrganizer({
+class CustomMediaPicker extends StatelessWidget {
+  const CustomMediaPicker({
     super.key,
-    required this.labelText,
+    this.labelText,
     this.maxLength = 3,
     required this.media,
     required this.onPickMedia,
     required this.onDeleteMedia,
   });
 
-  final String labelText;
+  final String? labelText;
   final int maxLength;
   final List<MediaResponseModel> media;
   final void Function(MediaResponseModel) onPickMedia;
@@ -54,14 +54,16 @@ class MediaOrganizer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          labelText,
-          style: AppTextStyles.paragraphSMedium.copyWith(
-            color: AppColors.textSecondary,
+        if (labelText != null) ...[
+          Text(
+            labelText!,
+            style: AppTextStyles.paragraphSMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+            textAlign: TextAlign.start,
           ),
-          textAlign: TextAlign.start,
-        ),
-        const SizedBox(height: 4.0),
+          const SizedBox(height: 4.0),
+        ],
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -70,7 +72,7 @@ class MediaOrganizer extends StatelessWidget {
             if (i < media.length) {
               return Container(
                 width: double.infinity,
-                height: 40.0,
+                height: 40.5,
                 margin: const EdgeInsets.only(
                   bottom: 8.0,
                 ),
@@ -120,7 +122,7 @@ class MediaOrganizer extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: double.infinity,
-                  height: 40.0,
+                  height: 40.5,
                   margin: const EdgeInsets.only(
                     bottom: 8.0,
                   ),

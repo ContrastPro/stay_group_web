@@ -7,6 +7,7 @@ class AppIcons {
   static const String arrowBack = '$_path/arrow_back.svg';
   static const String arrowForward = '$_path/arrow_forward.svg';
   static const String calculation = '$_path/calculation.svg';
+  static const String calendar = '$_path/calendar.svg';
   static const String close = '$_path/close.svg';
   static const String dashboard = '$_path/dashboard.svg';
   static const String delete = '$_path/delete.svg';

@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
 
+import '../../../models/calculations/calculation_info_model.dart';
 import '../../../models/calculations/calculation_model.dart';
 import '../../../models/calculations/calculation_period_model.dart';
 import '../../../models/companies/company_model.dart';
@@ -23,6 +24,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
+import '../../../widgets/data_pickers/custom_date_picker.dart';
 import '../../../widgets/dropdowns/custom_dropdown.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
@@ -75,14 +77,35 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   final TextEditingController _controllerDepositVal = TextEditingController();
   final TextEditingController _controllerDepositPct = TextEditingController();
 
+  bool _dataLoaded = false;
   bool _isLoading = false;
-  bool _nameValid = false;
   bool _priceValid = false;
-  bool _depositValid = false;
 
   CompanyModel? _company;
   ProjectModel? _project;
   CalculationPeriodModel? _calculationPeriod;
+  DateTime? _startInstallments;
+  DateTime? _endInstallments;
+
+  void _setInitialData(ManageCalculationState state) {
+    if (_dataLoaded) return;
+
+    if (widget.calculation == null) {
+      return _switchDataLoaded(true);
+    }
+
+    final CalculationInfoModel info = widget.calculation!.info;
+
+    _controllerName.text = info.name;
+
+    _switchDataLoaded(true);
+  }
+
+  void _switchDataLoaded(bool status) {
+    if (_dataLoaded != status) {
+      setState(() => _dataLoaded = status);
+    }
+  }
 
   void _switchLoading(bool status) {
     if (_isLoading != status) {
@@ -91,11 +114,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _onSelectCompany({
-    String? name,
+    required String name,
     required List<CompanyModel> companies,
   }) {
-    if (name == null) return;
-
     final CompanyModel company = companies.firstWhere(
       (e) => e.info.name == name,
     );
@@ -104,22 +125,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _onSelectProject({
-    String? name,
+    required String name,
     required List<ProjectModel> projects,
   }) {
-    if (name == null) return;
-
     final ProjectModel project = projects.firstWhere(
       (e) => e.info.name == name,
     );
 
     setState(() => _project = project);
-  }
-
-  void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
   }
 
   void _validatePrice(String price) {
@@ -143,11 +156,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return 'First deposit in ($symbol)';
   }
 
-  int _parseString(String value) {
-    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.parse(formatValue);
-  }
-
   void _validateDepositVal(String depositVal) {
     final bool isValid = depositVal.length > 3;
 
@@ -161,8 +169,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     } else {
       _controllerDepositPct.clear();
     }
-
-    setState(() => _depositValid = isValid);
   }
 
   void _validateDepositPct(String depositPct) {
@@ -178,18 +184,27 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     } else {
       _controllerDepositVal.clear();
     }
-
-    setState(() => _depositValid = isValid);
   }
 
-  void _onSelectCalculationPeriod(String? name) {
-    if (name == null) return;
+  int _parseString(String value) {
+    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+    return int.parse(formatValue);
+  }
 
+  void _onSelectCalculationPeriod(String name) {
     final CalculationPeriodModel period = _calculationPeriods.firstWhere(
       (e) => e.name == name,
     );
 
     setState(() => _calculationPeriod = period);
+  }
+
+  void _onSelectStartInstallments(DateTime installments) {
+    setState(() => _startInstallments = installments);
+  }
+
+  void _onSelectEndInstallments(DateTime installments) {
+    setState(() => _endInstallments = installments);
   }
 
   Future<void> _printPdf(ManageCalculationState state) async {
@@ -628,6 +643,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         ),
       child: BlocConsumer<ManageCalculationBloc, ManageCalculationState>(
         listener: (_, state) {
+          if (state.userData != null) {
+            _setInitialData(state);
+          }
+
           if (state.status == BlocStatus.loading) {
             _switchLoading(true);
           }
@@ -684,12 +703,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       const SizedBox(height: 16.0),
                       if (state.companies.isNotEmpty) ...[
                         AnimatedDropdown(
-                          enabled: state.companies.isNotEmpty,
+                          initialData: _company?.info.name,
                           labelText: 'Company',
                           hintText: 'Select company',
                           values:
                               state.companies.map((e) => e.info.name).toList(),
-                          onChanged: (String? name) => _onSelectCompany(
+                          onChanged: (String name) => _onSelectCompany(
                             name: name,
                             companies: state.companies,
                           ),
@@ -697,11 +716,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         const SizedBox(height: 16.0),
                       ],
                       AnimatedDropdown(
-                        enabled: state.projects.isNotEmpty,
+                        initialData: _project?.info.name,
                         labelText: 'Project',
                         hintText: 'Select project',
                         values: state.projects.map((e) => e.info.name).toList(),
-                        onChanged: (String? name) => _onSelectProject(
+                        onChanged: (String name) => _onSelectProject(
                           name: name,
                           projects: state.projects,
                         ),
@@ -834,7 +853,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(64),
                       ],
-                      onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
                     BorderTextField(
@@ -884,10 +902,35 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     ),
                     const SizedBox(height: 16.0),
                     AnimatedDropdown(
+                      initialData: _calculationPeriod?.name,
                       labelText: 'Calculation period',
                       hintText: 'Select period',
                       values: _calculationPeriods.map((e) => e.name).toList(),
                       onChanged: _onSelectCalculationPeriod,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomDatePicker(
+                            initialDate: _startInstallments,
+                            lastDate: _endInstallments,
+                            labelText: 'Start of installments',
+                            hintText: 'dd/MM/yy',
+                            onChanged: _onSelectStartInstallments,
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: CustomDatePicker(
+                            initialDate: _endInstallments,
+                            firstDate: _startInstallments,
+                            labelText: 'End of installments',
+                            hintText: 'dd/MM/yy',
+                            onChanged: _onSelectEndInstallments,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 40.0),
                     if (widget.calculation == null) ...[

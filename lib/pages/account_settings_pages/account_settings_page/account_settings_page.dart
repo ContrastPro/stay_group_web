@@ -43,6 +43,24 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   String? _errorTextName;
 
+  void _setInitialData(AccountSettingsState state) {
+    if (_dataLoaded) return;
+
+    if (state.spaceData != null) {
+      _controllerWorkspace.text = state.spaceData!.info.name;
+    }
+
+    _controllerName.text = state.userData!.info.name;
+    _validateName(state.userData!.info.name);
+    _controllerEmail.text = state.userData!.credential.email;
+
+    if (state.userData!.info.phone != null) {
+      _controllerPhone.text = state.userData!.info.phone!;
+    }
+
+    _switchDataLoaded(true);
+  }
+
   void _switchDataLoaded(bool status) {
     if (_dataLoaded != status) {
       setState(() => _dataLoaded = status);
@@ -115,21 +133,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           return BlocConsumer<AccountSettingsBloc, AccountSettingsState>(
             listener: (_, state) {
               if (state.userData != null) {
-                if (!_dataLoaded) {
-                  if (state.spaceData != null) {
-                    _controllerWorkspace.text = state.spaceData!.info.name;
-                  }
-
-                  _controllerName.text = state.userData!.info.name;
-                  _validateName(state.userData!.info.name);
-                  _controllerEmail.text = state.userData!.credential.email;
-
-                  if (state.userData!.info.phone != null) {
-                    _controllerPhone.text = state.userData!.info.phone!;
-                  }
-
-                  _switchDataLoaded(true);
-                }
+                _setInitialData(state);
               }
 
               if (state.status == BlocStatus.loading) {

@@ -24,7 +24,7 @@ import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
-import '../../../widgets/uncategorized/media_organizer.dart';
+import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
 
@@ -308,7 +308,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28.0),
-                  MediaOrganizer(
+                  CustomMediaPicker(
                     labelText: 'Upload images',
                     media: _media,
                     onPickMedia: _onPickMedia,

@@ -7,18 +7,18 @@ import '../../resources/app_text_styles.dart';
 class AnimatedDropdown extends StatelessWidget {
   const AnimatedDropdown({
     super.key,
-    this.enabled = true,
+    this.initialData,
     this.labelText,
-    this.hintText,
+    required this.hintText,
     required this.values,
     required this.onChanged,
   });
 
-  final bool enabled;
+  final String? initialData;
   final String? labelText;
-  final String? hintText;
+  final String hintText;
   final List<String> values;
-  final void Function(String?) onChanged;
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +29,18 @@ class AnimatedDropdown extends StatelessWidget {
           Text(
             labelText!,
             style: AppTextStyles.paragraphSMedium.copyWith(
-              color: enabled
-                  ? AppColors.textSecondary
-                  : AppColors.textSecondary.withOpacity(0.40),
+              color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.start,
           ),
           const SizedBox(height: 4.0),
         ],
         CustomDropdown<String>(
-          enabled: enabled,
+          initialItem: initialData,
           hintText: hintText,
           items: values,
           closedHeaderPadding: const EdgeInsets.symmetric(
-            vertical: 9.0,
+            vertical: 8.5,
             horizontal: 12.0,
           ),
           validateOnChange: false,
@@ -61,7 +59,11 @@ class AnimatedDropdown extends StatelessWidget {
             headerStyle: AppTextStyles.paragraphMRegular,
             listItemStyle: AppTextStyles.paragraphMRegular,
           ),
-          onChanged: onChanged,
+          onChanged: (String? value) {
+            if (value != null) {
+              onChanged(value);
+            }
+          },
         ),
       ],
     );

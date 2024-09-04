@@ -24,7 +24,7 @@ import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
-import '../../../widgets/uncategorized/media_organizer.dart';
+import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
 
@@ -273,7 +273,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28.0),
-                  MediaOrganizer(
+                  CustomMediaPicker(
                     labelText: 'Upload banner',
                     maxLength: 1,
                     media: _media,
