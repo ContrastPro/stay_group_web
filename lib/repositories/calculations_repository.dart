@@ -27,8 +27,24 @@ class CalculationsRepository {
   Future<void> createCalculation({
     required String spaceId,
     required String id,
+    String? companyId,
+    String? projectId,
+    String? section,
+    String? floor,
+    String? number,
+    String? type,
+    String? rooms,
+    String? bathrooms,
+    String? total,
+    String? living,
     required String name,
     String? description,
+    String? price,
+    String? depositVal,
+    String? depositPct,
+    int? period,
+    DateTime? startInstallments,
+    DateTime? endInstallments,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -38,8 +54,28 @@ class CalculationsRepository {
     await reference.set({
       'id': id,
       'info': {
+        'companyId': companyId,
+        'projectId': projectId,
+        'section': section,
+        'floor': floor,
+        'number': number,
+        'type': type,
+        'rooms': rooms,
+        'bathrooms': bathrooms,
+        'total': total,
+        'living': living,
         'name': name,
         'description': description,
+        'price': price,
+        'depositVal': depositVal,
+        'depositPct': depositPct,
+        'period': period,
+        'startInstallments': startInstallments != null
+            ? localToUtc(startInstallments, onlyUtcFormat: true)
+            : null,
+        'endInstallments': endInstallments != null
+            ? localToUtc(endInstallments, onlyUtcFormat: true)
+            : null,
       },
       'metadata': {
         'createdAt': localToUtc(currentTime()),
@@ -52,8 +88,24 @@ class CalculationsRepository {
   Future<void> updateCalculation({
     required String spaceId,
     required String id,
+    String? companyId,
+    String? projectId,
+    String? section,
+    String? floor,
+    String? number,
+    String? type,
+    String? rooms,
+    String? bathrooms,
+    String? total,
+    String? living,
     required String name,
     String? description,
+    String? price,
+    String? depositVal,
+    String? depositPct,
+    int? period,
+    DateTime? startInstallments,
+    DateTime? endInstallments,
     required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(
@@ -64,8 +116,28 @@ class CalculationsRepository {
     await reference.update({
       'id': id,
       'info': {
+        'companyId': companyId,
+        'projectId': projectId,
+        'section': section,
+        'floor': floor,
+        'number': number,
+        'type': type,
+        'rooms': rooms,
+        'bathrooms': bathrooms,
+        'total': total,
+        'living': living,
         'name': name,
         'description': description,
+        'price': price,
+        'depositVal': depositVal,
+        'depositPct': depositPct,
+        'period': period,
+        'startInstallments': startInstallments != null
+            ? localToUtc(startInstallments, onlyUtcFormat: true)
+            : null,
+        'endInstallments': endInstallments != null
+            ? localToUtc(endInstallments, onlyUtcFormat: true)
+            : null,
       },
       'metadata': {
         'createdAt': createdAt,

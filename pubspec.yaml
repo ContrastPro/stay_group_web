@@ -44,6 +44,7 @@ dependencies:
 
 
   # Services
+  collection: ^1.18.0
   crypt: ^4.3.1
   email_validator: ^3.0.0
   file_sizes: ^1.0.6
@@ -52,6 +53,7 @@ dependencies:
   go_router: ^14.2.7
   image_picker: ^1.1.2
   intl: ^0.19.0
+  jiffy: ^6.3.1
   logger: ^2.4.0
   pdf: ^3.11.1
   printing: ^5.13.0

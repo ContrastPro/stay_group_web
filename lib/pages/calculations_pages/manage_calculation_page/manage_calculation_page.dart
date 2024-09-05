@@ -1,6 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
@@ -60,17 +62,17 @@ class ManageCalculationPage extends StatefulWidget {
 }
 
 class _ManageCalculationPageState extends State<ManageCalculationPage> {
-  static const List<CalculationPeriodModel> _calculationPeriods = [
+  static const List<CalculationPeriodModel> _periods = [
     CalculationPeriodModel(
-      days: 30,
+      month: 1,
       name: 'Every month',
     ),
     CalculationPeriodModel(
-      days: 90,
+      month: 3,
       name: 'Every quarter',
     ),
     CalculationPeriodModel(
-      days: 180,
+      month: 6,
       name: 'Every six months',
     ),
   ];
@@ -98,7 +100,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   CompanyModel? _company;
   ProjectModel? _project;
   String? _errorTextName;
-  CalculationPeriodModel? _calculationPeriod;
+  CalculationPeriodModel? _period;
   DateTime? _startInstallments;
   DateTime? _endInstallments;
 
@@ -111,11 +113,98 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
     final CalculationInfoModel info = widget.calculation!.info;
 
+    if (info.companyId != null) {
+      final CompanyModel? company = state.companies.firstWhereOrNull(
+        (e) => e.id == info.companyId,
+      );
+
+      setState(() => _company = company);
+    }
+
+    if (info.projectId != null) {
+      final ProjectModel? project = state.projects.firstWhereOrNull(
+        (e) => e.id == info.projectId,
+      );
+
+      setState(() => _project = project);
+    }
+
+    if (info.section != null) {
+      _controllerSection.text = info.section!;
+    }
+
+    if (info.floor != null) {
+      _controllerFloor.text = info.floor!;
+    }
+
+    if (info.number != null) {
+      _controllerNumber.text = info.number!;
+    }
+
+    if (info.type != null) {
+      _controllerType.text = info.type!;
+    }
+
+    if (info.rooms != null) {
+      _controllerRooms.text = info.rooms!;
+    }
+
+    if (info.bathrooms != null) {
+      _controllerBathrooms.text = info.bathrooms!;
+    }
+
+    if (info.total != null) {
+      _controllerTotal.text = info.total!;
+    }
+
+    if (info.living != null) {
+      _controllerLiving.text = info.living!;
+    }
+
     _controllerName.text = info.name;
     _validateName(info.name);
 
     if (info.description != null) {
       _controllerDescription.text = info.description!;
+    }
+
+    if (info.price != null) {
+      _controllerPrice.text = info.price!;
+      _validatePrice(info.price!);
+    }
+
+    if (info.depositVal != null) {
+      _controllerDepositVal.text = info.depositVal!;
+    }
+
+    if (info.depositPct != null) {
+      _controllerDepositPct.text = info.depositPct!;
+    }
+
+    if (info.period != null) {
+      final CalculationPeriodModel period = _periods.firstWhere(
+        (e) => e.month == info.period,
+      );
+
+      setState(() => _period = period);
+    }
+
+    if (info.startInstallments != null) {
+      setState(() {
+        _startInstallments = Jiffy.parse(
+          info.startInstallments!,
+          isUtc: true,
+        ).dateTime;
+      });
+    }
+
+    if (info.endInstallments != null) {
+      setState(() {
+        _endInstallments = Jiffy.parse(
+          info.endInstallments!,
+          isUtc: true,
+        ).dateTime;
+      });
     }
 
     _switchDataLoaded(true);
@@ -218,11 +307,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _onSelectCalculationPeriod(String name) {
-    final CalculationPeriodModel period = _calculationPeriods.firstWhere(
+    final CalculationPeriodModel period = _periods.firstWhere(
       (e) => e.name == name,
     );
 
-    setState(() => _calculationPeriod = period);
+    setState(() => _period = period);
   }
 
   void _onSelectStartInstallments(DateTime installments) {
@@ -434,7 +523,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             fit: pdf.BoxFit.cover,
                           ),
                         ),
-                        pdf.SizedBox(width: 8.0),
+                        if (projectImages.length > 1) ...[
+                          pdf.SizedBox(width: 8.0),
+                        ],
                         pdf.Column(
                           children: [
                             if (projectImages.length > 1) ...[
@@ -445,13 +536,18 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                 fit: pdf.BoxFit.cover,
                               ),
                             ],
+                            pdf.SizedBox(height: 8.0),
                             if (projectImages.length > 2) ...[
-                              pdf.SizedBox(height: 8.0),
                               pdf.Image(
                                 projectImages[2],
                                 width: 180.0,
                                 height: 136.0,
                                 fit: pdf.BoxFit.cover,
+                              ),
+                            ] else ...[
+                              pdf.SizedBox(
+                                width: 180.0,
+                                height: 136.0,
                               ),
                             ],
                           ],
@@ -664,8 +760,20 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
+    final String section = _controllerSection.text.trim();
+    final String floor = _controllerFloor.text.trim();
+    final String number = _controllerNumber.text.trim();
+    final String type = _controllerType.text.trim();
+    final String rooms = _controllerRooms.text.trim();
+    final String bathrooms = _controllerBathrooms.text.trim();
+    final String total = _controllerTotal.text.trim();
+    final String living = _controllerLiving.text.trim();
     final String name = _controllerName.text.trim();
     final String description = _controllerDescription.text.trim();
+
+    final String price = _controllerPrice.text.trim();
+    final String depositVal = _controllerDepositVal.text.trim();
+    final String depositPct = _controllerDepositPct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
       const String errorName = 'Calculation name is too short';
@@ -676,8 +784,24 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
     context.read<ManageCalculationBloc>().add(
           CreateCalculation(
+            companyId: _company?.id,
+            projectId: _project?.id,
+            section: section,
+            floor: floor,
+            number: number,
+            type: type,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            total: total,
+            living: living,
             name: name,
             description: description,
+            price: price,
+            depositVal: depositVal,
+            depositPct: depositPct,
+            period: _period?.month,
+            startInstallments: _startInstallments,
+            endInstallments: _endInstallments,
           ),
         );
   }
@@ -685,8 +809,19 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   void _updateCalculation(BuildContext context) {
     _switchErrorName();
 
+    final String section = _controllerSection.text.trim();
+    final String floor = _controllerFloor.text.trim();
+    final String number = _controllerNumber.text.trim();
+    final String type = _controllerType.text.trim();
+    final String rooms = _controllerRooms.text.trim();
+    final String bathrooms = _controllerBathrooms.text.trim();
+    final String total = _controllerTotal.text.trim();
+    final String living = _controllerLiving.text.trim();
     final String name = _controllerName.text.trim();
     final String description = _controllerDescription.text.trim();
+    final String price = _controllerPrice.text.trim();
+    final String depositVal = _controllerDepositVal.text.trim();
+    final String depositPct = _controllerDepositPct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
       const String errorName = 'Calculation name is too short';
@@ -698,8 +833,24 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     context.read<ManageCalculationBloc>().add(
           UpdateCalculation(
             id: widget.calculation!.id,
+            companyId: _company?.id,
+            projectId: _project?.id,
+            section: section,
+            floor: floor,
+            number: number,
+            type: type,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            total: total,
+            living: living,
             name: name,
             description: description,
+            price: price,
+            depositVal: depositVal,
+            depositPct: depositPct,
+            period: _period?.month,
+            startInstallments: _startInstallments,
+            endInstallments: _endInstallments,
             createdAt: widget.calculation!.metadata.createdAt,
           ),
         );
@@ -952,7 +1103,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       hintText: 'Field for notes, explanations, etc..',
                       maxLines: 6,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(640),
+                        LengthLimitingTextInputFormatter(1024),
                       ],
                     ),
                     const SizedBox(height: 16.0),
@@ -962,10 +1113,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       hintText: 'Example: €100000',
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(11),
-                        //todo: uncomment
-                        /*FilteringTextInputFormatter.allow(
+                        FilteringTextInputFormatter.allow(
                           RegExp(r'^[€£¥₽₹$]\d*$'),
-                        ),*/
+                        ),
                       ],
                       onChanged: _validatePrice,
                     ),
@@ -1003,10 +1153,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     ),
                     const SizedBox(height: 16.0),
                     AnimatedDropdown(
-                      initialData: _calculationPeriod?.name,
+                      initialData: _period?.name,
                       labelText: 'Calculation period',
                       hintText: 'Select period',
-                      values: _calculationPeriods.map((e) => e.name).toList(),
+                      values: _periods.map((e) => e.name).toList(),
                       onChanged: _onSelectCalculationPeriod,
                     ),
                     const SizedBox(height: 16.0),

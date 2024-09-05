@@ -1,9 +1,9 @@
 class CalculationPeriodModel {
   const CalculationPeriodModel({
-    required this.days,
+    required this.month,
     required this.name,
   });
 
-  final int days;
+  final int month;
   final String name;
 }
