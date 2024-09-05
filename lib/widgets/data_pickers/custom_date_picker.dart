@@ -15,7 +15,7 @@ class CustomDatePicker extends StatelessWidget {
     this.firstDate,
     this.lastDate,
     this.labelText,
-    required this.hintText,
+    required this.hintFormat,
     required this.onChanged,
   });
 
@@ -24,7 +24,7 @@ class CustomDatePicker extends StatelessWidget {
   final DateTime? firstDate;
   final DateTime? lastDate;
   final String? labelText;
-  final String hintText;
+  final String hintFormat;
   final void Function(DateTime) onChanged;
 
   static const Duration _day = Duration(days: 1);
@@ -74,11 +74,11 @@ class CustomDatePicker extends StatelessWidget {
 
   String _getFormatDate() {
     if (initialDate != null) {
-      final DateFormat dateFormat = DateFormat('dd/MM/yy');
+      final DateFormat dateFormat = DateFormat(hintFormat);
       return dateFormat.format(initialDate!);
     }
 
-    return hintText;
+    return hintFormat;
   }
 
   @override

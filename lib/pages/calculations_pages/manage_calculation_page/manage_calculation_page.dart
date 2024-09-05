@@ -190,20 +190,24 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     }
 
     if (info.startInstallments != null) {
+      final Jiffy startInstallments = Jiffy.parse(
+        info.startInstallments!,
+        isUtc: true,
+      );
+
       setState(() {
-        _startInstallments = Jiffy.parse(
-          info.startInstallments!,
-          isUtc: true,
-        ).dateTime;
+        _startInstallments = startInstallments.dateTime;
       });
     }
 
     if (info.endInstallments != null) {
+      final Jiffy endInstallments = Jiffy.parse(
+        info.endInstallments!,
+        isUtc: true,
+      );
+
       setState(() {
-        _endInstallments = Jiffy.parse(
-          info.endInstallments!,
-          isUtc: true,
-        ).dateTime;
+        _endInstallments = endInstallments.dateTime;
       });
     }
 
@@ -260,15 +264,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
   String _getDepositValTitle() {
     final String price = _controllerPrice.text;
-    final String symbol;
 
     if (price.isNotEmpty) {
-      symbol = price[0];
+      return 'First deposit in (${price[0]})';
     } else {
-      symbol = '€';
+      return 'First deposit in (€)';
     }
-
-    return 'First deposit in ($symbol)';
   }
 
   void _validateDepositVal(String depositVal) {
@@ -299,11 +300,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     } else {
       _controllerDepositVal.clear();
     }
-  }
-
-  int _parseString(String value) {
-    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.parse(formatValue);
   }
 
   void _onSelectCalculationPeriod(String name) {
@@ -342,8 +338,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     required PdfPageFormat format,
     required ManageCalculationState state,
   }) async {
-    _switchLoading(true);
-
     final pdf.Document document = pdf.Document();
 
     final pdf.TtfFont fontBold = await fontFromAssetBundle(
@@ -367,6 +361,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
 
     if (_project != null) {
+      _switchLoading(true);
+
       final pdf.Page projectInfo = await _getProjectInfo(
         format: format,
         state: state,
@@ -377,13 +373,19 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       document.addPage(projectInfo);
     }
 
-    final pdf.MultiPage calculationInfo = await _getCalculationInfo(
-      format: format,
-      stylePrimary: stylePrimary,
-      styleSecondary: styleSecondary,
-    );
+    final int? payments = _getPayments();
 
-    document.addPage(calculationInfo);
+    if (payments != null) {
+      _switchLoading(true);
+
+      final pdf.MultiPage calculationInfo = await _getCalculationInfo(
+        format: format,
+        stylePrimary: stylePrimary,
+        styleSecondary: styleSecondary,
+      );
+
+      document.addPage(calculationInfo);
+    }
 
     final Uint8List savedDocument = await document.save();
 
@@ -739,6 +741,24 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     required pdf.TextStyle stylePrimary,
     required pdf.TextStyle styleSecondary,
   }) async {
+    final String price = _controllerPrice.text.trim();
+
+    final String depositVal = _controllerDepositVal.text.trim();
+    final String depositPct = _controllerDepositPct.text.trim();
+    final String firstDeposit = '${price[0]}$depositVal — $depositPct%';
+
+    final int? payments = _getPayments();
+    final String installmentPlan = '${_period!.name} — $payments payments';
+
+    final Jiffy startInstallments = Jiffy.parseFromDateTime(
+      _startInstallments!,
+    );
+    final Jiffy endInstallments = Jiffy.parseFromDateTime(
+      _endInstallments!,
+    );
+    final String installmentTerms =
+        '${startInstallments.yMMMMd} — ${endInstallments.yMMMMd}';
+
     return pdf.MultiPage(
       pageFormat: format,
       margin: const pdf.EdgeInsets.symmetric(
@@ -746,8 +766,92 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         vertical: 72.0,
       ),
       build: (pdf.Context context) {
-        return [];
+        return [
+          _getCalculationInfoItem(
+            title: 'Unit price (without extra costs)',
+            data: price,
+            stylePrimary: stylePrimary,
+            styleSecondary: styleSecondary,
+          ),
+          if (depositVal.isNotEmpty) ...[
+            _getCalculationInfoItem(
+              title: 'First deposit',
+              data: firstDeposit,
+              stylePrimary: stylePrimary,
+              styleSecondary: styleSecondary,
+            ),
+          ],
+          _getCalculationInfoItem(
+            title: 'Installment plan',
+            data: installmentPlan,
+            stylePrimary: stylePrimary,
+            styleSecondary: styleSecondary,
+          ),
+          _getCalculationInfoItem(
+            title: 'Installment terms',
+            data: installmentTerms,
+            stylePrimary: stylePrimary,
+            styleSecondary: styleSecondary,
+          ),
+        ];
       },
+    );
+  }
+
+  int? _getPayments() {
+    if (!_priceValid) return null;
+    if (_period == null) return null;
+    if (_startInstallments == null) return null;
+    if (_endInstallments == null) return null;
+
+    final Jiffy startInstallments = Jiffy.parseFromDateTime(
+      _startInstallments!,
+    );
+
+    final Jiffy endInstallments = Jiffy.parseFromDateTime(
+      _endInstallments!.add(const Duration(days: 1)),
+    );
+
+    final int difference =
+        startInstallments.diff(endInstallments, unit: Unit.month).toInt();
+
+    final int round = difference < 0 ? difference * -1 : 1;
+
+    return round ~/ _period!.month;
+  }
+
+  int _parseString(String value) {
+    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+    return int.parse(formatValue);
+  }
+
+  pdf.Padding _getCalculationInfoItem({
+    required String title,
+    required String data,
+    required pdf.TextStyle stylePrimary,
+    required pdf.TextStyle styleSecondary,
+  }) {
+    return pdf.Padding(
+      padding: const pdf.EdgeInsets.only(
+        bottom: 4.0,
+      ),
+      child: pdf.Row(
+        children: [
+          pdf.Text(
+            '• $title: ',
+            style: stylePrimary.copyWith(
+              fontSize: 10.0,
+            ),
+          ),
+          pdf.SizedBox(width: 2.0),
+          pdf.Text(
+            data,
+            style: styleSecondary.copyWith(
+              fontSize: 10.0,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1168,7 +1272,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             initialDate: _startInstallments,
                             lastDate: _endInstallments,
                             labelText: 'Start of installments',
-                            hintText: 'dd/MM/yy',
+                            hintFormat: 'dd/MM/yy',
                             onChanged: _onSelectStartInstallments,
                           ),
                         ),
@@ -1179,7 +1283,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             initialDate: _endInstallments,
                             firstDate: _startInstallments,
                             labelText: 'End of installments',
-                            hintText: 'dd/MM/yy',
+                            hintFormat: 'dd/MM/yy',
                             onChanged: _onSelectEndInstallments,
                           ),
                         ),
