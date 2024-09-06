@@ -63,7 +63,7 @@ class CustomDatePicker extends StatelessWidget {
 
   DateTime _getLastDate() {
     final DateTime now = currentTime();
-    final DateTime maxYears = DateTime(now.year + 30);
+    final DateTime maxYears = DateTime(now.year + 20);
 
     if (lastDate != null) {
       return lastDate!.subtract(_day);

@@ -85,7 +85,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   final TextEditingController _controllerBathrooms = TextEditingController();
   final TextEditingController _controllerTotal = TextEditingController();
   final TextEditingController _controllerLiving = TextEditingController();
-
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
   final TextEditingController _controllerPrice = TextEditingController();
@@ -373,9 +372,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       document.addPage(projectInfo);
     }
 
-    final int? payments = _getPayments();
+    final bool isCalculate = _isCalculate();
 
-    if (payments != null) {
+    if (isCalculate) {
       _switchLoading(true);
 
       final pdf.MultiPage calculationInfo = await _getCalculationInfo(
@@ -741,14 +740,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     required pdf.TextStyle stylePrimary,
     required pdf.TextStyle styleSecondary,
   }) async {
-    final String price = _controllerPrice.text.trim();
+    final int price = _parseString(_controllerPrice.text);
+    final int remainingPrice = _getRemainingPrice();
+    final int payments = _getPayments();
 
-    final String depositVal = _controllerDepositVal.text.trim();
-    final String depositPct = _controllerDepositPct.text.trim();
-    final String firstDeposit = '${price[0]}$depositVal — $depositPct%';
-
-    final int? payments = _getPayments();
-    final String installmentPlan = '${_period!.name} — $payments payments';
+    final String symbol = _controllerPrice.text[0];
+    final String depositVal = _controllerDepositVal.text;
+    final String depositPct = _controllerDepositPct.text;
 
     final Jiffy startInstallments = Jiffy.parseFromDateTime(
       _startInstallments!,
@@ -756,8 +754,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final Jiffy endInstallments = Jiffy.parseFromDateTime(
       _endInstallments!,
     );
-    final String installmentTerms =
-        '${startInstallments.yMMMMd} — ${endInstallments.yMMMMd}';
 
     return pdf.MultiPage(
       pageFormat: format,
@@ -767,43 +763,71 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       ),
       build: (pdf.Context context) {
         return [
+          pdf.Text(
+            _project != null
+                ? 'Calculations for "${_project!.info.name}"'
+                : 'Calculations',
+            style: stylePrimary.copyWith(
+              fontSize: 14.0,
+            ),
+            maxLines: 1,
+          ),
+          pdf.SizedBox(height: 6.0),
           _getCalculationInfoItem(
             title: 'Unit price (without extra costs)',
-            data: price,
+            data: '$symbol$price',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           if (depositVal.isNotEmpty) ...[
             _getCalculationInfoItem(
               title: 'First deposit',
-              data: firstDeposit,
+              data: '$symbol$depositVal — $depositPct%',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
             ),
           ],
-          _getCalculationInfoItem(
-            title: 'Installment plan',
-            data: installmentPlan,
-            stylePrimary: stylePrimary,
-            styleSecondary: styleSecondary,
-          ),
-          _getCalculationInfoItem(
-            title: 'Installment terms',
-            data: installmentTerms,
-            stylePrimary: stylePrimary,
-            styleSecondary: styleSecondary,
-          ),
+          if (remainingPrice > 0 && payments > 0) ...[
+            _getCalculationInfoItem(
+              title: 'Installment plan',
+              data:
+                  '${_period!.name}(~$symbol${(remainingPrice / payments).round()}) — $payments payment(s)',
+              stylePrimary: stylePrimary,
+              styleSecondary: styleSecondary,
+            ),
+            _getCalculationInfoItem(
+              title: 'Installment terms',
+              data: '${startInstallments.yMMMMd} — ${endInstallments.yMMMMd}',
+              stylePrimary: stylePrimary,
+              styleSecondary: styleSecondary,
+            ),
+          ],
         ];
       },
     );
   }
 
-  int? _getPayments() {
-    if (!_priceValid) return null;
-    if (_period == null) return null;
-    if (_startInstallments == null) return null;
-    if (_endInstallments == null) return null;
+  bool _isCalculate() {
+    if (!_priceValid) return false;
+    if (_period == null) return false;
+    if (_startInstallments == null) return false;
+    if (_endInstallments == null) return false;
+    return true;
+  }
 
+  int _getRemainingPrice() {
+    final int price = _parseString(_controllerPrice.text);
+    final String depositVal = _controllerDepositVal.text;
+
+    if (depositVal.isNotEmpty) {
+      final int deposit = _parseString(depositVal);
+      return price - deposit;
+    }
+
+    return price;
+  }
+
+  int _getPayments() {
     final Jiffy startInstallments = Jiffy.parseFromDateTime(
       _startInstallments!,
     );
@@ -815,9 +839,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final int difference =
         startInstallments.diff(endInstallments, unit: Unit.month).toInt();
 
-    final int round = difference < 0 ? difference * -1 : 1;
+    final int differenceRound = difference < 0 ? difference * -1 : difference;
 
-    return round ~/ _period!.month;
+    return differenceRound ~/ _period!.month;
   }
 
   int _parseString(String value) {
@@ -874,7 +898,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final String living = _controllerLiving.text.trim();
     final String name = _controllerName.text.trim();
     final String description = _controllerDescription.text.trim();
-
     final String price = _controllerPrice.text.trim();
     final String depositVal = _controllerDepositVal.text.trim();
     final String depositPct = _controllerDepositPct.text.trim();
