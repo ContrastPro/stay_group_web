@@ -16,11 +16,12 @@ class InAppNotificationService {
     BotToast.showCustomNotification(
       onlyOne: true,
       duration: const Duration(
-        milliseconds: 10000,
+        milliseconds: 8000,
       ),
       animationDuration: const Duration(
         milliseconds: 450,
       ),
+      align: Alignment.bottomCenter,
       toastBuilder: (_) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -32,7 +33,7 @@ class InAppNotificationService {
                 vertical: 12.0,
               ),
               margin: const EdgeInsets.symmetric(
-                horizontal: 32.0,
+                horizontal: 18.0,
                 vertical: 16.0,
               ),
               decoration: BoxDecoration(

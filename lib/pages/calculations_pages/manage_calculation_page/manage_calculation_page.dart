@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
@@ -362,7 +363,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (_project != null) {
       _switchLoading(true);
 
-      final pdf.Page projectInfo = await _getProjectInfo(
+      final pdf.Page projectInfo = await _getPdfProjectInfo(
         format: format,
         state: state,
         stylePrimary: stylePrimary,
@@ -377,7 +378,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (isCalculate) {
       _switchLoading(true);
 
-      final pdf.MultiPage calculationInfo = await _getCalculationInfo(
+      final pdf.MultiPage calculationInfo = await _getPdfCalculationInfo(
         format: format,
         stylePrimary: stylePrimary,
         styleSecondary: styleSecondary,
@@ -393,8 +394,16 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return savedDocument;
   }
 
+  bool _isCalculate() {
+    if (!_priceValid) return false;
+    if (_period == null) return false;
+    if (_startInstallments == null) return false;
+    if (_endInstallments == null) return false;
+    return true;
+  }
+
   //todo: 1
-  Future<pdf.Page> _getProjectInfo({
+  Future<pdf.Page> _getPdfProjectInfo({
     required PdfPageFormat format,
     required ManageCalculationState state,
     required pdf.TextStyle stylePrimary,
@@ -588,7 +597,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       crossAxisCount: 4,
                       children: [
                         if (section.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Section',
                             data: section,
                             stylePrimary: stylePrimary,
@@ -596,7 +605,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (floor.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Floor',
                             data: floor,
                             stylePrimary: stylePrimary,
@@ -604,7 +613,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (number.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Unit number',
                             data: number,
                             stylePrimary: stylePrimary,
@@ -612,7 +621,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (type.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Unit type',
                             data: type,
                             stylePrimary: stylePrimary,
@@ -620,7 +629,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (rooms.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Rooms',
                             data: rooms,
                             stylePrimary: stylePrimary,
@@ -628,7 +637,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (bathrooms.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Bathrooms',
                             data: bathrooms,
                             stylePrimary: stylePrimary,
@@ -636,7 +645,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (total.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Total area',
                             data: '$total m2',
                             stylePrimary: stylePrimary,
@@ -644,7 +653,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ],
                         if (living.isNotEmpty) ...[
-                          _getProjectFeatureItem(
+                          _getPdfProjectFeatureItem(
                             title: 'Living area',
                             data: '$living m2',
                             stylePrimary: stylePrimary,
@@ -703,7 +712,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
   }
 
-  pdf.Padding _getProjectFeatureItem({
+  pdf.Padding _getPdfProjectFeatureItem({
     required String title,
     required String data,
     required pdf.TextStyle stylePrimary,
@@ -735,14 +744,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   //todo: 2
-  Future<pdf.MultiPage> _getCalculationInfo({
+  Future<pdf.MultiPage> _getPdfCalculationInfo({
     required PdfPageFormat format,
     required pdf.TextStyle stylePrimary,
     required pdf.TextStyle styleSecondary,
   }) async {
     final int price = _parseString(_controllerPrice.text);
     final int remainingPrice = _getRemainingPrice();
-    final int payments = _getPayments();
+    final int payments = _getPaymentsCount();
 
     final String symbol = _controllerPrice.text[0];
     final String depositVal = _controllerDepositVal.text;
@@ -753,6 +762,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
     final Jiffy endInstallments = Jiffy.parseFromDateTime(
       _endInstallments!,
+    );
+
+    final List<pdf.Widget> calculations = _getPdfCalculations(
+      styleSecondary: styleSecondary,
     );
 
     return pdf.MultiPage(
@@ -773,14 +786,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             maxLines: 1,
           ),
           pdf.SizedBox(height: 6.0),
-          _getCalculationInfoItem(
+          _getPdfCalculationInfoItem(
             title: 'Unit price (without extra costs)',
             data: '$symbol$price',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           if (depositVal.isNotEmpty) ...[
-            _getCalculationInfoItem(
+            _getPdfCalculationInfoItem(
               title: 'First deposit',
               data: '$symbol$depositVal — $depositPct%',
               stylePrimary: stylePrimary,
@@ -788,68 +801,35 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             ),
           ],
           if (remainingPrice > 0 && payments > 0) ...[
-            _getCalculationInfoItem(
+            _getPdfCalculationInfoItem(
               title: 'Installment plan',
               data:
                   '${_period!.name}(~$symbol${(remainingPrice / payments).round()}) — $payments payment(s)',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
             ),
-            _getCalculationInfoItem(
+            _getPdfCalculationInfoItem(
               title: 'Installment terms',
               data: '${startInstallments.yMMMMd} — ${endInstallments.yMMMMd}',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
             ),
+            pdf.SizedBox(height: 14.0),
+            _getPdfCalculationItem(
+              first: '№',
+              second: 'Payment date',
+              third: 'Total',
+              addColor: true,
+              styleSecondary: styleSecondary,
+            ),
+            ...calculations,
           ],
         ];
       },
     );
   }
 
-  bool _isCalculate() {
-    if (!_priceValid) return false;
-    if (_period == null) return false;
-    if (_startInstallments == null) return false;
-    if (_endInstallments == null) return false;
-    return true;
-  }
-
-  int _getRemainingPrice() {
-    final int price = _parseString(_controllerPrice.text);
-    final String depositVal = _controllerDepositVal.text;
-
-    if (depositVal.isNotEmpty) {
-      final int deposit = _parseString(depositVal);
-      return price - deposit;
-    }
-
-    return price;
-  }
-
-  int _getPayments() {
-    final Jiffy startInstallments = Jiffy.parseFromDateTime(
-      _startInstallments!,
-    );
-
-    final Jiffy endInstallments = Jiffy.parseFromDateTime(
-      _endInstallments!.add(const Duration(days: 1)),
-    );
-
-    final int difference =
-        startInstallments.diff(endInstallments, unit: Unit.month).toInt();
-
-    final int differenceRound = difference < 0 ? difference * -1 : difference;
-
-    return differenceRound ~/ _period!.month;
-  }
-
-  int _parseString(String value) {
-    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.parse(formatValue);
-  }
-
-  pdf.Padding _getCalculationInfoItem({
+  pdf.Padding _getPdfCalculationInfoItem({
     required String title,
     required String data,
     required pdf.TextStyle stylePrimary,
@@ -872,6 +852,159 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             data,
             style: styleSecondary.copyWith(
               fontSize: 10.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //todo: 3
+  List<pdf.Widget> _getPdfCalculations({
+    required pdf.TextStyle styleSecondary,
+  }) {
+    final List<pdf.Widget> calculations = [];
+
+    final int remainingPrice = _getRemainingPrice();
+    final int payments = _getPaymentsCount();
+
+    if (remainingPrice > 0 && payments > 0) {
+      final String symbol = _controllerPrice.text[0];
+      final String price = '$symbol${(remainingPrice / payments).round()}';
+
+      final DateFormat dateFormat = DateFormat('dd/MM/yy');
+      final List<DateTime> paymentDates = _getPaymentsDateTime(
+        payments: payments,
+      );
+
+      for (int i = 0; i < payments; i++) {
+        calculations.add(
+          _getPdfCalculationItem(
+            first: '${i + 1}',
+            second: dateFormat.format(
+              paymentDates[i],
+            ),
+            third: price,
+            styleSecondary: styleSecondary,
+          ),
+        );
+      }
+    }
+
+    return calculations;
+  }
+
+  int _getPaymentsCount() {
+    final Jiffy startInstallments = Jiffy.parseFromDateTime(
+      _startInstallments!,
+    );
+
+    final Jiffy endInstallments = Jiffy.parseFromDateTime(
+      _endInstallments!.add(const Duration(days: 1)),
+    );
+
+    final int difference =
+        startInstallments.diff(endInstallments, unit: Unit.month).toInt();
+
+    final int differenceRound = difference < 0 ? difference * -1 : difference;
+
+    return differenceRound ~/ _period!.month;
+  }
+
+  int _getRemainingPrice() {
+    final int price = _parseString(_controllerPrice.text);
+    final String depositVal = _controllerDepositVal.text;
+
+    if (depositVal.isNotEmpty) {
+      final int deposit = _parseString(depositVal);
+      return price - deposit;
+    }
+
+    return price;
+  }
+
+  int _parseString(String value) {
+    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+    return int.parse(formatValue);
+  }
+
+  List<DateTime> _getPaymentsDateTime({
+    required int payments,
+  }) {
+    final List<DateTime> paymentsDateTime = [];
+    final DateTime startInstallments = _startInstallments!;
+
+    for (int i = 0; i < payments; i++) {
+      final int index = _period!.month * i;
+
+      paymentsDateTime.add(
+        DateTime(
+          startInstallments.year,
+          startInstallments.month + index,
+          startInstallments.day,
+        ),
+      );
+    }
+
+    return paymentsDateTime;
+  }
+
+  pdf.Container _getPdfCalculationItem({
+    required String first,
+    required String second,
+    required String third,
+    bool addColor = false,
+    required pdf.TextStyle styleSecondary,
+  }) {
+    const PdfColor scaffoldSecondary = PdfColor.fromInt(0xFFFCFEFF);
+    const PdfColor iconPrimary = PdfColor.fromInt(0xFF637083);
+
+    return pdf.Container(
+      height: 20.0,
+      padding: const pdf.EdgeInsets.symmetric(
+        horizontal: 12.0,
+      ),
+      decoration: pdf.BoxDecoration(
+        color: addColor ? iconPrimary : null,
+        border: const pdf.Border(
+          bottom: pdf.BorderSide(
+            color: iconPrimary,
+            width: 0.6,
+          ),
+        ),
+      ),
+      child: pdf.Row(
+        children: [
+          pdf.Container(
+            width: 42.0,
+            child: pdf.Text(
+              first,
+              style: styleSecondary.copyWith(
+                fontSize: 10.0,
+                color: addColor ? scaffoldSecondary : null,
+              ),
+            ),
+          ),
+          pdf.Expanded(
+            child: pdf.Container(
+              child: pdf.Text(
+                second,
+                style: styleSecondary.copyWith(
+                  fontSize: 10.0,
+                  color: addColor ? scaffoldSecondary : null,
+                ),
+              ),
+            ),
+          ),
+          pdf.Expanded(
+            child: pdf.Container(
+              child: pdf.Text(
+                third,
+                style: styleSecondary.copyWith(
+                  fontSize: 10.0,
+                  color: addColor ? scaffoldSecondary : null,
+                ),
+              ),
             ),
           ),
         ],
