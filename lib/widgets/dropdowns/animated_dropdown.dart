@@ -25,6 +25,7 @@ class AnimatedDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 3.5),
         if (labelText != null) ...[
           Text(
             labelText!,
@@ -33,7 +34,7 @@ class AnimatedDropdown extends StatelessWidget {
             ),
             textAlign: TextAlign.start,
           ),
-          const SizedBox(height: 4.0),
+          const SizedBox(height: 1.5),
         ],
         CustomDropdown<String>(
           initialItem: initialData,

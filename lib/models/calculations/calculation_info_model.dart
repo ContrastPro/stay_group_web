@@ -12,6 +12,7 @@ class CalculationInfoModel {
     this.living,
     required this.name,
     this.description,
+    required this.currency,
     this.price,
     this.depositVal,
     this.depositPct,
@@ -34,6 +35,7 @@ class CalculationInfoModel {
       living: json['living'],
       name: json['name'],
       description: json['description'],
+      currency: json['currency'],
       price: json['price'],
       depositVal: json['depositVal'],
       depositPct: json['depositPct'],
@@ -55,6 +57,7 @@ class CalculationInfoModel {
   final String? living;
   final String name;
   final String? description;
+  final String currency;
   final String? price;
   final String? depositVal;
   final String? depositPct;

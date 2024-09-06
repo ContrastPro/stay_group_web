@@ -28,7 +28,8 @@ import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_date_picker.dart';
-import '../../../widgets/dropdowns/custom_dropdown.dart';
+import '../../../widgets/dropdowns/animated_dropdown.dart';
+import '../../../widgets/dropdowns/icon_dropdown.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
@@ -63,6 +64,7 @@ class ManageCalculationPage extends StatefulWidget {
 }
 
 class _ManageCalculationPageState extends State<ManageCalculationPage> {
+  static const List<String> _currencies = ['€', '\$', '£', '¥', '₹'];
   static const List<CalculationPeriodModel> _periods = [
     CalculationPeriodModel(
       month: 1,
@@ -100,6 +102,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   CompanyModel? _company;
   ProjectModel? _project;
   String? _errorTextName;
+  String? _currency;
   CalculationPeriodModel? _period;
   DateTime? _startInstallments;
   DateTime? _endInstallments;
@@ -108,6 +111,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (_dataLoaded) return;
 
     if (widget.calculation == null) {
+      _currency = _currencies.first;
       return _switchDataLoaded(true);
     }
 
@@ -167,6 +171,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (info.description != null) {
       _controllerDescription.text = info.description!;
     }
+
+    _currency = info.currency;
 
     if (info.price != null) {
       _controllerPrice.text = info.price!;
@@ -254,22 +260,16 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     });
   }
 
+  void _onSelectCurrency(String currency) {
+    setState(() => _currency = currency);
+  }
+
   void _validatePrice(String price) {
     setState(() {
-      _priceValid = price.length > 5;
+      _priceValid = price.length > 4;
       _controllerDepositVal.clear();
       _controllerDepositPct.clear();
     });
-  }
-
-  String _getDepositValTitle() {
-    final String price = _controllerPrice.text;
-
-    if (price.isNotEmpty) {
-      return 'First deposit in (${price[0]})';
-    } else {
-      return 'First deposit in (€)';
-    }
   }
 
   void _validateDepositVal(String depositVal) {
@@ -753,7 +753,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final int remainingPrice = _getRemainingPrice();
     final int payments = _getPaymentsCount();
 
-    final String symbol = _controllerPrice.text[0];
     final String depositVal = _controllerDepositVal.text;
     final String depositPct = _controllerDepositPct.text;
 
@@ -788,14 +787,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           pdf.SizedBox(height: 6.0),
           _getPdfCalculationInfoItem(
             title: 'Unit price (without extra costs)',
-            data: '$symbol$price',
+            data: '$_currency$price',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           if (depositVal.isNotEmpty) ...[
             _getPdfCalculationInfoItem(
               title: 'First deposit',
-              data: '$symbol$depositVal — $depositPct%',
+              data: '$_currency$depositVal — $depositPct%',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
             ),
@@ -804,7 +803,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             _getPdfCalculationInfoItem(
               title: 'Installment plan',
               data:
-                  '${_period!.name}(~$symbol${(remainingPrice / payments).round()}) — $payments payment(s)',
+                  '${_period!.name}(~$_currency${(remainingPrice / payments).round()}) — $payments payment(s)',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
             ),
@@ -869,8 +868,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final int payments = _getPaymentsCount();
 
     if (remainingPrice > 0 && payments > 0) {
-      final String symbol = _controllerPrice.text[0];
-      final String price = '$symbol${(remainingPrice / payments).round()}';
+      final String price = '$_currency${(remainingPrice / payments).round()}';
 
       final DateFormat dateFormat = DateFormat('dd/MM/yy');
       final List<DateTime> paymentDates = _getPaymentsDateTime(
@@ -1056,6 +1054,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             living: living,
             name: name,
             description: description,
+            currency: _currency!,
             price: price,
             depositVal: depositVal,
             depositPct: depositPct,
@@ -1105,6 +1104,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             living: living,
             name: name,
             description: description,
+            currency: _currency!,
             price: price,
             depositVal: depositVal,
             depositPct: depositPct,
@@ -1367,17 +1367,28 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
-                      controller: _controllerPrice,
-                      labelText: 'Unit price (without extra costs)',
-                      hintText: 'Example: €100000',
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(11),
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'^[€£¥₽₹$]\d*$'),
+                    Row(
+                      children: [
+                        IconDropdown(
+                          initialData: _currency!,
+                          values: _currencies,
+                          labelText: 'Currency',
+                          onChanged: _onSelectCurrency,
+                        ),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          child: BorderTextField(
+                            controller: _controllerPrice,
+                            labelText: 'Unit price',
+                            hintText: 'Enter value',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: _validatePrice,
+                          ),
                         ),
                       ],
-                      onChanged: _validatePrice,
                     ),
                     const SizedBox(height: 16.0),
                     Row(
@@ -1386,7 +1397,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           child: BorderTextField(
                             controller: _controllerDepositVal,
                             enabled: _priceValid,
-                            labelText: _getDepositValTitle(),
+                            labelText: 'First deposit in ($_currency)',
                             hintText: 'Enter value',
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(10),

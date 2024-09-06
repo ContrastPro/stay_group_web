@@ -48,6 +48,10 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
 
       if (savedCalculations != null) {
         calculations.addAll(savedCalculations.calculations);
+
+        calculations.sort(
+          (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+        );
       }
 
       emit(

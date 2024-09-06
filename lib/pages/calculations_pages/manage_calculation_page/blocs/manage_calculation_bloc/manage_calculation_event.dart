@@ -23,6 +23,7 @@ class CreateCalculation extends ManageCalculationEvent {
     required this.living,
     required this.name,
     required this.description,
+    required this.currency,
     required this.price,
     required this.depositVal,
     required this.depositPct,
@@ -43,6 +44,7 @@ class CreateCalculation extends ManageCalculationEvent {
   final String living;
   final String name;
   final String description;
+  final String currency;
   final String price;
   final String depositVal;
   final String depositPct;
@@ -66,6 +68,7 @@ class UpdateCalculation extends ManageCalculationEvent {
     required this.living,
     required this.name,
     required this.description,
+    required this.currency,
     required this.price,
     required this.depositVal,
     required this.depositPct,
@@ -88,6 +91,7 @@ class UpdateCalculation extends ManageCalculationEvent {
   final String living;
   final String name;
   final String description;
+  final String currency;
   final String price;
   final String depositVal;
   final String depositPct;
