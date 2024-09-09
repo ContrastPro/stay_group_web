@@ -107,6 +107,11 @@ String localToUtc(
   return date.toUtc().toIso8601String();
 }
 
+int parseString(String data) {
+  final String formatValue = data.replaceAll(RegExp(r'[^0-9]'), '');
+  return int.parse(formatValue);
+}
+
 List<MediaModel> getSavedMedia({
   required List<MediaModel>? media,
   required List<MediaResponseModel> localMedia,

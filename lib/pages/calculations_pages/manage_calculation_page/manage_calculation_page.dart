@@ -2,10 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
 
 import '../../../models/calculations/calculation_info_model.dart';
@@ -20,10 +18,10 @@ import '../../../repositories/projects_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_icons.dart';
-import '../../../resources/app_images.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
@@ -34,6 +32,7 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
+import 'widgets/pdf_generate_document.dart';
 
 class ManageCalculationPageArguments {
   const ManageCalculationPageArguments({
@@ -276,8 +275,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final bool isValid = depositVal.length > 3;
 
     if (isValid) {
-      final int price = _parseString(_controllerPrice.text);
-      final int deposit = _parseString(depositVal);
+      final int price = parseString(_controllerPrice.text);
+      final int deposit = parseString(depositVal);
 
       final double depositPct = (deposit * 100) / price;
 
@@ -291,8 +290,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final bool isValid = depositPct.isNotEmpty;
 
     if (isValid) {
-      final int price = _parseString(_controllerPrice.text);
-      final int deposit = _parseString(depositPct);
+      final int price = parseString(_controllerPrice.text);
+      final int deposit = parseString(depositPct);
 
       final double depositVal = (price * deposit) / 100;
 
@@ -319,12 +318,46 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   Future<void> _printPdf(ManageCalculationState state) async {
+    final String section = _controllerSection.text.trim();
+    final String floor = _controllerFloor.text.trim();
+    final String number = _controllerNumber.text.trim();
+    final String type = _controllerType.text.trim();
+    final String rooms = _controllerRooms.text.trim();
+    final String bathrooms = _controllerBathrooms.text.trim();
+    final String total = _controllerTotal.text.trim();
+    final String living = _controllerLiving.text.trim();
+    final String depositVal = _controllerDepositVal.text.trim();
+    final String depositPct = _controllerDepositPct.text.trim();
+
     final bool isPrinted = await Printing.layoutPdf(
       format: PdfPageFormat.a4,
       onLayout: (PdfPageFormat format) {
-        return _generatePdf(
+        return pdfGenerateDocument(
           format: format,
           state: state,
+          company: _company,
+          project: _project,
+          section: section,
+          floor: floor,
+          number: number,
+          type: type,
+          rooms: rooms,
+          bathrooms: bathrooms,
+          total: total,
+          living: living,
+          currency: _currency,
+          depositVal: depositVal,
+          depositPct: depositPct,
+          period: _period,
+          startInstallments: _startInstallments,
+          endInstallments: _endInstallments,
+          switchLoading: _switchLoading,
+          isCalculate: _isCalculate,
+          getPrice: _getPrice,
+          getRemainingPrice: _getRemainingPrice,
+          getPaymentsCount: _getPaymentsCount,
+          getPayment: _getPayment,
+          getPaymentsDates: _getPaymentsDates,
         );
       },
     );
@@ -332,66 +365,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (isPrinted) {
       // update counter
     }
-  }
-
-  Future<Uint8List> _generatePdf({
-    required PdfPageFormat format,
-    required ManageCalculationState state,
-  }) async {
-    final pdf.Document document = pdf.Document();
-
-    final pdf.TtfFont fontBold = await fontFromAssetBundle(
-      'assets/fonts/Inter-Medium.ttf',
-    );
-
-    final pdf.TtfFont fontRegular = await fontFromAssetBundle(
-      'assets/fonts/Inter-Regular.ttf',
-    );
-
-    final pdf.TextStyle stylePrimary = pdf.TextStyle(
-      font: fontBold,
-      fontSize: 16.0,
-      color: const PdfColor.fromInt(0xFF141C25),
-    );
-
-    final pdf.TextStyle styleSecondary = pdf.TextStyle(
-      font: fontRegular,
-      fontSize: 10.0,
-      color: const PdfColor.fromInt(0xFF344051),
-    );
-
-    if (_project != null) {
-      _switchLoading(true);
-
-      final pdf.Page projectInfo = await _getPdfProjectInfo(
-        format: format,
-        state: state,
-        stylePrimary: stylePrimary,
-        styleSecondary: styleSecondary,
-      );
-
-      document.addPage(projectInfo);
-    }
-
-    final bool isCalculate = _isCalculate();
-
-    if (isCalculate) {
-      _switchLoading(true);
-
-      final pdf.MultiPage calculationInfo = await _getPdfCalculationInfo(
-        format: format,
-        stylePrimary: stylePrimary,
-        styleSecondary: styleSecondary,
-      );
-
-      document.addPage(calculationInfo);
-    }
-
-    final Uint8List savedDocument = await document.save();
-
-    _switchLoading(false);
-
-    return savedDocument;
   }
 
   bool _isCalculate() {
@@ -402,497 +375,31 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return true;
   }
 
-  //todo: 1
-  Future<pdf.Page> _getPdfProjectInfo({
-    required PdfPageFormat format,
-    required ManageCalculationState state,
-    required pdf.TextStyle stylePrimary,
-    required pdf.TextStyle styleSecondary,
-  }) async {
-    const PdfColor scaffoldSecondary = PdfColor.fromInt(0xFFFCFEFF);
-    const PdfColor iconPrimary = PdfColor.fromInt(0xFF637083);
-    final pdf.ImageProvider imageLocation = await imageFromAssetBundle(
-      AppImages.location,
-    );
-
-    final List<pdf.ImageProvider> projectImages = [];
-
-    if (_project!.info.media != null) {
-      for (int i = 0; i < _project!.info.media!.length; i++) {
-        final pdf.ImageProvider image = await networkImage(
-          _project!.info.media![i].thumbnail,
-        );
-
-        projectImages.add(image);
-      }
-    }
-
-    final String section = _controllerSection.text.trim();
-    final String floor = _controllerFloor.text.trim();
-    final String number = _controllerNumber.text.trim();
-    final String type = _controllerType.text.trim();
-    final String rooms = _controllerRooms.text.trim();
-    final String bathrooms = _controllerBathrooms.text.trim();
-    final String total = _controllerTotal.text.trim();
-    final String living = _controllerLiving.text.trim();
-
-    return pdf.Page(
-      pageFormat: format,
-      margin: const pdf.EdgeInsets.symmetric(
-        horizontal: 42.0,
-        vertical: 72.0,
-      ),
-      build: (pdf.Context context) {
-        return pdf.Column(
-          children: [
-            pdf.Container(
-              width: double.infinity,
-              height: 72.0,
-              padding: const pdf.EdgeInsets.symmetric(
-                horizontal: 22.0,
-              ),
-              color: iconPrimary,
-              child: pdf.Row(
-                children: [
-                  if (state.spaceData != null) ...[
-                    pdf.Expanded(
-                      child: pdf.Column(
-                        mainAxisAlignment: pdf.MainAxisAlignment.center,
-                        crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                        children: [
-                          pdf.Text(
-                            state.spaceData!.info.name,
-                            style: stylePrimary.copyWith(
-                              color: scaffoldSecondary,
-                            ),
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                    pdf.Expanded(
-                      child: pdf.Column(
-                        mainAxisAlignment: pdf.MainAxisAlignment.center,
-                        crossAxisAlignment: pdf.CrossAxisAlignment.end,
-                        children: [
-                          pdf.Text(
-                            state.userData!.info.name,
-                            style: stylePrimary.copyWith(
-                              color: scaffoldSecondary,
-                            ),
-                            maxLines: 2,
-                          ),
-                          pdf.Text(
-                            state.userData!.info.phone ??
-                                state.userData!.credential.email,
-                            style: styleSecondary.copyWith(
-                              color: scaffoldSecondary,
-                            ),
-                            maxLines: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ] else ...[
-                    pdf.Column(
-                      mainAxisAlignment: pdf.MainAxisAlignment.center,
-                      crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                      children: [
-                        pdf.Text(
-                          state.userData!.info.name,
-                          style: stylePrimary.copyWith(
-                            color: scaffoldSecondary,
-                          ),
-                          maxLines: 2,
-                        ),
-                        pdf.Text(
-                          state.userData!.credential.email,
-                          style: styleSecondary.copyWith(
-                            color: scaffoldSecondary,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            pdf.Expanded(
-              child: pdf.Column(
-                crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                children: [
-                  pdf.SizedBox(height: 8.0),
-                  if (projectImages.isNotEmpty) ...[
-                    pdf.Row(
-                      children: [
-                        pdf.Expanded(
-                          child: pdf.Image(
-                            projectImages[0],
-                            height: 280.0,
-                            fit: pdf.BoxFit.cover,
-                          ),
-                        ),
-                        if (projectImages.length > 1) ...[
-                          pdf.SizedBox(width: 8.0),
-                        ],
-                        pdf.Column(
-                          children: [
-                            if (projectImages.length > 1) ...[
-                              pdf.Image(
-                                projectImages[1],
-                                width: 180.0,
-                                height: 136.0,
-                                fit: pdf.BoxFit.cover,
-                              ),
-                            ],
-                            pdf.SizedBox(height: 8.0),
-                            if (projectImages.length > 2) ...[
-                              pdf.Image(
-                                projectImages[2],
-                                width: 180.0,
-                                height: 136.0,
-                                fit: pdf.BoxFit.cover,
-                              ),
-                            ] else ...[
-                              pdf.SizedBox(
-                                width: 180.0,
-                                height: 136.0,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                    pdf.SizedBox(height: 16.0),
-                  ],
-                  pdf.Text(
-                    _project!.info.name,
-                    style: stylePrimary,
-                    maxLines: 1,
-                  ),
-                  pdf.Row(
-                    children: [
-                      pdf.Image(
-                        imageLocation,
-                        width: 14.0,
-                      ),
-                      pdf.SizedBox(width: 4.0),
-                      pdf.Text(
-                        _project!.info.location,
-                        style: styleSecondary,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
-                  pdf.SizedBox(height: 10.0),
-                  pdf.Text(
-                    _project!.info.description,
-                    style: styleSecondary,
-                    maxLines: 8,
-                  ),
-                  pdf.SizedBox(height: 18.0),
-                  pdf.Expanded(
-                    child: pdf.GridView(
-                      crossAxisCount: 4,
-                      children: [
-                        if (section.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Section',
-                            data: section,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (floor.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Floor',
-                            data: floor,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (number.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Unit number',
-                            data: number,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (type.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Unit type',
-                            data: type,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (rooms.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Rooms',
-                            data: rooms,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (bathrooms.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Bathrooms',
-                            data: bathrooms,
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (total.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Total area',
-                            data: '$total m2',
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                        if (living.isNotEmpty) ...[
-                          _getPdfProjectFeatureItem(
-                            title: 'Living area',
-                            data: '$living m2',
-                            stylePrimary: stylePrimary,
-                            styleSecondary: styleSecondary,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            pdf.Container(
-              width: double.infinity,
-              height: 72.0,
-              padding: const pdf.EdgeInsets.symmetric(
-                horizontal: 22.0,
-              ),
-              color: iconPrimary,
-              child: pdf.Column(
-                mainAxisAlignment: pdf.MainAxisAlignment.center,
-                crossAxisAlignment: pdf.CrossAxisAlignment.start,
-                children: [
-                  if (_company != null) ...[
-                    pdf.Text(
-                      'About company',
-                      style: stylePrimary.copyWith(
-                        fontSize: 10.0,
-                        color: scaffoldSecondary,
-                      ),
-                    ),
-                    pdf.SizedBox(height: 1.5),
-                    pdf.Text(
-                      '${_company!.info.name}. ${_company!.info.description}',
-                      style: styleSecondary.copyWith(
-                        fontSize: 8.0,
-                        color: scaffoldSecondary,
-                      ),
-                      maxLines: 3,
-                    ),
-                  ] else ...[
-                    pdf.Text(
-                      'www.staygroup.space',
-                      style: stylePrimary.copyWith(
-                        fontSize: 10.0,
-                        color: scaffoldSecondary,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
+  int? _getPrice() {
+    if (!_priceValid) return null;
+    final int price = parseString(_controllerPrice.text);
+    return price;
   }
 
-  pdf.Padding _getPdfProjectFeatureItem({
-    required String title,
-    required String data,
-    required pdf.TextStyle stylePrimary,
-    required pdf.TextStyle styleSecondary,
-  }) {
-    return pdf.Padding(
-      padding: const pdf.EdgeInsets.only(
-        right: 16.0,
-      ),
-      child: pdf.Column(
-        crossAxisAlignment: pdf.CrossAxisAlignment.start,
-        children: [
-          pdf.Text(
-            title,
-            style: stylePrimary.copyWith(
-              fontSize: 10.0,
-            ),
-          ),
-          pdf.Text(
-            data,
-            style: styleSecondary.copyWith(
-              fontSize: 8.0,
-            ),
-            maxLines: 2,
-          ),
-        ],
-      ),
-    );
-  }
-
-  //todo: 2
-  Future<pdf.MultiPage> _getPdfCalculationInfo({
-    required PdfPageFormat format,
-    required pdf.TextStyle stylePrimary,
-    required pdf.TextStyle styleSecondary,
-  }) async {
-    final int price = _parseString(_controllerPrice.text);
-    final int remainingPrice = _getRemainingPrice();
-    final int payments = _getPaymentsCount();
+  int? _getRemainingPrice() {
+    final int? price = _getPrice();
+    if (price == null) return null;
 
     final String depositVal = _controllerDepositVal.text;
-    final String depositPct = _controllerDepositPct.text;
 
-    final Jiffy startInstallments = Jiffy.parseFromDateTime(
-      _startInstallments!,
-    );
-    final Jiffy endInstallments = Jiffy.parseFromDateTime(
-      _endInstallments!,
-    );
-
-    final List<pdf.Widget> calculations = _getPdfCalculations(
-      styleSecondary: styleSecondary,
-    );
-
-    return pdf.MultiPage(
-      pageFormat: format,
-      margin: const pdf.EdgeInsets.symmetric(
-        horizontal: 42.0,
-        vertical: 72.0,
-      ),
-      build: (pdf.Context context) {
-        return [
-          pdf.Text(
-            _project != null
-                ? 'Calculations for "${_project!.info.name}"'
-                : 'Calculations',
-            style: stylePrimary.copyWith(
-              fontSize: 14.0,
-            ),
-            maxLines: 1,
-          ),
-          pdf.SizedBox(height: 6.0),
-          _getPdfCalculationInfoItem(
-            title: 'Unit price (without extra costs)',
-            data: '$_currency$price',
-            stylePrimary: stylePrimary,
-            styleSecondary: styleSecondary,
-          ),
-          if (depositVal.isNotEmpty) ...[
-            _getPdfCalculationInfoItem(
-              title: 'First deposit',
-              data: '$_currency$depositVal — $depositPct%',
-              stylePrimary: stylePrimary,
-              styleSecondary: styleSecondary,
-            ),
-          ],
-          if (remainingPrice > 0 && payments > 0) ...[
-            _getPdfCalculationInfoItem(
-              title: 'Installment plan',
-              data:
-                  '${_period!.name}(~$_currency${(remainingPrice / payments).round()}) — $payments payment(s)',
-              stylePrimary: stylePrimary,
-              styleSecondary: styleSecondary,
-            ),
-            _getPdfCalculationInfoItem(
-              title: 'Installment terms',
-              data: '${startInstallments.yMMMMd} — ${endInstallments.yMMMMd}',
-              stylePrimary: stylePrimary,
-              styleSecondary: styleSecondary,
-            ),
-            pdf.SizedBox(height: 14.0),
-            _getPdfCalculationItem(
-              first: '№',
-              second: 'Payment date',
-              third: 'Total',
-              addColor: true,
-              styleSecondary: styleSecondary,
-            ),
-            ...calculations,
-          ],
-        ];
-      },
-    );
-  }
-
-  pdf.Padding _getPdfCalculationInfoItem({
-    required String title,
-    required String data,
-    required pdf.TextStyle stylePrimary,
-    required pdf.TextStyle styleSecondary,
-  }) {
-    return pdf.Padding(
-      padding: const pdf.EdgeInsets.only(
-        bottom: 4.0,
-      ),
-      child: pdf.Row(
-        children: [
-          pdf.Text(
-            '• $title: ',
-            style: stylePrimary.copyWith(
-              fontSize: 10.0,
-            ),
-          ),
-          pdf.SizedBox(width: 2.0),
-          pdf.Text(
-            data,
-            style: styleSecondary.copyWith(
-              fontSize: 10.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  //todo: 3
-  List<pdf.Widget> _getPdfCalculations({
-    required pdf.TextStyle styleSecondary,
-  }) {
-    final List<pdf.Widget> calculations = [];
-
-    final int remainingPrice = _getRemainingPrice();
-    final int payments = _getPaymentsCount();
-
-    if (remainingPrice > 0 && payments > 0) {
-      final String price = '$_currency${(remainingPrice / payments).round()}';
-
-      final DateFormat dateFormat = DateFormat('dd/MM/yy');
-      final List<DateTime> paymentDates = _getPaymentsDateTime(
-        payments: payments,
-      );
-
-      for (int i = 0; i < payments; i++) {
-        calculations.add(
-          _getPdfCalculationItem(
-            first: '${i + 1}',
-            second: dateFormat.format(
-              paymentDates[i],
-            ),
-            third: price,
-            styleSecondary: styleSecondary,
-          ),
-        );
-      }
+    if (depositVal.isNotEmpty) {
+      final int deposit = parseString(depositVal);
+      return price - deposit;
     }
 
-    return calculations;
+    return price;
   }
 
-  int _getPaymentsCount() {
+  int? _getPaymentsCount() {
+    if (_period == null) return null;
+    if (_startInstallments == null) return null;
+    if (_endInstallments == null) return null;
+
     final Jiffy startInstallments = Jiffy.parseFromDateTime(
       _startInstallments!,
     );
@@ -901,41 +408,46 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       _endInstallments!.add(const Duration(days: 1)),
     );
 
-    final int difference =
-        startInstallments.diff(endInstallments, unit: Unit.month).toInt();
+    final num differenceNum = startInstallments.diff(
+      endInstallments,
+      unit: Unit.month,
+    );
 
-    final int differenceRound = difference < 0 ? difference * -1 : difference;
+    final int differenceInt = differenceNum.toInt();
+    if (differenceInt == 0) return differenceInt;
 
-    return differenceRound ~/ _period!.month;
+    final int differenceRound = differenceInt < 0 ? differenceInt * -1 : 0;
+    final int difference = differenceRound ~/ _period!.month;
+
+    return difference;
   }
 
-  int _getRemainingPrice() {
-    final int price = _parseString(_controllerPrice.text);
-    final String depositVal = _controllerDepositVal.text;
+  int? _getPayment() {
+    final int? remainingPrice = _getRemainingPrice();
+    if (remainingPrice == null) return null;
 
-    if (depositVal.isNotEmpty) {
-      final int deposit = _parseString(depositVal);
-      return price - deposit;
+    final int? paymentsCount = _getPaymentsCount();
+    if (paymentsCount == null) return null;
+
+    if (remainingPrice > 0 && paymentsCount > 0) {
+      return (remainingPrice / paymentsCount).round();
     }
 
-    return price;
+    return 0;
   }
 
-  int _parseString(String value) {
-    final String formatValue = value.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.parse(formatValue);
-  }
+  List<DateTime>? _getPaymentsDates() {
+    final int? paymentsCount = _getPaymentsCount();
+    if (paymentsCount == null) return null;
 
-  List<DateTime> _getPaymentsDateTime({
-    required int payments,
-  }) {
-    final List<DateTime> paymentsDateTime = [];
+    final List<DateTime> dates = [];
+
     final DateTime startInstallments = _startInstallments!;
 
-    for (int i = 0; i < payments; i++) {
+    for (int i = 0; i < paymentsCount; i++) {
       final int index = _period!.month * i;
 
-      paymentsDateTime.add(
+      dates.add(
         DateTime(
           startInstallments.year,
           startInstallments.month + index,
@@ -944,70 +456,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       );
     }
 
-    return paymentsDateTime;
-  }
-
-  pdf.Container _getPdfCalculationItem({
-    required String first,
-    required String second,
-    required String third,
-    bool addColor = false,
-    required pdf.TextStyle styleSecondary,
-  }) {
-    const PdfColor scaffoldSecondary = PdfColor.fromInt(0xFFFCFEFF);
-    const PdfColor iconPrimary = PdfColor.fromInt(0xFF637083);
-
-    return pdf.Container(
-      height: 20.0,
-      padding: const pdf.EdgeInsets.symmetric(
-        horizontal: 12.0,
-      ),
-      decoration: pdf.BoxDecoration(
-        color: addColor ? iconPrimary : null,
-        border: const pdf.Border(
-          bottom: pdf.BorderSide(
-            color: iconPrimary,
-            width: 0.6,
-          ),
-        ),
-      ),
-      child: pdf.Row(
-        children: [
-          pdf.Container(
-            width: 42.0,
-            child: pdf.Text(
-              first,
-              style: styleSecondary.copyWith(
-                fontSize: 10.0,
-                color: addColor ? scaffoldSecondary : null,
-              ),
-            ),
-          ),
-          pdf.Expanded(
-            child: pdf.Container(
-              child: pdf.Text(
-                second,
-                style: styleSecondary.copyWith(
-                  fontSize: 10.0,
-                  color: addColor ? scaffoldSecondary : null,
-                ),
-              ),
-            ),
-          ),
-          pdf.Expanded(
-            child: pdf.Container(
-              child: pdf.Text(
-                third,
-                style: styleSecondary.copyWith(
-                  fontSize: 10.0,
-                  color: addColor ? scaffoldSecondary : null,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return dates;
   }
 
   void _createCalculation(BuildContext context) {
@@ -1359,8 +808,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     const SizedBox(height: 16.0),
                     BorderTextField(
                       controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Field for notes, explanations, etc..',
+                      labelText: 'Calculation notes',
+                      hintText: 'Field for notes, clients info, etc..',
                       maxLines: 6,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(1024),
