@@ -27,19 +27,24 @@ class MediaService {
       final String id = uuid();
 
       final Uint8List optimizedData;
+      final Uint8List thumbnail;
 
       if (data.lengthInBytes < kFileWeightMin) {
         optimizedData = data;
+
+        thumbnail = await compressQuality(
+          data: data,
+        );
       } else {
         optimizedData = await compressQuality(
           data: data,
         );
-      }
 
-      final Uint8List thumbnail = await compressQuality(
-        index: 4,
-        data: data,
-      );
+        thumbnail = await compressQuality(
+          index: 4,
+          data: data,
+        );
+      }
 
       final String format = pickedImage.name.split('.').last.toLowerCase();
 
