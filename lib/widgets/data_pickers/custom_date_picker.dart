@@ -40,6 +40,7 @@ class CustomDatePicker extends StatelessWidget {
       lastDate: lastDate,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDatePickerMode: DatePickerMode.year,
+      barrierColor: AppColors.primary.withOpacity(0.35),
     );
 
     if (selectedDate != null) {

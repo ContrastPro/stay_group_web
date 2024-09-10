@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
 
+import '../../../../models/calculations/calculation_extra_model.dart';
 import '../../../../models/calculations/calculation_period_model.dart';
 import '../../../../models/companies/company_model.dart';
 import '../../../../models/projects/project_model.dart';
@@ -29,14 +30,15 @@ Future<Uint8List> pdfGenerateDocument({
   required String bathrooms,
   required String total,
   required String living,
+  required bool calculationValid,
   required String? currency,
   required String depositVal,
   required String depositPct,
   required CalculationPeriodModel? period,
   required DateTime? startInstallments,
   required DateTime? endInstallments,
+  required List<CalculationExtraModel> extra,
   required void Function(bool) switchLoading,
-  required bool Function() isCalculate,
   required int? Function() getPrice,
   required int? Function() getRemainingPrice,
   required int? Function() getPaymentsCount,
@@ -88,9 +90,7 @@ Future<Uint8List> pdfGenerateDocument({
     document.addPage(projectInfo);
   }
 
-  final bool calculate = isCalculate();
-
-  if (calculate) {
+  if (calculationValid) {
     switchLoading(true);
 
     final int? price = getPrice();
@@ -109,6 +109,7 @@ Future<Uint8List> pdfGenerateDocument({
       period: period!,
       startInstallments: startInstallments!,
       endInstallments: endInstallments!,
+      extra: extra,
       remainingPrice: remainingPrice!,
       paymentsCount: paymentsCount!,
       payment: payment!,

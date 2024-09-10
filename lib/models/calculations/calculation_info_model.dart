@@ -1,3 +1,5 @@
+import 'calculation_extra_model.dart';
+
 class CalculationInfoModel {
   const CalculationInfoModel({
     this.companyId,
@@ -19,6 +21,7 @@ class CalculationInfoModel {
     this.period,
     this.startInstallments,
     this.endInstallments,
+    this.extra,
   });
 
   factory CalculationInfoModel.fromJson(Map<Object?, dynamic> json) {
@@ -42,6 +45,11 @@ class CalculationInfoModel {
       period: json['period'],
       startInstallments: json['startInstallments'],
       endInstallments: json['endInstallments'],
+      extra: json['extra'] != null
+          ? (json['extra'] as List)
+              .map((e) => CalculationExtraModel.fromJson(e))
+              .toList()
+          : null,
     );
   }
 
@@ -64,4 +72,5 @@ class CalculationInfoModel {
   final int? period;
   final String? startInstallments;
   final String? endInstallments;
+  final List<CalculationExtraModel>? extra;
 }

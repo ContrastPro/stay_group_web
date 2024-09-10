@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../models/calculations/calculation_extra_model.dart';
 import '../../../../../models/companies/company_model.dart';
 import '../../../../../models/companies/company_response_model.dart';
 import '../../../../../models/projects/project_model.dart';
@@ -130,6 +131,7 @@ class ManageCalculationBloc
         period: event.period,
         startInstallments: event.startInstallments,
         endInstallments: event.endInstallments,
+        extra: event.extra.isNotEmpty ? event.extra : null,
       );
 
       emit(
@@ -186,6 +188,7 @@ class ManageCalculationBloc
         period: event.period,
         startInstallments: event.startInstallments,
         endInstallments: event.endInstallments,
+        extra: event.extra.isNotEmpty ? event.extra : null,
         createdAt: event.createdAt,
       );
 

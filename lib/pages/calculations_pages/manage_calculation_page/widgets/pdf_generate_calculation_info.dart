@@ -1,10 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 
+import '../../../../models/calculations/calculation_extra_model.dart';
 import '../../../../models/calculations/calculation_period_model.dart';
 import '../../../../models/projects/project_model.dart';
+import '../../../../utils/helpers.dart';
 import 'pdf_generate_document.dart';
 
 Future<pdf.MultiPage> pdfGenerateCalculationInfo({
@@ -17,6 +19,7 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   required CalculationPeriodModel period,
   required DateTime startInstallments,
   required DateTime endInstallments,
+  required List<CalculationExtraModel> extra,
   required int remainingPrice,
   required int paymentsCount,
   required int payment,
@@ -24,15 +27,13 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   required pdf.TextStyle stylePrimary,
   required pdf.TextStyle styleSecondary,
 }) async {
-  final Jiffy start = Jiffy.parseFromDateTime(
-    startInstallments,
-  );
-  final Jiffy end = Jiffy.parseFromDateTime(
-    endInstallments,
-  );
+  final DateFormat dateFormat = DateFormat.yMMMMd();
+  final String start = dateFormat.format(startInstallments);
+  final String end = dateFormat.format(endInstallments);
 
   final List<pdf.Widget> calculations = _pdfGetCalculations(
     currency: currency,
+    extra: extra,
     paymentsCount: paymentsCount,
     payment: payment,
     paymentsDates: paymentsDates,
@@ -81,16 +82,19 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
           ),
           _pdfGetCalculationInfoItem(
             title: 'Installment terms',
-            data: '${start.yMMMMd} — ${end.yMMMMd}',
+            data: '$start — $end',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           pdf.SizedBox(height: 14.0),
           _pdfGetCalculationItem(
-            first: '№',
-            second: 'Payment date',
-            third: 'Total',
             addColor: true,
+            number: '№',
+            date: 'Payment date',
+            total: 'Total',
+            payment: 'Installments',
+            extraPrice: 'Taxes and fees',
+            extraDescription: 'Description',
             styleSecondary: styleSecondary,
           ),
           ...calculations,
@@ -132,6 +136,7 @@ pdf.Padding _pdfGetCalculationInfoItem({
 
 List<pdf.Widget> _pdfGetCalculations({
   required String currency,
+  required List<CalculationExtraModel> extra,
   required int paymentsCount,
   required int payment,
   required List<DateTime> paymentsDates,
@@ -143,13 +148,24 @@ List<pdf.Widget> _pdfGetCalculations({
     final DateFormat dateFormat = DateFormat('dd/MM/yy');
 
     for (int i = 0; i < paymentsCount; i++) {
+      int extraPrice = 0;
+
+      final CalculationExtraModel? calculationExtra = extra.firstWhereOrNull(
+        (e) => e.date.isAtSameMomentAs(paymentsDates[i]),
+      );
+
+      if (calculationExtra != null) {
+        extraPrice = parseString(calculationExtra.priceVal);
+      }
+
       calculations.add(
         _pdfGetCalculationItem(
-          first: '${i + 1}',
-          second: dateFormat.format(
-            paymentsDates[i],
-          ),
-          third: '$currency$payment',
+          number: '${i + 1}',
+          date: dateFormat.format(paymentsDates[i]),
+          total: '$currency${payment + extraPrice}',
+          payment: '$currency$payment',
+          extraPrice: '$currency$extraPrice',
+          extraDescription: calculationExtra?.name,
           styleSecondary: styleSecondary,
         ),
       );
@@ -160,10 +176,13 @@ List<pdf.Widget> _pdfGetCalculations({
 }
 
 pdf.Container _pdfGetCalculationItem({
-  required String first,
-  required String second,
-  required String third,
   bool addColor = false,
+  required String number,
+  required String date,
+  required String total,
+  required String payment,
+  required String extraPrice,
+  String? extraDescription,
   required pdf.TextStyle styleSecondary,
 }) {
   return pdf.Container(
@@ -184,7 +203,7 @@ pdf.Container _pdfGetCalculationItem({
         pdf.Container(
           width: 20.0,
           child: pdf.Text(
-            first,
+            number,
             style: styleSecondary.copyWith(
               fontSize: 8.0,
               color: addColor ? pdfScaffoldSecondary : null,
@@ -193,49 +212,71 @@ pdf.Container _pdfGetCalculationItem({
           ),
         ),
         pdf.Expanded(
+          flex: 15,
           child: pdf.Container(
             child: pdf.Text(
-              second,
+              date,
               style: styleSecondary.copyWith(
                 fontSize: 8.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
+              textAlign: pdf.TextAlign.center,
             ),
           ),
         ),
         pdf.Expanded(
+          flex: 15,
           child: pdf.Container(
             child: pdf.Text(
-              third,
+              total,
               style: styleSecondary.copyWith(
                 fontSize: 8.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
+              textAlign: pdf.TextAlign.center,
             ),
           ),
         ),
         pdf.Expanded(
+          flex: 15,
           child: pdf.Container(
             child: pdf.Text(
-              third,
+              payment,
               style: styleSecondary.copyWith(
                 fontSize: 8.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
+              textAlign: pdf.TextAlign.center,
             ),
           ),
         ),
         pdf.Expanded(
+          flex: 20,
           child: pdf.Container(
             child: pdf.Text(
-              third,
+              extraPrice,
               style: styleSecondary.copyWith(
                 fontSize: 8.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
+              textAlign: pdf.TextAlign.center,
             ),
           ),
         ),
+        pdf.Expanded(
+          flex: 35,
+          child: pdf.Container(
+            child: pdf.Text(
+              extraDescription ?? '—',
+              style: styleSecondary.copyWith(
+                fontSize: addColor ? 8.0 : 6.0,
+                color: addColor ? pdfScaffoldSecondary : null,
+              ),
+              maxLines: addColor ? 2 : null,
+            ),
+          ),
+        ),
+        pdf.SizedBox(width: 16.0),
         pdf.Column(
           mainAxisAlignment: pdf.MainAxisAlignment.center,
           crossAxisAlignment: pdf.CrossAxisAlignment.end,

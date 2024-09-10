@@ -86,14 +86,12 @@ bool passwordIsValid({
 
 String utcToLocal(
   String date, {
-  DateFormat? format,
+  String? format,
 }) {
+  final DateFormat dateFormat = DateFormat(format ?? 'HH:mm');
+
   final DateTime localDate = DateTime.parse(date).toLocal();
-
-  final DateFormat dateFormat = format ?? DateFormat('HH:mm');
-  final String formattedDate = dateFormat.format(localDate);
-
-  return formattedDate;
+  return dateFormat.format(localDate);
 }
 
 String localToUtc(

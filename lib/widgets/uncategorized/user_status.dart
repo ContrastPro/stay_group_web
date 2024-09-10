@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../resources/app_colors.dart';
-import '../../utils/constants.dart';
 
 class UserStatus extends StatelessWidget {
   const UserStatus({
@@ -33,7 +32,7 @@ class UserStatus extends StatelessWidget {
             height: 6.0,
             decoration: BoxDecoration(
               color: archived ? AppColors.error : AppColors.success,
-              borderRadius: kCircleRadius,
+              borderRadius: BorderRadius.circular(100.0),
             ),
           ),
           const SizedBox(width: 8.0),

@@ -2,10 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
+import '../../../models/calculations/calculation_extra_model.dart';
 import '../../../models/calculations/calculation_info_model.dart';
 import '../../../models/calculations/calculation_model.dart';
 import '../../../models/calculations/calculation_period_model.dart';
@@ -30,8 +32,10 @@ import '../../../widgets/dropdowns/animated_dropdown.dart';
 import '../../../widgets/dropdowns/icon_dropdown.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
+import '../../../widgets/modals/modal_dialog.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
+import 'widgets/calculation_extra_modal_dialog.dart';
 import 'widgets/pdf_generate_document.dart';
 
 class ManageCalculationPageArguments {
@@ -63,22 +67,7 @@ class ManageCalculationPage extends StatefulWidget {
 }
 
 class _ManageCalculationPageState extends State<ManageCalculationPage> {
-  static const List<String> _currencies = ['€', '\$', '£', '¥', '₹'];
-  static const List<CalculationPeriodModel> _periods = [
-    CalculationPeriodModel(
-      month: 1,
-      name: 'Every month',
-    ),
-    CalculationPeriodModel(
-      month: 3,
-      name: 'Every quarter',
-    ),
-    CalculationPeriodModel(
-      month: 6,
-      name: 'Every six months',
-    ),
-  ];
-
+  final List<CalculationExtraModel> _extra = [];
   final TextEditingController _controllerSection = TextEditingController();
   final TextEditingController _controllerFloor = TextEditingController();
   final TextEditingController _controllerNumber = TextEditingController();
@@ -97,6 +86,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   bool _isLoading = false;
   bool _nameValid = false;
   bool _priceValid = false;
+  bool _calculationValid = false;
 
   CompanyModel? _company;
   ProjectModel? _project;
@@ -110,7 +100,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (_dataLoaded) return;
 
     if (widget.calculation == null) {
-      _currency = _currencies.first;
+      _currency = kCurrencies.first;
       return _switchDataLoaded(true);
     }
 
@@ -121,7 +111,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         (e) => e.id == info.companyId,
       );
 
-      setState(() => _company = company);
+      _company = company;
     }
 
     if (info.projectId != null) {
@@ -129,7 +119,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         (e) => e.id == info.projectId,
       );
 
-      setState(() => _project = project);
+      _project = project;
     }
 
     if (info.section != null) {
@@ -187,35 +177,34 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     }
 
     if (info.period != null) {
-      final CalculationPeriodModel period = _periods.firstWhere(
+      final CalculationPeriodModel period = kPeriods.firstWhere(
         (e) => e.month == info.period,
       );
 
-      setState(() => _period = period);
+      _period = period;
     }
 
     if (info.startInstallments != null) {
-      final Jiffy startInstallments = Jiffy.parse(
+      final DateTime startInstallments = DateTime.parse(
         info.startInstallments!,
-        isUtc: true,
       );
 
-      setState(() {
-        _startInstallments = startInstallments.dateTime;
-      });
+      _startInstallments = startInstallments;
     }
 
     if (info.endInstallments != null) {
-      final Jiffy endInstallments = Jiffy.parse(
+      final DateTime endInstallments = DateTime.parse(
         info.endInstallments!,
-        isUtc: true,
       );
 
-      setState(() {
-        _endInstallments = endInstallments.dateTime;
-      });
+      _endInstallments = endInstallments;
     }
 
+    if (info.extra != null) {
+      _extra.addAll(info.extra!);
+    }
+
+    _validateCalculation();
     _switchDataLoaded(true);
   }
 
@@ -254,9 +243,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
+    setState(() => _nameValid = name.length > 1);
   }
 
   void _onSelectCurrency(String currency) {
@@ -264,11 +251,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _validatePrice(String price) {
-    setState(() {
-      _priceValid = price.length > 4;
-      _controllerDepositVal.clear();
-      _controllerDepositPct.clear();
-    });
+    _priceValid = price.length > 4;
+    _controllerDepositVal.clear();
+    _controllerDepositPct.clear();
+    _validateCalculation();
   }
 
   void _validateDepositVal(String depositVal) {
@@ -302,19 +288,32 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   void _onSelectCalculationPeriod(String name) {
-    final CalculationPeriodModel period = _periods.firstWhere(
+    final CalculationPeriodModel period = kPeriods.firstWhere(
       (e) => e.name == name,
     );
 
-    setState(() => _period = period);
+    _period = period;
+
+    _validateCalculation();
   }
 
-  void _onSelectStartInstallments(DateTime installments) {
-    setState(() => _startInstallments = installments);
+  void _onSelectStartInstallments(DateTime startInstallments) {
+    _startInstallments = startInstallments;
+    _validateCalculation();
   }
 
-  void _onSelectEndInstallments(DateTime installments) {
-    setState(() => _endInstallments = installments);
+  void _onSelectEndInstallments(DateTime endInstallments) {
+    _endInstallments = endInstallments;
+    _validateCalculation();
+  }
+
+  void _validateCalculation() {
+    final bool calculationValid = _priceValid &&
+        _period != null &&
+        _startInstallments != null &&
+        _endInstallments != null;
+
+    setState(() => _calculationValid = calculationValid);
   }
 
   Future<void> _printPdf(ManageCalculationState state) async {
@@ -345,14 +344,15 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           bathrooms: bathrooms,
           total: total,
           living: living,
+          calculationValid: _calculationValid,
           currency: _currency,
           depositVal: depositVal,
           depositPct: depositPct,
           period: _period,
           startInstallments: _startInstallments,
           endInstallments: _endInstallments,
+          extra: _extra,
           switchLoading: _switchLoading,
-          isCalculate: _isCalculate,
           getPrice: _getPrice,
           getRemainingPrice: _getRemainingPrice,
           getPaymentsCount: _getPaymentsCount,
@@ -365,14 +365,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     if (isPrinted) {
       // update counter
     }
-  }
-
-  bool _isCalculate() {
-    if (!_priceValid) return false;
-    if (_period == null) return false;
-    if (_startInstallments == null) return false;
-    if (_endInstallments == null) return false;
-    return true;
   }
 
   int? _getPrice() {
@@ -459,6 +451,53 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return dates;
   }
 
+  Future<void> _showManageExtraModal({
+    CalculationExtraModel? calculationExtra,
+  }) async {
+    if (!_calculationValid) return;
+
+    final int? price = _getPrice();
+
+    final List<DateTime>? paymentsDates = _getPaymentsDates();
+    if (paymentsDates!.isEmpty) return;
+
+    await ModalDialog.show(
+      context: context,
+      builder: (ctx) => CalculationExtraModalDialog(
+        currency: _currency!,
+        price: price!,
+        paymentsDates: paymentsDates,
+        calculationExtra: calculationExtra,
+        onCancel: ctx.pop,
+        onCreate: (CalculationExtraModel extra) {
+          setState(() {
+            _extra.add(extra);
+          });
+
+          ctx.pop();
+        },
+        onUpdate: (CalculationExtraModel extra) {
+          final int index = _extra.indexWhere((e) => e.id == extra.id);
+
+          setState(() {
+            _extra[index] = extra;
+          });
+
+          ctx.pop();
+        },
+        onDelete: (CalculationExtraModel extra) {
+          final int index = _extra.indexWhere((e) => e.id == extra.id);
+
+          setState(() {
+            _extra.removeAt(index);
+          });
+
+          ctx.pop();
+        },
+      ),
+    );
+  }
+
   void _createCalculation(BuildContext context) {
     _switchErrorName();
 
@@ -510,6 +549,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             period: _period?.month,
             startInstallments: _startInstallments,
             endInstallments: _endInstallments,
+            extra: _extra,
           ),
         );
   }
@@ -560,6 +600,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             period: _period?.month,
             startInstallments: _startInstallments,
             endInstallments: _endInstallments,
+            extra: _extra,
             createdAt: widget.calculation!.metadata.createdAt,
           ),
         );
@@ -820,7 +861,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       children: [
                         IconDropdown(
                           initialData: _currency!,
-                          values: _currencies,
+                          values: kCurrencies,
                           labelText: 'Currency',
                           onChanged: _onSelectCurrency,
                         ),
@@ -876,7 +917,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       initialData: _period?.name,
                       labelText: 'Calculation period',
                       hintText: 'Select period',
-                      values: _periods.map((e) => e.name).toList(),
+                      values: kPeriods.map((e) => e.name).toList(),
                       onChanged: _onSelectCalculationPeriod,
                     ),
                     const SizedBox(height: 16.0),
@@ -904,6 +945,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16.0),
+                    CustomTextButton(
+                      prefixIcon: AppIcons.add,
+                      text: 'Add extra expense',
+                      onTap: () => _showManageExtraModal(),
                     ),
                     const SizedBox(height: 40.0),
                     CustomTextButton(

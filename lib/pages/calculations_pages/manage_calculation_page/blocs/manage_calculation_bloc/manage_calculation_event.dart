@@ -30,6 +30,7 @@ class CreateCalculation extends ManageCalculationEvent {
     this.period,
     this.startInstallments,
     this.endInstallments,
+    required this.extra,
   });
 
   final String? companyId;
@@ -51,6 +52,7 @@ class CreateCalculation extends ManageCalculationEvent {
   final int? period;
   final DateTime? startInstallments;
   final DateTime? endInstallments;
+  final List<CalculationExtraModel> extra;
 }
 
 class UpdateCalculation extends ManageCalculationEvent {
@@ -75,6 +77,7 @@ class UpdateCalculation extends ManageCalculationEvent {
     this.period,
     this.startInstallments,
     this.endInstallments,
+    required this.extra,
     required this.createdAt,
   });
 
@@ -98,5 +101,6 @@ class UpdateCalculation extends ManageCalculationEvent {
   final int? period;
   final DateTime? startInstallments;
   final DateTime? endInstallments;
+  final List<CalculationExtraModel> extra;
   final String createdAt;
 }

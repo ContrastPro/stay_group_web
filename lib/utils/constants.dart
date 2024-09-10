@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/calculations/calculation_period_model.dart';
+
 enum BlocStatus { initial, loading, loaded, success, failed }
 
 enum DateDifference { seconds, minutes, days }
@@ -12,9 +14,22 @@ const int kFileWeightMax = 10485760;
 
 const List<String> kImageFormats = ['jpg', 'jpeg', 'png'];
 
-const BorderRadius kCircleRadius = BorderRadius.all(
-  Radius.circular(100.0),
-);
+const List<String> kCurrencies = ['€', '\$', '£', '¥', '₹'];
+
+const List<CalculationPeriodModel> kPeriods = [
+  CalculationPeriodModel(
+    month: 1,
+    name: 'Every month',
+  ),
+  CalculationPeriodModel(
+    month: 3,
+    name: 'Every quarter',
+  ),
+  CalculationPeriodModel(
+    month: 6,
+    name: 'Every six months',
+  ),
+];
 
 const Duration kDebugRequestDuration = Duration(milliseconds: 50);
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/companies_repository.dart';
@@ -194,7 +193,7 @@ class _DashboardPageContent extends StatelessWidget {
                           alignment: Alignment.center,
                           title: utcToLocal(
                             state.companies[i].metadata.createdAt,
-                            format: DateFormat('dd/MM/yy'),
+                            format: 'dd/MM/yy',
                           ),
                           maxLines: 1,
                         ),

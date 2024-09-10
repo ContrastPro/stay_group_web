@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 
+import '../models/calculations/calculation_extra_model.dart';
 import '../models/calculations/calculation_response_model.dart';
 import '../services/repository_logger_service.dart';
 import '../utils/helpers.dart';
@@ -46,6 +47,7 @@ class CalculationsRepository {
     int? period,
     DateTime? startInstallments,
     DateTime? endInstallments,
+    List<CalculationExtraModel>? extra,
   }) async {
     final DatabaseReference reference = _getRef(
       spaceId,
@@ -72,12 +74,9 @@ class CalculationsRepository {
         'depositVal': depositVal,
         'depositPct': depositPct,
         'period': period,
-        'startInstallments': startInstallments != null
-            ? localToUtc(startInstallments, onlyUtcFormat: true)
-            : null,
-        'endInstallments': endInstallments != null
-            ? localToUtc(endInstallments, onlyUtcFormat: true)
-            : null,
+        'startInstallments': startInstallments?.toString(),
+        'endInstallments': endInstallments?.toString(),
+        'extra': extra?.map((e) => e.toJson()).toList(),
       },
       'metadata': {
         'createdAt': localToUtc(currentTime()),
@@ -109,6 +108,7 @@ class CalculationsRepository {
     int? period,
     DateTime? startInstallments,
     DateTime? endInstallments,
+    List<CalculationExtraModel>? extra,
     required String createdAt,
   }) async {
     final DatabaseReference reference = _getRef(
@@ -136,12 +136,9 @@ class CalculationsRepository {
         'depositVal': depositVal,
         'depositPct': depositPct,
         'period': period,
-        'startInstallments': startInstallments != null
-            ? localToUtc(startInstallments, onlyUtcFormat: true)
-            : null,
-        'endInstallments': endInstallments != null
-            ? localToUtc(endInstallments, onlyUtcFormat: true)
-            : null,
+        'startInstallments': startInstallments?.toString(),
+        'endInstallments': endInstallments?.toString(),
+        'extra': extra?.map((e) => e.toJson()).toList(),
       },
       'metadata': {
         'createdAt': createdAt,
