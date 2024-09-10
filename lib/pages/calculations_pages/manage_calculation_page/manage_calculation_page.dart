@@ -851,7 +851,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       controller: _controllerDescription,
                       labelText: 'Calculation notes',
                       hintText: 'Field for notes, clients info, etc..',
-                      maxLines: 6,
+                      maxLines: 14,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(1024),
                       ],

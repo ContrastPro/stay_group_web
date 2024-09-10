@@ -83,9 +83,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
   }
 
   void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
+    setState(() => _nameValid = name.length > 1);
   }
 
   void _validateEmail(String email) {

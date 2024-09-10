@@ -120,15 +120,11 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
   }
 
   void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
+    setState(() => _nameValid = name.length > 1);
   }
 
   void _validateDescription(String description) {
-    setState(() {
-      _descriptionValid = description.length > 1;
-    });
+    setState(() => _descriptionValid = description.length > 1);
   }
 
   void _createCompany(BuildContext context) {

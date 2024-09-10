@@ -272,7 +272,6 @@ pdf.Container _pdfGetCalculationItem({
                 fontSize: addColor ? 8.0 : 6.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
-              maxLines: addColor ? 2 : null,
             ),
           ),
         ),

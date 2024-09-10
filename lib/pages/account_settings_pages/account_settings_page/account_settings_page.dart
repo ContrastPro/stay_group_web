@@ -74,9 +74,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
+    setState(() => _nameValid = name.length > 1);
   }
 
   void _switchErrorName({String? error}) {

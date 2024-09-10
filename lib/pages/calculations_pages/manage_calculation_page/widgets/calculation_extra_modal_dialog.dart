@@ -100,7 +100,7 @@ class _CalculationExtraModalDialogState
 
       final double depositPct = (deposit * 100) / widget.price;
 
-      _controllerPricePct.text = depositPct.toStringAsFixed(0);
+      _controllerPricePct.text = depositPct.toStringAsFixed(1);
     } else {
       _controllerPricePct.clear();
     }
@@ -240,9 +240,8 @@ class _CalculationExtraModalDialogState
                       labelText: 'Name',
                       hintText: 'Extra expense name',
                       errorText: _errorTextName,
-                      maxLines: 2,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
+                        LengthLimitingTextInputFormatter(100),
                       ],
                       onChanged: _validateName,
                     ),

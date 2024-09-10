@@ -125,21 +125,15 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
   }
 
   void _validateName(String name) {
-    setState(() {
-      _nameValid = name.length > 1;
-    });
+    setState(() => _nameValid = name.length > 1);
   }
 
   void _validateLocation(String location) {
-    setState(() {
-      _locationValid = location.length > 1;
-    });
+    setState(() => _locationValid = location.length > 1);
   }
 
   void _validateDescription(String description) {
-    setState(() {
-      _descriptionValid = description.length > 1;
-    });
+    setState(() => _descriptionValid = description.length > 1);
   }
 
   void _createProject(BuildContext context) {
@@ -361,7 +355,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     labelText: 'Description',
                     hintText: 'Project description',
                     errorText: _errorTextDescription,
-                    maxLines: 6,
+                    maxLines: 14,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(640),
                     ],
