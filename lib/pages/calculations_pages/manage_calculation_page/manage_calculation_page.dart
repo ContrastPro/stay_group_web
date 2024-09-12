@@ -35,7 +35,8 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/modals/modal_dialog.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
-import 'widgets/calculation_extra_modal_dialog.dart';
+import 'widgets/manage_calculation_extra_item.dart';
+import 'widgets/manage_calculation_extra_modal_dialog.dart';
 import 'widgets/pdf_generate_document.dart';
 
 class ManageCalculationPageArguments {
@@ -451,9 +452,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return dates;
   }
 
-  Future<void> _showManageExtraModal({
+  Future<void> _showManageExtraModal([
     CalculationExtraModel? calculationExtra,
-  }) async {
+  ]) async {
     if (!_calculationValid) return;
 
     final int? price = _getPrice();
@@ -463,39 +464,52 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
     await ModalDialog.show(
       context: context,
-      builder: (ctx) => CalculationExtraModalDialog(
+      builder: (ctx) => ManageCalculationExtraModalDialog(
         currency: _currency!,
         price: price!,
         paymentsDates: paymentsDates,
         calculationExtra: calculationExtra,
         onCancel: ctx.pop,
-        onCreate: (CalculationExtraModel extra) {
-          setState(() {
-            _extra.add(extra);
-          });
-
-          ctx.pop();
-        },
-        onUpdate: (CalculationExtraModel extra) {
-          final int index = _extra.indexWhere((e) => e.id == extra.id);
-
-          setState(() {
-            _extra[index] = extra;
-          });
-
-          ctx.pop();
-        },
-        onDelete: (CalculationExtraModel extra) {
-          final int index = _extra.indexWhere((e) => e.id == extra.id);
-
-          setState(() {
-            _extra.removeAt(index);
-          });
-
-          ctx.pop();
-        },
+        onCreate: (CalculationExtraModel extra) => _createCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
+        onUpdate: (CalculationExtraModel extra) => _updateCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
+        onDelete: (CalculationExtraModel extra) => _deleteCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
       ),
     );
+  }
+
+  void _createCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    setState(() => _extra.add(extra));
+    context.pop();
+  }
+
+  void _updateCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    final int index = _extra.indexWhere((e) => e.id == extra.id);
+    setState(() => _extra[index] = extra);
+    context.pop();
+  }
+
+  void _deleteCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    final int index = _extra.indexWhere((e) => e.id == extra.id);
+    setState(() => _extra.removeAt(index));
+    context.pop();
   }
 
   void _createCalculation(BuildContext context) {
@@ -946,18 +960,30 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 28.0),
+                    Text(
+                      'Extra expense',
+                      style: AppTextStyles.paragraphLMedium,
+                    ),
                     const SizedBox(height: 16.0),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _extra.length,
+                      itemBuilder: (_, int i) {
+                        return ManageCalculationExtraItem(
+                          currency: _currency!,
+                          calculationExtra: _extra[i],
+                          onManage: _showManageExtraModal,
+                        );
+                      },
+                    ),
                     CustomTextButton(
                       prefixIcon: AppIcons.add,
                       text: 'Add extra expense',
-                      onTap: () => _showManageExtraModal(),
+                      onTap: _showManageExtraModal,
                     ),
                     const SizedBox(height: 40.0),
-                    CustomTextButton(
-                      text: 'Print Pdf',
-                      onTap: () => _printPdf(state),
-                    ),
-                    const SizedBox(height: 12.0),
                     if (widget.calculation == null) ...[
                       CustomButton(
                         text: 'Create calculation',

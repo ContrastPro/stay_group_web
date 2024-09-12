@@ -15,9 +15,8 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) {
-      return web;
-    }
+    if (kIsWeb) return web;
+
     switch (defaultTargetPlatform) {
       default:
         throw UnsupportedError(

@@ -28,7 +28,7 @@ class CustomDrawer extends StatelessWidget {
   static const List<BottomNavigationBarItemModel> _tabsManager = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: 'Dashboard',
+      title: 'Companies', //Dashboard
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(
@@ -61,7 +61,7 @@ class CustomDrawer extends StatelessWidget {
   static const List<BottomNavigationBarItemModel> _tabsWorker = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: 'Dashboard',
+      title: 'Companies', //Dashboard
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(

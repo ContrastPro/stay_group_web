@@ -267,7 +267,7 @@ pdf.Container _pdfGetCalculationItem({
           flex: 35,
           child: pdf.Container(
             child: pdf.Text(
-              extraDescription ?? '—',
+              extraDescription ?? '',
               style: styleSecondary.copyWith(
                 fontSize: addColor ? 8.0 : 6.0,
                 color: addColor ? pdfScaffoldSecondary : null,

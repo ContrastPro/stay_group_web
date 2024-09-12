@@ -14,8 +14,8 @@ import '../../../../widgets/buttons/custom_text_button.dart';
 import '../../../../widgets/dropdowns/animated_dropdown.dart';
 import '../../../../widgets/text_fields/border_text_field.dart';
 
-class CalculationExtraModalDialog extends StatefulWidget {
-  const CalculationExtraModalDialog({
+class ManageCalculationExtraModalDialog extends StatefulWidget {
+  const ManageCalculationExtraModalDialog({
     super.key,
     required this.currency,
     required this.price,
@@ -37,12 +37,12 @@ class CalculationExtraModalDialog extends StatefulWidget {
   final void Function(CalculationExtraModel) onDelete;
 
   @override
-  State<CalculationExtraModalDialog> createState() =>
-      _CalculationExtraModalDialogState();
+  State<ManageCalculationExtraModalDialog> createState() =>
+      _ManageCalculationExtraModalDialogState();
 }
 
-class _CalculationExtraModalDialogState
-    extends State<CalculationExtraModalDialog> {
+class _ManageCalculationExtraModalDialogState
+    extends State<ManageCalculationExtraModalDialog> {
   final List<CalculationDateModel> _dates = [];
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerPriceVal = TextEditingController();
@@ -82,8 +82,6 @@ class _CalculationExtraModalDialogState
       _validateName(extra.name);
       _controllerPriceVal.text = extra.priceVal;
       _validatePriceVal(extra.priceVal);
-      _controllerPricePct.text = extra.pricePct;
-      _validatePricePct(extra.pricePct);
       _onSelectDate(dateFormat.format(extra.date));
     }
   }

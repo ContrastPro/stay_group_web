@@ -100,7 +100,7 @@ class _DashboardPageContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Dashboard',
+                'Companies', //Dashboard
                 style: AppTextStyles.head6Medium,
               ),
               SizedBox(
