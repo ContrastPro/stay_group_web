@@ -32,12 +32,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (response != null) {
+        final User user = response.user!;
+
         final UserModel? userData = await usersRepository.getUserById(
-          userId: response.user!.uid,
+          userId: user.uid,
         );
 
         if (userData!.info.role == UserRole.manager) {
-          if (response.user!.emailVerified) {
+          if (user.emailVerified) {
             emit(
               state.copyWith(
                 status: BlocStatus.loaded,
@@ -112,11 +114,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           );
 
+          final User user = credential!.user!;
+
           await usersRepository.activateUser(
             archived: userData.archived,
             blocked: userData.blocked,
             id: userData.id,
-            userId: credential!.user!.uid,
+            userId: user.uid,
             spaceId: userData.spaceId!,
             email: userData.credential.email,
             role: userData.info.role,
@@ -174,58 +178,62 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       await requestDelay();
 
-      final UserCredential? response = await authRepository.emailSignUp(
+      final UserModel? response = await usersRepository.getUserByEmail(
         email: event.email,
-        password: event.password,
       );
 
       if (response != null) {
-        final User user = response.user!;
-
-        final String id = uuid();
-
-        final DateTime dueDate = currentTime().add(
-          const Duration(days: 7),
-        );
-
-        await usersRepository.createUser(
-          id: id,
-          userId: user.uid,
-          email: user.email!,
-          role: UserRole.manager,
-          name: 'My space',
-          dueDate: dueDate,
-        );
-
-        await authRepository.sendEmailVerification();
-
-        await authRepository.signOut();
-
         emit(
           state.copyWith(
             status: BlocStatus.loaded,
           ),
         );
 
-        emit(
-          state.copyWith(
-            status: BlocStatus.success,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
-        );
-
-        emit(
+        return emit(
           state.copyWith(
             status: BlocStatus.failed,
             errorMessage: 'A user with this email address already exists',
           ),
         );
       }
+
+      final UserCredential? credential = await authRepository.emailSignUp(
+        email: event.email,
+        password: event.password,
+      );
+
+      final User user = credential!.user!;
+
+      final String id = uuid();
+
+      final DateTime dueDate = currentTime().add(
+        const Duration(days: 7),
+      );
+
+      await usersRepository.createUser(
+        id: id,
+        userId: user.uid,
+        email: user.email!,
+        role: UserRole.manager,
+        name: 'My space',
+        dueDate: dueDate,
+      );
+
+      await authRepository.sendEmailVerification();
+
+      await authRepository.signOut();
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      return emit(
+        state.copyWith(
+          status: BlocStatus.success,
+        ),
+      );
     });
 
     on<PasswordRecovery>((event, emit) async {
@@ -271,23 +279,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
 
-      final bool? isSent = await authRepository.passwordRecovery(
+      await authRepository.passwordRecovery(
         email: event.email,
       );
-
-      if (isSent != null) {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
-        );
-
-        return emit(
-          state.copyWith(
-            status: BlocStatus.success,
-          ),
-        );
-      }
 
       emit(
         state.copyWith(
@@ -297,8 +291,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       emit(
         state.copyWith(
-          status: BlocStatus.failed,
-          errorMessage: 'User with this email does not exist',
+          status: BlocStatus.success,
         ),
       );
     });

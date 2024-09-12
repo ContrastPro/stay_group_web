@@ -1001,6 +1001,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       text: 'Back to Calculations page',
                       onTap: widget.navigateToCalculationsPage,
                     ),
+                    const SizedBox(height: 12.0),
+                    CustomButton(
+                      prefixIcon: AppIcons.calculation,
+                      text: 'Print PDF',
+                      backgroundColor: AppColors.info,
+                      onTap: () => _printPdf(state),
+                    ),
                   ],
                 ),
                 preview: _CalculationPreview(
