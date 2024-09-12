@@ -52,25 +52,25 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
           ),
         );
 
-        emit(
+        return emit(
           state.copyWith(
             status: BlocStatus.success,
           ),
         );
-      } else {
-        emit(
-          state.copyWith(
-            status: BlocStatus.loaded,
-          ),
-        );
-
-        emit(
-          state.copyWith(
-            status: BlocStatus.failed,
-            errorMessage: 'A user with this email address already exists',
-          ),
-        );
       }
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.loaded,
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          status: BlocStatus.failed,
+          errorMessage: 'A user with this email address already exists',
+        ),
+      );
     });
 
     on<UpdateUser>((event, emit) async {

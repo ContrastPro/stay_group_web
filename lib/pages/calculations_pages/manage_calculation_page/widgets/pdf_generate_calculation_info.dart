@@ -31,6 +31,12 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   final String start = dateFormat.format(startInstallments);
   final String end = dateFormat.format(endInstallments);
 
+  int totalPrice = price;
+
+  for (int i = 0; i < extra.length; i++) {
+    totalPrice = totalPrice + parseString(extra[i].priceVal);
+  }
+
   final List<pdf.Widget> calculations = _pdfGetCalculations(
     currency: currency,
     extra: extra,
@@ -59,7 +65,7 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
         ),
         pdf.SizedBox(height: 6.0),
         _pdfGetCalculationInfoItem(
-          title: 'Unit price (without extra costs)',
+          title: 'Unit price',
           data: '$currency$price',
           stylePrimary: stylePrimary,
           styleSecondary: styleSecondary,
@@ -86,6 +92,14 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
+          if (price != totalPrice) ...[
+            _pdfGetCalculationInfoItem(
+              title: 'Total price (Unit price + Taxes and fees)',
+              data: '$currency$totalPrice',
+              stylePrimary: stylePrimary,
+              styleSecondary: styleSecondary,
+            ),
+          ],
           pdf.SizedBox(height: 14.0),
           _pdfGetCalculationItem(
             addColor: true,
@@ -267,7 +281,7 @@ pdf.Container _pdfGetCalculationItem({
           flex: 35,
           child: pdf.Container(
             child: pdf.Text(
-              extraDescription ?? '',
+              extraDescription ?? '—',
               style: styleSecondary.copyWith(
                 fontSize: addColor ? 8.0 : 6.0,
                 color: addColor ? pdfScaffoldSecondary : null,
