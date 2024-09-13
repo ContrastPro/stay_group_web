@@ -105,9 +105,14 @@ String localToUtc(
   return date.toUtc().toIso8601String();
 }
 
-int parseString(String data) {
-  final String formatValue = data.replaceAll(RegExp(r'[^0-9]'), '');
+int parseStringInt(String data) {
+  final String formatValue = data.replaceAll(RegExp(r'[^0-9.]+'), '');
   return int.parse(formatValue);
+}
+
+double parseStringDouble(String data) {
+  final String formatValue = data.replaceAll(RegExp(r'[^0-9.]+'), '');
+  return double.parse(formatValue);
 }
 
 List<MediaModel> getSavedMedia({

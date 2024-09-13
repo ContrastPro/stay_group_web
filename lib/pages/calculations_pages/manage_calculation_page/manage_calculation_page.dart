@@ -262,8 +262,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final bool isValid = depositVal.length > 3;
 
     if (isValid) {
-      final int price = parseString(_controllerPrice.text);
-      final int deposit = parseString(depositVal);
+      final int price = parseStringInt(_controllerPrice.text);
+      final int deposit = parseStringInt(depositVal);
 
       final double depositPct = (deposit * 100) / price;
 
@@ -277,8 +277,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final bool isValid = depositPct.isNotEmpty;
 
     if (isValid) {
-      final int price = parseString(_controllerPrice.text);
-      final int deposit = parseString(depositPct);
+      final int price = parseStringInt(_controllerPrice.text);
+      final int deposit = parseStringInt(depositPct);
 
       final double depositVal = (price * deposit) / 100;
 
@@ -370,7 +370,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
   int? _getPrice() {
     if (!_priceValid) return null;
-    final int price = parseString(_controllerPrice.text);
+    final int price = parseStringInt(_controllerPrice.text);
     return price;
   }
 
@@ -381,7 +381,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final String depositVal = _controllerDepositVal.text;
 
     if (depositVal.isNotEmpty) {
-      final int deposit = parseString(depositVal);
+      final int deposit = parseStringInt(depositVal);
       return price - deposit;
     }
 
@@ -484,6 +484,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         ),
       ),
     );
+
+    setState(() {
+      _extra.sort(
+        (a, b) => a.date.compareTo(b.date),
+      );
+    });
   }
 
   void _createCalculationExtra({

@@ -94,7 +94,7 @@ class _ManageCalculationExtraModalDialogState
     final bool isValid = depositVal.length > 1;
 
     if (isValid) {
-      final int deposit = parseString(depositVal);
+      final double deposit = parseStringDouble(depositVal);
 
       final double depositPct = (deposit * 100) / widget.price;
 
@@ -110,7 +110,7 @@ class _ManageCalculationExtraModalDialogState
     final bool isValid = depositPct.isNotEmpty;
 
     if (isValid) {
-      final int deposit = parseString(depositPct);
+      final double deposit = parseStringDouble(depositPct);
 
       final double depositVal = (widget.price * deposit) / 100;
 
@@ -239,7 +239,7 @@ class _ManageCalculationExtraModalDialogState
                       hintText: 'Extra expense name',
                       errorText: _errorTextName,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(100),
+                        LengthLimitingTextInputFormatter(110),
                       ],
                       onChanged: _validateName,
                     ),
@@ -267,8 +267,10 @@ class _ManageCalculationExtraModalDialogState
                             hintText: 'Enter percent',
                             errorText: _errorTextPrice,
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(3),
-                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+\.?\d*'),
+                              ),
                             ],
                             onChanged: _validatePricePct,
                           ),

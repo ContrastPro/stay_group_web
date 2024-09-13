@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
@@ -34,7 +33,7 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   int totalPrice = price;
 
   for (int i = 0; i < extra.length; i++) {
-    totalPrice = totalPrice + parseString(extra[i].priceVal);
+    totalPrice = totalPrice + parseStringInt(extra[i].priceVal);
   }
 
   final List<pdf.Widget> calculations = _pdfGetCalculations(
@@ -162,24 +161,31 @@ List<pdf.Widget> _pdfGetCalculations({
     final DateFormat dateFormat = DateFormat('dd/MM/yy');
 
     for (int i = 0; i < paymentsCount; i++) {
+      final DateTime paymentDate = paymentsDates[i];
+
       int extraPrice = 0;
+      String extraDescription = '';
 
-      final CalculationExtraModel? calculationExtra = extra.firstWhereOrNull(
-        (e) => e.date.isAtSameMomentAs(paymentsDates[i]),
-      );
+      for (int y = 0; y < extra.length; y++) {
+        final CalculationExtraModel calculationExtra = extra[y];
 
-      if (calculationExtra != null) {
-        extraPrice = parseString(calculationExtra.priceVal);
+        if (calculationExtra.date.isAtSameMomentAs(paymentDate)) {
+          extraPrice = extraPrice + parseStringInt(calculationExtra.priceVal);
+
+          extraDescription = extraDescription.isNotEmpty
+              ? '$extraDescription; ${calculationExtra.name}'
+              : calculationExtra.name;
+        }
       }
 
       calculations.add(
         _pdfGetCalculationItem(
           number: '${i + 1}',
-          date: dateFormat.format(paymentsDates[i]),
+          date: dateFormat.format(paymentDate),
           total: '$currency${payment + extraPrice}',
           payment: '$currency$payment',
           extraPrice: '$currency$extraPrice',
-          extraDescription: calculationExtra?.name,
+          extraDescription: extraDescription,
           styleSecondary: styleSecondary,
         ),
       );
@@ -196,7 +202,7 @@ pdf.Container _pdfGetCalculationItem({
   required String total,
   required String payment,
   required String extraPrice,
-  String? extraDescription,
+  required String extraDescription,
   required pdf.TextStyle styleSecondary,
 }) {
   return pdf.Container(
@@ -281,15 +287,16 @@ pdf.Container _pdfGetCalculationItem({
           flex: 35,
           child: pdf.Container(
             child: pdf.Text(
-              extraDescription ?? '—',
+              extraDescription.isNotEmpty ? extraDescription : '—',
               style: styleSecondary.copyWith(
                 fontSize: addColor ? 8.0 : 6.0,
                 color: addColor ? pdfScaffoldSecondary : null,
               ),
+              maxLines: 2,
             ),
           ),
         ),
-        pdf.SizedBox(width: 16.0),
+        pdf.SizedBox(width: 6.0),
         pdf.Column(
           mainAxisAlignment: pdf.MainAxisAlignment.center,
           crossAxisAlignment: pdf.CrossAxisAlignment.end,
