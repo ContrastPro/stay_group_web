@@ -15,6 +15,8 @@ class CachedNetworkImageLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
+      width: double.infinity,
+      height: double.infinity,
       fit: fit,
       progressIndicatorBuilder: (_, __, progress) {
         return Stack(

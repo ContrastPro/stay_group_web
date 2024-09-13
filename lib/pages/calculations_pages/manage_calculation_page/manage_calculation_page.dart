@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
@@ -31,6 +32,7 @@ import '../../../widgets/data_pickers/custom_date_picker.dart';
 import '../../../widgets/dropdowns/animated_dropdown.dart';
 import '../../../widgets/dropdowns/icon_dropdown.dart';
 import '../../../widgets/layouts/preview_layout.dart';
+import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/modals/modal_dialog.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
@@ -518,6 +520,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     context.pop();
   }
 
+  void _updateState(String value) {
+    setState(() {});
+  }
+
   void _createCalculation(BuildContext context) {
     _switchErrorName();
 
@@ -746,6 +752,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(32),
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -758,6 +765,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                 LengthLimitingTextInputFormatter(3),
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                         ],
@@ -773,6 +781,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(32),
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -784,6 +793,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(32),
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                         ],
@@ -800,6 +810,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                 LengthLimitingTextInputFormatter(3),
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -812,6 +823,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                 LengthLimitingTextInputFormatter(3),
                                 FilteringTextInputFormatter.digitsOnly,
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                         ],
@@ -830,6 +842,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                   RegExp(r'^\d+\.?\d*'),
                                 ),
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                           const SizedBox(width: 16.0),
@@ -844,6 +857,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                                   RegExp(r'^\d+\.?\d*'),
                                 ),
                               ],
+                              onChanged: _updateState,
                             ),
                           ),
                         ],
@@ -1017,8 +1031,18 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ],
                 ),
                 preview: _CalculationPreview(
+                  calculationValid: _calculationValid,
                   company: _company,
                   project: _project,
+                  section: _controllerSection.text,
+                  floor: _controllerFloor.text,
+                  number: _controllerNumber.text,
+                  type: _controllerType.text,
+                  rooms: _controllerRooms.text,
+                  bathrooms: _controllerBathrooms.text,
+                  total: _controllerTotal.text,
+                  living: _controllerLiving.text,
+                  state: state,
                 ),
               ),
             );
@@ -1035,15 +1059,428 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
 class _CalculationPreview extends StatelessWidget {
   const _CalculationPreview({
+    required this.calculationValid,
     this.company,
     this.project,
+    required this.section,
+    required this.floor,
+    required this.number,
+    required this.type,
+    required this.rooms,
+    required this.bathrooms,
+    required this.total,
+    required this.living,
+    required this.state,
+  });
+
+  final bool calculationValid;
+  final CompanyModel? company;
+  final ProjectModel? project;
+  final String section;
+  final String floor;
+  final String number;
+  final String type;
+  final String rooms;
+  final String bathrooms;
+  final String total;
+  final String living;
+  final ManageCalculationState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 40.0,
+        vertical: 42.0,
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 640.0,
+            height: 940.0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 42.0,
+              vertical: 72.0,
+            ),
+            decoration: const BoxDecoration(
+              color: AppColors.scaffoldSecondary,
+            ),
+            child: Column(
+              children: [
+                _ProjectHeader(
+                  state: state,
+                ),
+                _ProjectContent(
+                  company: company,
+                  project: project,
+                  section: section,
+                  floor: floor,
+                  number: number,
+                  type: type,
+                  rooms: rooms,
+                  bathrooms: bathrooms,
+                  total: total,
+                  living: living,
+                ),
+                _ProjectFooter(
+                  company: company,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProjectHeader extends StatelessWidget {
+  const _ProjectHeader({
+    required this.state,
+  });
+
+  final ManageCalculationState state;
+
+  String _getUserContact() {
+    return state.userData!.info.phone ?? state.userData!.credential.email;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 72.0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 22.0,
+      ),
+      color: AppColors.iconPrimary,
+      child: Row(
+        children: [
+          if (state.spaceData != null) ...[
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.spaceData!.info.name,
+                    style: AppTextStyles.paragraphMMedium.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    state.userData!.info.name,
+                    style: AppTextStyles.paragraphMMedium.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                    maxLines: 2,
+                  ),
+                  Text(
+                    _getUserContact(),
+                    style: AppTextStyles.captionRegular.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.userData!.info.name,
+                    style: AppTextStyles.paragraphMMedium.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                    maxLines: 1,
+                  ),
+                  Text(
+                    state.userData!.credential.email,
+                    style: AppTextStyles.captionRegular.copyWith(
+                      color: AppColors.scaffoldSecondary,
+                    ),
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProjectContent extends StatelessWidget {
+  const _ProjectContent({
+    this.company,
+    this.project,
+    required this.section,
+    required this.floor,
+    required this.number,
+    required this.type,
+    required this.rooms,
+    required this.bathrooms,
+    required this.total,
+    required this.living,
   });
 
   final CompanyModel? company;
   final ProjectModel? project;
+  final String section;
+  final String floor;
+  final String number;
+  final String type;
+  final String rooms;
+  final String bathrooms;
+  final String total;
+  final String living;
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox();
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (project != null) ...[
+            const SizedBox(height: 8.0),
+            if (project!.info.media != null) ...[
+              SizedBox(
+                width: double.infinity,
+                height: 300.0,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CachedNetworkImageLoader(
+                        imageUrl: project!.info.media![0].data,
+                      ),
+                    ),
+                    if (project!.info.media!.length > 1) ...[
+                      const SizedBox(width: 8.0),
+                      SizedBox(
+                        width: 200.0,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 146.0,
+                              child: CachedNetworkImageLoader(
+                                imageUrl: project!.info.media![1].data,
+                              ),
+                            ),
+                            if (project!.info.media!.length > 2) ...[
+                              const SizedBox(height: 8.0),
+                              SizedBox(
+                                height: 146.0,
+                                child: CachedNetworkImageLoader(
+                                  imageUrl: project!.info.media![2].data,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16.0),
+            ],
+            Text(
+              project!.info.name,
+              style: AppTextStyles.paragraphMSemiBold,
+              maxLines: 1,
+            ),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  AppIcons.location,
+                  width: 16.0,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.textPrimary,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                const SizedBox(width: 4.0),
+                Flexible(
+                  child: Text(
+                    project!.info.location,
+                    style: AppTextStyles.captionRegular,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10.0),
+            Text(
+              project!.info.description,
+              style: AppTextStyles.captionRegular,
+              maxLines: 8,
+            ),
+            const SizedBox(height: 18.0),
+            Expanded(
+              child: GridView.count(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 4,
+                childAspectRatio: 2.0,
+                children: [
+                  if (section.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Section',
+                      data: section,
+                    ),
+                  ],
+                  if (floor.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Floor',
+                      data: floor,
+                    ),
+                  ],
+                  if (number.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Unit number',
+                      data: number,
+                    ),
+                  ],
+                  if (type.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Unit type',
+                      data: type,
+                    ),
+                  ],
+                  if (rooms.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Rooms',
+                      data: rooms,
+                    ),
+                  ],
+                  if (bathrooms.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Bathrooms',
+                      data: bathrooms,
+                    ),
+                  ],
+                  if (total.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Total area',
+                      data: '$total m2',
+                    ),
+                  ],
+                  if (living.isNotEmpty) ...[
+                    _ProjectFeatureItem(
+                      title: 'Living area',
+                      data: '$living m2',
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProjectFeatureItem extends StatelessWidget {
+  const _ProjectFeatureItem({
+    required this.title,
+    required this.data,
+  });
+
+  final String title;
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        right: 16.0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.captionMedium.copyWith(
+              fontSize: 10.0,
+            ),
+          ),
+          Text(
+            data,
+            style: AppTextStyles.captionRegular.copyWith(
+              fontSize: 8.0,
+            ),
+            maxLines: 2,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProjectFooter extends StatelessWidget {
+  const _ProjectFooter({
+    this.company,
+  });
+
+  final CompanyModel? company;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 72.0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 22.0,
+      ),
+      color: AppColors.iconPrimary,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (company != null) ...[
+            Text(
+              'About company',
+              style: AppTextStyles.captionMedium.copyWith(
+                fontSize: 10.0,
+                color: AppColors.scaffoldSecondary,
+              ),
+            ),
+            const SizedBox(height: 1.5),
+            Text(
+              '${company!.info.name}. ${company!.info.description}',
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: AppColors.scaffoldSecondary,
+              ),
+              maxLines: 3,
+            ),
+          ] else ...[
+            Text(
+              'www.staygroup.space',
+              style: AppTextStyles.captionMedium.copyWith(
+                fontSize: 10.0,
+                color: AppColors.scaffoldSecondary,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

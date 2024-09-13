@@ -99,7 +99,7 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
               styleSecondary: styleSecondary,
             ),
           ],
-          pdf.SizedBox(height: 14.0),
+          pdf.SizedBox(height: 12.0),
           _pdfGetCalculationItem(
             addColor: true,
             number: '№',

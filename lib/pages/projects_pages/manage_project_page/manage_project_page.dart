@@ -142,7 +142,8 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     _switchErrorDescription();
 
     if (widget.count > 9) {
-      const String errorLimit = 'The limit for creating projects for the workspace has been reached';
+      const String errorLimit =
+          'The limit for creating projects for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
@@ -424,7 +425,9 @@ class _ProjectPreview extends StatelessWidget {
             width: 640.0,
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 16.0,
+            ).copyWith(
+              top: 16.0,
+              bottom: 32.0,
             ),
             decoration: BoxDecoration(
               color: AppColors.scaffoldSecondary,

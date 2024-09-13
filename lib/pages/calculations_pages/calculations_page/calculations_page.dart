@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
+import '../../../models/calculations/calculation_info_model.dart';
+import '../../../models/calculations/calculation_period_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/calculations_repository.dart';
 import '../../../repositories/users_repository.dart';
@@ -91,6 +94,46 @@ class _CalculationsPageContent extends StatelessWidget {
         );
   }
 
+  String _getCalculationPrice(CalculationInfoModel info) {
+    if (info.price != null) {
+      return '${info.currency}${info.price}';
+    }
+
+    return '${info.currency}0';
+  }
+
+  String _getCalculationTerms(CalculationInfoModel info) {
+    if (info.startInstallments != null && info.endInstallments != null) {
+      final DateTime startInstallments = DateTime.parse(
+        info.startInstallments!,
+      );
+
+      final DateTime endInstallments = DateTime.parse(
+        info.endInstallments!,
+      );
+
+      final DateFormat dateFormat = DateFormat('MMMM, yy');
+      final String start = dateFormat.format(startInstallments);
+      final String end = dateFormat.format(endInstallments);
+
+      return '$start - $end';
+    }
+
+    return '—';
+  }
+
+  String _getCalculationPlan(CalculationInfoModel info) {
+    if (info.period != null) {
+      final CalculationPeriodModel period = kPeriods.firstWhere(
+        (e) => e.month == info.period,
+      );
+
+      return period.name;
+    }
+
+    return '—';
+  }
+
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
@@ -140,7 +183,7 @@ class _CalculationsPageContent extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
                   TableCellItem(
-                    flex: 70,
+                    flex: 25,
                     padding: const EdgeInsets.symmetric(
                       vertical: 8.0,
                     ).copyWith(
@@ -148,6 +191,18 @@ class _CalculationsPageContent extends StatelessWidget {
                       right: 4.0,
                     ),
                     title: 'Calculation Name',
+                  ),
+                  const TableCellItem(
+                    flex: 12,
+                    title: 'Unit price',
+                  ),
+                  const TableCellItem(
+                    flex: 21,
+                    title: 'Installment terms',
+                  ),
+                  const TableCellItem(
+                    flex: 12,
+                    title: 'Installment plan',
                   ),
                   const TableCellItem(
                     flex: 15,
@@ -170,7 +225,7 @@ class _CalculationsPageContent extends StatelessWidget {
                       height: 68.0,
                       cells: [
                         TableCellItem(
-                          flex: 70,
+                          flex: 25,
                           padding: const EdgeInsets.symmetric(
                             vertical: 8.0,
                           ).copyWith(
@@ -178,7 +233,28 @@ class _CalculationsPageContent extends StatelessWidget {
                             right: 4.0,
                           ),
                           title: state.calculations[i].info.name,
-                          maxLines: 1,
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 12,
+                          title: _getCalculationPrice(
+                            state.calculations[i].info,
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 21,
+                          title: _getCalculationTerms(
+                            state.calculations[i].info,
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                        TableCellItem(
+                          flex: 12,
+                          title: _getCalculationPlan(
+                            state.calculations[i].info,
+                          ),
+                          textAlign: TextAlign.start,
                         ),
                         TableCellItem(
                           flex: 15,

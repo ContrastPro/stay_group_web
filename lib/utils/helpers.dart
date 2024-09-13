@@ -106,7 +106,7 @@ String localToUtc(
 }
 
 int parseStringInt(String data) {
-  final String formatValue = data.replaceAll(RegExp(r'[^0-9.]+'), '');
+  final String formatValue = data.replaceAll(RegExp(r'[^0-9]'), '');
   return int.parse(formatValue);
 }
 

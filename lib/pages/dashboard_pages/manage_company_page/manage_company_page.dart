@@ -132,7 +132,8 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     _switchErrorDescription();
 
     if (widget.count > 2) {
-      const String errorLimit = 'The limit for creating companies for the workspace has been reached';
+      const String errorLimit =
+          'The limit for creating companies for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
