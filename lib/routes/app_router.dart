@@ -40,11 +40,13 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: SplashPage(
-              navigateToLogInPage: () => context.go(
-                LogInPage.routePath,
+              navigateToLogInPage: () => _go(
+                context: context,
+                routePath: LogInPage.routePath,
               ),
-              navigateToDashboardPage: () => context.go(
-                DashboardPage.routePath,
+              navigateToDashboardPage: () => _go(
+                context: context,
+                routePath: DashboardPage.routePath,
               ),
             ),
           ),
@@ -58,14 +60,17 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: LogInPage(
-              navigateToRestorePasswordPage: () => context.go(
-                RestorePasswordPage.routePath,
+              navigateToRestorePasswordPage: () => _go(
+                context: context,
+                routePath: RestorePasswordPage.routePath,
               ),
-              navigateToDashboardPage: () => context.go(
-                DashboardPage.routePath,
+              navigateToDashboardPage: () => _go(
+                context: context,
+                routePath: DashboardPage.routePath,
               ),
-              navigateToSignUpPage: () => context.go(
-                SignUpPage.routePath,
+              navigateToSignUpPage: () => _go(
+                context: context,
+                routePath: SignUpPage.routePath,
               ),
             ),
           ),
@@ -77,12 +82,14 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: RestorePasswordPage(
-              navigateToRestoreEmailPage: (String email) => context.go(
-                RestoreEmailPage.routePath,
-                extra: email,
+              navigateToRestoreEmailPage: (String query) => _go(
+                context: context,
+                routePath: RestoreEmailPage.routePath,
+                query: query,
               ),
-              navigateToLogInPage: () => context.go(
-                LogInPage.routePath,
+              navigateToLogInPage: () => _go(
+                context: context,
+                routePath: LogInPage.routePath,
               ),
             ),
           ),
@@ -92,14 +99,15 @@ class AppRouter {
           parentNavigatorKey: _rootNavigatorKey,
           path: RestoreEmailPage.routePath,
           pageBuilder: (context, state) {
-            final String args = state.extra as String;
+            final String? args = _query(state);
 
             return _customTransition(
               state: state,
               child: RestoreEmailPage(
                 email: args,
-                navigateToLogInPage: () => context.go(
-                  LogInPage.routePath,
+                navigateToLogInPage: () => _go(
+                  context: context,
+                  routePath: LogInPage.routePath,
                 ),
               ),
             );
@@ -112,12 +120,14 @@ class AppRouter {
           pageBuilder: (context, state) => _customTransition(
             state: state,
             child: SignUpPage(
-              navigateToVerifyEmailPage: (String email) => context.go(
-                VerifyEmailPage.routePath,
-                extra: email,
+              navigateToVerifyEmailPage: (String query) => _go(
+                context: context,
+                routePath: VerifyEmailPage.routePath,
+                query: query,
               ),
-              navigateToLogInPage: () => context.go(
-                LogInPage.routePath,
+              navigateToLogInPage: () => _go(
+                context: context,
+                routePath: LogInPage.routePath,
               ),
             ),
           ),
@@ -127,14 +137,15 @@ class AppRouter {
           parentNavigatorKey: _rootNavigatorKey,
           path: VerifyEmailPage.routePath,
           pageBuilder: (context, state) {
-            final String args = state.extra as String;
+            final String? args = _query(state);
 
             return _customTransition(
               state: state,
               child: VerifyEmailPage(
                 email: args,
-                navigateToLogInPage: () => context.go(
-                  LogInPage.routePath,
+                navigateToLogInPage: () => _go(
+                  context: context,
+                  routePath: LogInPage.routePath,
                 ),
               ),
             );
@@ -150,13 +161,18 @@ class AppRouter {
           builder: (context, state, body) => MainPage(
             body: body,
             state: state,
-            navigateToLogInPage: () => context.go(
-              LogInPage.routePath,
+            navigateToLogInPage: () => _go(
+              context: context,
+              routePath: LogInPage.routePath,
             ),
-            navigateToPricingPage: () => context.go(
-              LogInPage.routePath,
+            navigateToPricingPage: () => _go(
+              context: context,
+              routePath: LogInPage.routePath,
             ),
-            onSelectTab: context.go,
+            onSelectTab: (String routePath) => _go(
+              context: context,
+              routePath: routePath,
+            ),
           ),
           routes: [
             // [START] Dashboard pages
@@ -167,14 +183,11 @@ class AppRouter {
                 state: state,
                 child: DashboardPage(
                   state: state,
-                  navigateToManageCompanyPage: (
-                    ManageCompanyPageArguments extra,
-                  ) {
-                    context.go(
-                      ManageCompanyPage.routePath,
-                      extra: extra,
-                    );
-                  },
+                  navigateToManageCompanyPage: ([String? query]) => _go(
+                    context: context,
+                    routePath: ManageCompanyPage.routePath,
+                    query: query,
+                  ),
                 ),
               ),
             ),
@@ -182,24 +195,19 @@ class AppRouter {
             GoRoute(
               path: ManageCompanyPage.routePath,
               pageBuilder: (context, state) {
-                final ManageCompanyPageArguments args =
-                    state.extra as ManageCompanyPageArguments;
+                final String? args = _query(state);
 
                 return _customTransition(
                   state: state,
                   child: ManageCompanyPage(
-                    count: args.count,
-                    company: args.company,
-                    navigateToMediaViewerPage: (
-                      MediaViewerPageArguments extra,
-                    ) {
-                      context.push(
-                        MediaViewerPage.routePath,
-                        extra: extra,
-                      );
-                    },
-                    navigateToDashboardPage: () => context.go(
-                      DashboardPage.routePath,
+                    id: args,
+                    navigateToMediaViewerPage: (media) => context.push(
+                      MediaViewerPage.routePath,
+                      extra: media,
+                    ),
+                    navigateToDashboardPage: () => _go(
+                      context: context,
+                      routePath: DashboardPage.routePath,
                     ),
                   ),
                 );
@@ -216,14 +224,11 @@ class AppRouter {
                 state: state,
                 child: ProjectsPage(
                   state: state,
-                  navigateToManageProjectPage: (
-                    ManageProjectPageArguments extra,
-                  ) {
-                    context.go(
-                      ManageProjectPage.routePath,
-                      extra: extra,
-                    );
-                  },
+                  navigateToManageProjectPage: ([String? query]) => _go(
+                    context: context,
+                    routePath: ManageProjectPage.routePath,
+                    query: query,
+                  ),
                 ),
               ),
             ),
@@ -231,24 +236,19 @@ class AppRouter {
             GoRoute(
               path: ManageProjectPage.routePath,
               pageBuilder: (context, state) {
-                final ManageProjectPageArguments args =
-                    state.extra as ManageProjectPageArguments;
+                final String? args = _query(state);
 
                 return _customTransition(
                   state: state,
                   child: ManageProjectPage(
-                    count: args.count,
-                    project: args.project,
-                    navigateToMediaViewerPage: (
-                      MediaViewerPageArguments extra,
-                    ) {
-                      context.push(
-                        MediaViewerPage.routePath,
-                        extra: extra,
-                      );
-                    },
-                    navigateToProjectsPage: () => context.go(
-                      ProjectsPage.routePath,
+                    id: args,
+                    navigateToMediaViewerPage: (media) => context.push(
+                      MediaViewerPage.routePath,
+                      extra: media,
+                    ),
+                    navigateToProjectsPage: () => _go(
+                      context: context,
+                      routePath: ProjectsPage.routePath,
                     ),
                   ),
                 );
@@ -265,14 +265,11 @@ class AppRouter {
                 state: state,
                 child: TeamPage(
                   state: state,
-                  navigateToManageUserPage: (
-                    ManageUserPageArguments extra,
-                  ) {
-                    context.go(
-                      ManageUserPage.routePath,
-                      extra: extra,
-                    );
-                  },
+                  navigateToManageUserPage: ([String? query]) => _go(
+                    context: context,
+                    routePath: ManageUserPage.routePath,
+                    query: query,
+                  ),
                 ),
               ),
             ),
@@ -280,16 +277,15 @@ class AppRouter {
             GoRoute(
               path: ManageUserPage.routePath,
               pageBuilder: (context, state) {
-                final ManageUserPageArguments args =
-                    state.extra as ManageUserPageArguments;
+                final String? args = _query(state);
 
                 return _customTransition(
                   state: state,
                   child: ManageUserPage(
-                    count: args.count,
-                    userData: args.userData,
-                    navigateToTeamPage: () => context.go(
-                      TeamPage.routePath,
+                    id: args,
+                    navigateToTeamPage: () => _go(
+                      context: context,
+                      routePath: TeamPage.routePath,
                     ),
                   ),
                 );
@@ -306,14 +302,11 @@ class AppRouter {
                 state: state,
                 child: CalculationsPage(
                   state: state,
-                  navigateToManageCalculationPage: (
-                    ManageCalculationPageArguments extra,
-                  ) {
-                    context.go(
-                      ManageCalculationPage.routePath,
-                      extra: extra,
-                    );
-                  },
+                  navigateToManageCalculationPage: ([String? query]) => _go(
+                    context: context,
+                    routePath: ManageCalculationPage.routePath,
+                    query: query,
+                  ),
                 ),
               ),
             ),
@@ -321,16 +314,15 @@ class AppRouter {
             GoRoute(
               path: ManageCalculationPage.routePath,
               pageBuilder: (context, state) {
-                final ManageCalculationPageArguments args =
-                    state.extra as ManageCalculationPageArguments;
+                final String? args = _query(state);
 
                 return _customTransition(
                   state: state,
                   child: ManageCalculationPage(
-                    count: args.count,
-                    calculation: args.calculation,
-                    navigateToCalculationsPage: () => context.go(
-                      CalculationsPage.routePath,
+                    id: args,
+                    navigateToCalculationsPage: () => _go(
+                      context: context,
+                      routePath: CalculationsPage.routePath,
                     ),
                   ),
                 );
@@ -380,6 +372,24 @@ class AppRouter {
         // [END] Uncategorized pages
       ],
     );
+  }
+
+  static void _go({
+    required BuildContext context,
+    required String routePath,
+    String? query,
+  }) {
+    if (query == null) {
+      return context.go(routePath);
+    }
+
+    return context.go(
+      '$routePath?data=$query',
+    );
+  }
+
+  static String? _query(GoRouterState state) {
+    return state.uri.queryParameters['data'];
   }
 
   static CustomTransitionPage _customTransition<T>({

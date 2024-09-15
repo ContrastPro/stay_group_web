@@ -6,7 +6,11 @@ abstract class ManageCalculationEvent {
 }
 
 class Init extends ManageCalculationEvent {
-  const Init();
+  const Init({
+    this.id,
+  });
+
+  final String? id;
 }
 
 class CreateCalculation extends ManageCalculationEvent {
@@ -57,7 +61,6 @@ class CreateCalculation extends ManageCalculationEvent {
 
 class UpdateCalculation extends ManageCalculationEvent {
   const UpdateCalculation({
-    required this.id,
     this.companyId,
     this.projectId,
     required this.section,
@@ -78,10 +81,8 @@ class UpdateCalculation extends ManageCalculationEvent {
     this.startInstallments,
     this.endInstallments,
     required this.extra,
-    required this.createdAt,
   });
 
-  final String id;
   final String? companyId;
   final String? projectId;
   final String section;
@@ -102,5 +103,4 @@ class UpdateCalculation extends ManageCalculationEvent {
   final DateTime? startInstallments;
   final DateTime? endInstallments;
   final List<CalculationExtraModel> extra;
-  final String createdAt;
 }

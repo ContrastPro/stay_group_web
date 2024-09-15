@@ -77,10 +77,6 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     setState(() => _nameValid = name.length > 1);
   }
 
-  void _switchErrorName({String? error}) {
-    setState(() => _errorTextName = error);
-  }
-
   void _updateAccountInfo({
     required BuildContext context,
     required AccountSettingsState state,
@@ -105,6 +101,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             phone: phone,
           ),
         );
+  }
+
+  void _switchErrorName({String? error}) {
+    setState(() => _errorTextName = error);
   }
 
   void _showErrorMessage({
@@ -150,7 +150,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               }
             },
             builder: (context, state) {
-              if (state.userData != null) {
+              if (_dataLoaded) {
                 return FadeInAnimation(
                   child: ActionLoader(
                     isLoading: _isLoading,

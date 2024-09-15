@@ -20,7 +20,6 @@ import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
 import '../../../widgets/uncategorized/user_status.dart';
-import '../manage_user_page/manage_user_page.dart';
 import 'blocs/team_bloc/team_bloc.dart';
 
 class TeamPage extends StatelessWidget {
@@ -33,7 +32,7 @@ class TeamPage extends StatelessWidget {
   static const routePath = '/team_pages/team';
 
   final GoRouterState state;
-  final void Function(ManageUserPageArguments) navigateToManageUserPage;
+  final void Function([String?]) navigateToManageUserPage;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +73,7 @@ class _TeamPageContent extends StatelessWidget {
   });
 
   final TeamState state;
-  final void Function(ManageUserPageArguments) navigateToManageUserPage;
+  final void Function([String?]) navigateToManageUserPage;
 
   static const double _buttonWidth = 140.0;
 
@@ -123,11 +122,7 @@ class _TeamPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add user',
                   backgroundColor: AppColors.info,
-                  onTap: () => navigateToManageUserPage(
-                    ManageUserPageArguments(
-                      count: state.users.length,
-                    ),
-                  ),
+                  onTap: navigateToManageUserPage,
                 ),
               ),
             ],
@@ -141,11 +136,7 @@ class _TeamPageContent extends StatelessWidget {
               "You don't added your first user yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add user',
-          onTap: () => navigateToManageUserPage(
-            ManageUserPageArguments(
-              count: state.users.length,
-            ),
-          ),
+          onTap: navigateToManageUserPage,
           content: Column(
             children: [
               TableItem(
@@ -242,10 +233,7 @@ class _TeamPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageUserPage(
-                                  ManageUserPageArguments(
-                                    count: state.users.length,
-                                    userData: state.users[i],
-                                  ),
+                                  state.users[i].id,
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

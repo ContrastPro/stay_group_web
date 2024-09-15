@@ -20,6 +20,7 @@ import 'routes/app_router.dart';
 // todo: delete later
 // staygroup.io@gmail.com
 // glebon0202@gmail.com
+// leojugaschvili@gmail.com
 
 void _errorHandler(Object error, StackTrace stack) {
   log(

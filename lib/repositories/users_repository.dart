@@ -58,9 +58,7 @@ class UsersRepository {
           'dueDate': localToUtc(dueDate!),
         }),
       ]);
-    }
-
-    if (role == UserRole.worker) {
+    } else {
       formData.addEntries([
         MapEntry('spaceId', spaceId),
         MapEntry('credential', {

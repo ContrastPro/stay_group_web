@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/users/user_model.dart';
+import '../../../models/users/user_info_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
 import '../../../resources/app_colors.dart';
@@ -16,31 +16,20 @@ import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/preview_layout.dart';
+import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import 'blocs/manage_user_bloc/manage_user_bloc.dart';
-
-class ManageUserPageArguments {
-  const ManageUserPageArguments({
-    required this.count,
-    this.userData,
-  });
-
-  final int count;
-  final UserModel? userData;
-}
 
 class ManageUserPage extends StatefulWidget {
   const ManageUserPage({
     super.key,
-    required this.count,
-    this.userData,
+    this.id,
     required this.navigateToTeamPage,
   });
 
   static const routePath = '/team_pages/manage_user';
 
-  final int count;
-  final UserModel? userData;
+  final String? id;
   final void Function() navigateToTeamPage;
 
   @override
@@ -52,6 +41,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
+  bool _dataLoaded = false;
   bool _isLoading = false;
   bool _nameValid = false;
   bool _emailValid = false;
@@ -62,17 +52,25 @@ class _ManageUserPageState extends State<ManageUserPage> {
   String? _errorTextEmail;
   String? _errorTextPassword;
 
-  @override
-  void initState() {
-    _setInitialData();
-    super.initState();
+  void _setInitialData(ManageUserState state) {
+    if (_dataLoaded) return;
+
+    if (state.userData == null) {
+      return _switchDataLoaded(true);
+    }
+
+    final UserInfoModel info = state.userData!.info;
+
+    _controllerName.text = info.name;
+    _validateName(info.name);
+    _controllerEmail.text = state.userData!.credential.email;
+
+    _switchDataLoaded(true);
   }
 
-  void _setInitialData() {
-    if (widget.userData != null) {
-      _controllerName.text = widget.userData!.info.name;
-      _validateName(widget.userData!.info.name);
-      _controllerEmail.text = widget.userData!.credential.email;
+  void _switchDataLoaded(bool status) {
+    if (_dataLoaded != status) {
+      setState(() => _dataLoaded = status);
     }
   }
 
@@ -102,12 +100,15 @@ class _ManageUserPageState extends State<ManageUserPage> {
     });
   }
 
-  void _createUser(BuildContext context) {
+  void _createUser({
+    required BuildContext context,
+    required ManageUserState state,
+  }) {
     _switchErrorName();
     _switchErrorEmail();
     _switchErrorPassword();
 
-    if (widget.count > 3) {
+    if (state.users.length > 3) {
       const String errorLimit =
           'The limit for creating users for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
@@ -161,7 +162,6 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
     context.read<ManageUserBloc>().add(
           UpdateUser(
-            id: widget.userData!.id,
             name: name,
           ),
         );
@@ -194,9 +194,17 @@ class _ManageUserPageState extends State<ManageUserPage> {
       create: (_) => ManageUserBloc(
         authRepository: context.read<AuthRepository>(),
         usersRepository: context.read<UsersRepository>(),
-      ),
+      )..add(
+          Init(
+            id: widget.id,
+          ),
+        ),
       child: BlocConsumer<ManageUserBloc, ManageUserState>(
         listener: (_, state) {
+          if (state.user != null) {
+            _setInitialData(state);
+          }
+
           if (state.status == BlocStatus.loading) {
             _switchLoading(true);
             _switchErrorEmail();
@@ -208,7 +216,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: widget.userData == null
+              title: state.userData == null
                   ? 'User successfully created'
                   : 'User successfully updated',
               type: InAppNotificationType.success,
@@ -223,100 +231,109 @@ class _ManageUserPageState extends State<ManageUserPage> {
           }
         },
         builder: (context, state) {
-          return ActionLoader(
-            isLoading: _isLoading,
-            child: PreviewLayout(
-              content: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
-                  vertical: 42.0,
-                ),
-                children: [
-                  Text(
-                    widget.userData == null
-                        ? 'Add new team member'
-                        : 'Edit team member',
-                    style: AppTextStyles.head5SemiBold,
-                    textAlign: TextAlign.center,
+          if (_dataLoaded) {
+            return ActionLoader(
+              isLoading: _isLoading,
+              child: PreviewLayout(
+                content: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40.0,
+                    vertical: 42.0,
                   ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    widget.userData == null
-                        ? 'Create your team member'
-                        : 'Edit your team member info',
-                    style: AppTextStyles.paragraphSRegular.copyWith(
-                      color: AppColors.iconPrimary,
+                  children: [
+                    Text(
+                      state.userData == null
+                          ? 'Add new team member'
+                          : 'Edit team member',
+                      style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 28.0),
-                  BorderTextField(
-                    controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'User name',
-                    prefixIcon: AppIcons.user,
-                    errorText: _errorTextName,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(64),
-                    ],
-                    onChanged: _validateName,
-                  ),
-                  const SizedBox(height: 16.0),
-                  BorderTextField(
-                    controller: _controllerEmail,
-                    enabled: widget.userData == null,
-                    labelText: 'Email',
-                    hintText: 'User email',
-                    prefixIcon: AppIcons.mail,
-                    errorText: _errorTextEmail,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(64),
-                    ],
-                    onChanged: _validateEmail,
-                  ),
-                  if (widget.userData == null) ...[
+                    const SizedBox(height: 8.0),
+                    Text(
+                      state.userData == null
+                          ? 'Create your team member'
+                          : 'Edit your team member info',
+                      style: AppTextStyles.paragraphSRegular.copyWith(
+                        color: AppColors.iconPrimary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 28.0),
+                    BorderTextField(
+                      controller: _controllerName,
+                      labelText: 'Name',
+                      hintText: 'User name',
+                      prefixIcon: AppIcons.user,
+                      errorText: _errorTextName,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(64),
+                      ],
+                      onChanged: _validateName,
+                    ),
                     const SizedBox(height: 16.0),
                     BorderTextField(
-                      controller: _controllerPassword,
-                      labelText: 'Password',
-                      hintText: 'User password',
-                      isObscureText: _isObscurePassword,
-                      prefixIcon: AppIcons.lock,
-                      suffixIcon: _isObscurePassword
-                          ? AppIcons.visibilityOff
-                          : AppIcons.visibilityOn,
-                      errorText: _errorTextPassword,
+                      controller: _controllerEmail,
+                      enabled: state.userData == null,
+                      labelText: 'Email',
+                      hintText: 'User email',
+                      prefixIcon: AppIcons.mail,
+                      errorText: _errorTextEmail,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(32),
+                        LengthLimitingTextInputFormatter(64),
                       ],
-                      onSuffixTap: _switchObscurePassword,
-                      onChanged: _validatePassword,
+                      onChanged: _validateEmail,
                     ),
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                      text: 'Create user',
-                      onTap: () => _createUser(context),
-                    ),
-                  ] else ...[
-                    const SizedBox(height: 40.0),
-                    CustomButton(
-                      text: 'Save changes',
-                      onTap: () => _updateUser(context),
+                    if (state.userData == null) ...[
+                      const SizedBox(height: 16.0),
+                      BorderTextField(
+                        controller: _controllerPassword,
+                        labelText: 'Password',
+                        hintText: 'User password',
+                        isObscureText: _isObscurePassword,
+                        prefixIcon: AppIcons.lock,
+                        suffixIcon: _isObscurePassword
+                            ? AppIcons.visibilityOff
+                            : AppIcons.visibilityOn,
+                        errorText: _errorTextPassword,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(32),
+                        ],
+                        onSuffixTap: _switchObscurePassword,
+                        onChanged: _validatePassword,
+                      ),
+                      const SizedBox(height: 40.0),
+                      CustomButton(
+                        text: 'Create user',
+                        onTap: () => _createUser(
+                          context: context,
+                          state: state,
+                        ),
+                      ),
+                    ] else ...[
+                      const SizedBox(height: 40.0),
+                      CustomButton(
+                        text: 'Save changes',
+                        onTap: () => _updateUser(context),
+                      ),
+                    ],
+                    const SizedBox(height: 12.0),
+                    CustomTextButton(
+                      prefixIcon: AppIcons.arrowBack,
+                      text: 'Back to Team page',
+                      onTap: widget.navigateToTeamPage,
                     ),
                   ],
-                  const SizedBox(height: 12.0),
-                  CustomTextButton(
-                    prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Team page',
-                    onTap: widget.navigateToTeamPage,
-                  ),
-                ],
+                ),
+                preview: _UserPreview(
+                  name: _controllerName.text,
+                  email: _controllerEmail.text,
+                ),
               ),
-              preview: _UserPreview(
-                name: _controllerName.text,
-                email: _controllerEmail.text,
-              ),
-            ),
+            );
+          }
+
+          return const Center(
+            child: CustomLoader(),
           );
         },
       ),

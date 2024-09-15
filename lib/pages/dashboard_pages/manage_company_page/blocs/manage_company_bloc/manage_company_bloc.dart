@@ -1,7 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../models/companies/company_model.dart';
+import '../../../../../models/companies/company_response_model.dart';
 import '../../../../../models/medias/media_model.dart';
 import '../../../../../models/medias/media_response_model.dart';
 import '../../../../../models/users/user_info_model.dart';
@@ -24,6 +27,42 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
     required this.storageRepository,
     required this.usersRepository,
   }) : super(const ManageCompanyState()) {
+    on<Init>((event, emit) async {
+      await requestDelay();
+
+      final User? user = authRepository.currentUser();
+
+      final UserModel? response = await usersRepository.getUserById(
+        userId: user!.uid,
+      );
+
+      final String spaceId = response!.info.role == UserRole.manager
+          ? response.userId!
+          : response.spaceId!;
+
+      CompanyModel? company;
+      final List<CompanyModel> companies = [];
+
+      final CompanyResponseModel? savedCompanies =
+          await companiesRepository.getCompanies(spaceId: spaceId);
+
+      if (savedCompanies != null) {
+        companies.addAll(savedCompanies.companies);
+
+        company = companies.firstWhereOrNull(
+          (e) => e.id == event.id,
+        );
+      }
+
+      emit(
+        state.copyWith(
+          userData: response,
+          company: company,
+          companies: companies,
+        ),
+      );
+    });
+
     on<CreateCompany>((event, emit) async {
       emit(
         state.copyWith(
@@ -35,15 +74,9 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
         await requestDelay();
       }
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<MediaModel> media = [];
 
@@ -109,15 +142,9 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
         await requestDelay();
       }
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<MediaModel> media = [...event.savedMedia];
 
@@ -165,11 +192,11 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
 
       await companiesRepository.updateCompany(
         spaceId: spaceId,
-        id: event.id,
+        id: state.company!.id,
         media: media.isNotEmpty ? media : null,
         name: event.name,
         description: event.description,
-        createdAt: event.createdAt,
+        createdAt: state.company!.metadata.createdAt,
       );
 
       emit(

@@ -10,7 +10,6 @@ import 'package:printing/printing.dart';
 
 import '../../../models/calculations/calculation_extra_model.dart';
 import '../../../models/calculations/calculation_info_model.dart';
-import '../../../models/calculations/calculation_model.dart';
 import '../../../models/calculations/calculation_period_model.dart';
 import '../../../models/companies/company_model.dart';
 import '../../../models/projects/project_model.dart';
@@ -41,28 +40,16 @@ import 'widgets/manage_calculation_extra_item.dart';
 import 'widgets/manage_calculation_extra_modal_dialog.dart';
 import 'widgets/pdf_generate_document.dart';
 
-class ManageCalculationPageArguments {
-  const ManageCalculationPageArguments({
-    required this.count,
-    this.calculation,
-  });
-
-  final int count;
-  final CalculationModel? calculation;
-}
-
 class ManageCalculationPage extends StatefulWidget {
   const ManageCalculationPage({
     super.key,
-    required this.count,
-    this.calculation,
+    this.id,
     required this.navigateToCalculationsPage,
   });
 
   static const routePath = '/calculations_pages/manage_calculation';
 
-  final int count;
-  final CalculationModel? calculation;
+  final String? id;
   final void Function() navigateToCalculationsPage;
 
   @override
@@ -102,12 +89,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   void _setInitialData(ManageCalculationState state) {
     if (_dataLoaded) return;
 
-    if (widget.calculation == null) {
+    if (state.calculation == null) {
       _currency = kCurrencies.first;
       return _switchDataLoaded(true);
     }
 
-    final CalculationInfoModel info = widget.calculation!.info;
+    final CalculationInfoModel info = state.calculation!.info;
 
     if (info.companyId != null) {
       final CompanyModel? company = state.companies.firstWhereOrNull(
@@ -524,10 +511,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     setState(() {});
   }
 
-  void _createCalculation(BuildContext context) {
+  void _createCalculation({
+    required BuildContext context,
+    required ManageCalculationState state,
+  }) {
     _switchErrorName();
 
-    if (widget.count > 18) {
+    if (state.calculations.length > 18) {
       const String errorLimit =
           'The limit for creating calculations for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
@@ -606,7 +596,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
     context.read<ManageCalculationBloc>().add(
           UpdateCalculation(
-            id: widget.calculation!.id,
             companyId: _company?.id,
             projectId: _project?.id,
             section: section,
@@ -627,7 +616,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             startInstallments: _startInstallments,
             endInstallments: _endInstallments,
             extra: _extra,
-            createdAt: widget.calculation!.metadata.createdAt,
           ),
         );
   }
@@ -655,7 +643,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         projectsRepository: context.read<ProjectsRepository>(),
         usersRepository: context.read<UsersRepository>(),
       )..add(
-          const Init(),
+          Init(
+            id: widget.id,
+          ),
         ),
       child: BlocConsumer<ManageCalculationBloc, ManageCalculationState>(
         listener: (_, state) {
@@ -673,7 +663,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: widget.calculation == null
+              title: state.calculation == null
                   ? 'Calculation successfully created'
                   : 'Calculation successfully updated',
               type: InAppNotificationType.success,
@@ -683,7 +673,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           }
         },
         builder: (context, state) {
-          if (state.userData != null) {
+          if (_dataLoaded) {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
@@ -694,7 +684,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ),
                   children: [
                     Text(
-                      widget.calculation == null
+                      state.calculation == null
                           ? 'Add new calculation'
                           : 'Edit calculation',
                       style: AppTextStyles.head5SemiBold,
@@ -702,7 +692,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     ),
                     const SizedBox(height: 8.0),
                     Text(
-                      widget.calculation == null
+                      state.calculation == null
                           ? 'Create calculation for your clients'
                           : 'Edit calculation info',
                       style: AppTextStyles.paragraphSRegular.copyWith(
@@ -1004,10 +994,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       onTap: _showManageExtraModal,
                     ),
                     const SizedBox(height: 40.0),
-                    if (widget.calculation == null) ...[
+                    if (state.calculation == null) ...[
                       CustomButton(
                         text: 'Create calculation',
-                        onTap: () => _createCalculation(context),
+                        onTap: () => _createCalculation(
+                          context: context,
+                          state: state,
+                        ),
                       ),
                     ] else ...[
                       CustomButton(

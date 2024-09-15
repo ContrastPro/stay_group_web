@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../models/companies/company_info_model.dart';
-import '../../../models/companies/company_model.dart';
 import '../../../models/medias/media_model.dart';
 import '../../../models/medias/media_response_model.dart';
 import '../../../repositories/auth_repository.dart';
@@ -24,33 +23,22 @@ import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
+import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
 
-class ManageCompanyPageArguments {
-  const ManageCompanyPageArguments({
-    required this.count,
-    this.company,
-  });
-
-  final int count;
-  final CompanyModel? company;
-}
-
 class ManageCompanyPage extends StatefulWidget {
   const ManageCompanyPage({
     super.key,
-    required this.count,
-    this.company,
+    this.id,
     required this.navigateToMediaViewerPage,
     required this.navigateToDashboardPage,
   });
 
   static const routePath = '/dashboard_pages/manage_company';
 
-  final int count;
-  final CompanyModel? company;
+  final String? id;
   final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToDashboardPage;
 
@@ -63,6 +51,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
 
+  bool _dataLoaded = false;
   bool _isLoading = false;
   bool _nameValid = false;
   bool _descriptionValid = false;
@@ -70,36 +59,42 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
   String? _errorTextName;
   String? _errorTextDescription;
 
-  @override
-  void initState() {
-    _setInitialData();
-    super.initState();
+  void _setInitialData(ManageCompanyState state) {
+    if (_dataLoaded) return;
+
+    if (state.company == null) {
+      return _switchDataLoaded(true);
+    }
+
+    final CompanyInfoModel info = state.company!.info;
+
+    if (info.media != null) {
+      for (int i = 0; i < info.media!.length; i++) {
+        final MediaModel media = info.media![i];
+
+        _media.add(
+          MediaResponseModel(
+            id: media.id,
+            dataUrl: media.data,
+            thumbnailUrl: media.thumbnail,
+            format: media.format,
+            name: media.name,
+          ),
+        );
+      }
+    }
+
+    _controllerName.text = info.name;
+    _validateName(info.name);
+    _controllerDescription.text = info.description;
+    _validateDescription(info.description);
+
+    _switchDataLoaded(true);
   }
 
-  void _setInitialData() {
-    if (widget.company != null) {
-      final CompanyInfoModel info = widget.company!.info;
-
-      if (info.media != null) {
-        for (int i = 0; i < info.media!.length; i++) {
-          final MediaModel media = info.media![i];
-
-          _media.add(
-            MediaResponseModel(
-              id: media.id,
-              dataUrl: media.data,
-              thumbnailUrl: media.thumbnail,
-              format: media.format,
-              name: media.name,
-            ),
-          );
-        }
-      }
-
-      _controllerName.text = info.name;
-      _validateName(info.name);
-      _controllerDescription.text = info.description;
-      _validateDescription(info.description);
+  void _switchDataLoaded(bool status) {
+    if (_dataLoaded != status) {
+      setState(() => _dataLoaded = status);
     }
   }
 
@@ -127,11 +122,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     setState(() => _descriptionValid = description.length > 1);
   }
 
-  void _createCompany(BuildContext context) {
+  void _createCompany({
+    required BuildContext context,
+    required ManageCompanyState state,
+  }) {
     _switchErrorName();
     _switchErrorDescription();
 
-    if (widget.count > 2) {
+    if (state.companies.length > 2) {
       const String errorLimit =
           'The limit for creating companies for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
@@ -163,7 +161,10 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
         );
   }
 
-  void _updateCompany(BuildContext context) {
+  void _updateCompany({
+    required BuildContext context,
+    required ManageCompanyState state,
+  }) {
     _switchErrorName();
     _switchErrorDescription();
 
@@ -184,7 +185,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
       return _showErrorMessage(errorMessage: errorDescription);
     }
 
-    final List<MediaModel>? media = widget.company!.info.media;
+    final List<MediaModel>? media = state.company!.info.media;
 
     final List<MediaModel> savedMedia = getSavedMedia(
       media: media,
@@ -203,13 +204,11 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
 
     context.read<ManageCompanyBloc>().add(
           UpdateCompany(
-            id: widget.company!.id,
             savedMedia: savedMedia,
             addedMedia: addedMedia,
             removedMedia: removedMedia,
             name: name,
             description: description,
-            createdAt: widget.company!.metadata.createdAt,
           ),
         );
   }
@@ -239,9 +238,17 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
         companiesRepository: context.read<CompaniesRepository>(),
         storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
-      ),
+      )..add(
+          Init(
+            id: widget.id,
+          ),
+        ),
       child: BlocConsumer<ManageCompanyBloc, ManageCompanyState>(
         listener: (_, state) {
+          if (state.userData != null) {
+            _setInitialData(state);
+          }
+
           if (state.status == BlocStatus.loading) {
             _switchLoading(true);
           }
@@ -252,7 +259,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: widget.company == null
+              title: state.company == null
                   ? 'Company successfully created'
                   : 'Company successfully updated',
               type: InAppNotificationType.success,
@@ -262,89 +269,103 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
           }
         },
         builder: (context, state) {
-          return ActionLoader(
-            isLoading: _isLoading,
-            child: PreviewLayout(
-              content: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
-                  vertical: 42.0,
-                ),
-                children: [
-                  Text(
-                    widget.company == null ? 'Add new company' : 'Edit company',
-                    style: AppTextStyles.head5SemiBold,
-                    textAlign: TextAlign.center,
+          if (_dataLoaded) {
+            return ActionLoader(
+              isLoading: _isLoading,
+              child: PreviewLayout(
+                content: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40.0,
+                    vertical: 42.0,
                   ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    widget.company == null
-                        ? 'Create building company card'
-                        : 'Edit building company card',
-                    style: AppTextStyles.paragraphSRegular.copyWith(
-                      color: AppColors.iconPrimary,
+                  children: [
+                    Text(
+                      state.company == null
+                          ? 'Add new company'
+                          : 'Edit company',
+                      style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 28.0),
-                  CustomMediaPicker(
-                    labelText: 'Upload banner',
-                    maxLength: 1,
-                    media: _media,
-                    onPickMedia: _onPickMedia,
-                    onDeleteMedia: _onDeleteMedia,
-                  ),
-                  const SizedBox(height: 8.0),
-                  BorderTextField(
-                    controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'Company name',
-                    errorText: _errorTextName,
-                    maxLines: 2,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(64),
-                    ],
-                    onChanged: _validateName,
-                  ),
-                  const SizedBox(height: 16.0),
-                  BorderTextField(
-                    controller: _controllerDescription,
-                    labelText: 'Description',
-                    hintText: 'Company description',
-                    errorText: _errorTextDescription,
-                    maxLines: 6,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(256),
-                    ],
-                    onChanged: _validateDescription,
-                  ),
-                  const SizedBox(height: 40.0),
-                  if (widget.company == null) ...[
-                    CustomButton(
-                      text: 'Create company',
-                      onTap: () => _createCompany(context),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      state.company == null
+                          ? 'Create building company card'
+                          : 'Edit building company card',
+                      style: AppTextStyles.paragraphSRegular.copyWith(
+                        color: AppColors.iconPrimary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ] else ...[
-                    CustomButton(
-                      text: 'Save changes',
-                      onTap: () => _updateCompany(context),
+                    const SizedBox(height: 28.0),
+                    CustomMediaPicker(
+                      labelText: 'Upload banner',
+                      maxLength: 1,
+                      media: _media,
+                      onPickMedia: _onPickMedia,
+                      onDeleteMedia: _onDeleteMedia,
+                    ),
+                    const SizedBox(height: 8.0),
+                    BorderTextField(
+                      controller: _controllerName,
+                      labelText: 'Name',
+                      hintText: 'Company name',
+                      errorText: _errorTextName,
+                      maxLines: 2,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(64),
+                      ],
+                      onChanged: _validateName,
+                    ),
+                    const SizedBox(height: 16.0),
+                    BorderTextField(
+                      controller: _controllerDescription,
+                      labelText: 'Description',
+                      hintText: 'Company description',
+                      errorText: _errorTextDescription,
+                      maxLines: 6,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(256),
+                      ],
+                      onChanged: _validateDescription,
+                    ),
+                    const SizedBox(height: 40.0),
+                    if (state.company == null) ...[
+                      CustomButton(
+                        text: 'Create company',
+                        onTap: () => _createCompany(
+                          context: context,
+                          state: state,
+                        ),
+                      ),
+                    ] else ...[
+                      CustomButton(
+                        text: 'Save changes',
+                        onTap: () => _updateCompany(
+                          context: context,
+                          state: state,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12.0),
+                    CustomTextButton(
+                      prefixIcon: AppIcons.arrowBack,
+                      text: 'Back to Dashboard page',
+                      onTap: widget.navigateToDashboardPage,
                     ),
                   ],
-                  const SizedBox(height: 12.0),
-                  CustomTextButton(
-                    prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Dashboard page',
-                    onTap: widget.navigateToDashboardPage,
-                  ),
-                ],
+                ),
+                preview: _CompanyPreview(
+                  media: _media,
+                  name: _controllerName.text,
+                  description: _controllerDescription.text,
+                  navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
+                ),
               ),
-              preview: _CompanyPreview(
-                media: _media,
-                name: _controllerName.text,
-                description: _controllerDescription.text,
-                navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
-              ),
-            ),
+            );
+          }
+
+          return const Center(
+            child: CustomLoader(),
           );
         },
       ),

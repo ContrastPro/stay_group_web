@@ -80,15 +80,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
       await requestDelay();
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<CompanyModel> companies = [...state.companies];
 
@@ -118,6 +112,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       );
 
       companies.removeAt(index);
+
+      companies.sort(
+        (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+      );
 
       emit(
         state.copyWith(

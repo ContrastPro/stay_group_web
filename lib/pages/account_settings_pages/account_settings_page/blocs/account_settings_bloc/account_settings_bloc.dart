@@ -32,11 +32,9 @@ class AccountSettingsBloc
           ? response.userId!
           : response.spaceId!;
 
-      final UserModel? spaceData;
+      UserModel? spaceData;
 
-      if (response.info.role == UserRole.manager) {
-        spaceData = null;
-      } else {
+      if (response.info.role == UserRole.worker) {
         spaceData = await usersRepository.getUserById(
           userId: spaceId,
         );

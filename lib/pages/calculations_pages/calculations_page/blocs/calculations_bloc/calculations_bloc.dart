@@ -78,15 +78,9 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
 
       await requestDelay();
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<CalculationModel> calculations = [...state.calculations];
 
@@ -100,6 +94,10 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
       );
 
       calculations.removeAt(index);
+
+      calculations.sort(
+        (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+      );
 
       emit(
         state.copyWith(

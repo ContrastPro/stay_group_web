@@ -5,6 +5,14 @@ abstract class ManageCompanyEvent {
   const ManageCompanyEvent();
 }
 
+class Init extends ManageCompanyEvent {
+  const Init({
+    this.id,
+  });
+
+  final String? id;
+}
+
 class CreateCompany extends ManageCompanyEvent {
   const CreateCompany({
     required this.media,
@@ -19,20 +27,16 @@ class CreateCompany extends ManageCompanyEvent {
 
 class UpdateCompany extends ManageCompanyEvent {
   const UpdateCompany({
-    required this.id,
     required this.savedMedia,
     required this.addedMedia,
     required this.removedMedia,
     required this.name,
     required this.description,
-    required this.createdAt,
   });
 
-  final String id;
   final List<MediaModel> savedMedia;
   final List<MediaResponseModel> addedMedia;
   final List<MediaModel> removedMedia;
   final String name;
   final String description;
-  final String createdAt;
 }

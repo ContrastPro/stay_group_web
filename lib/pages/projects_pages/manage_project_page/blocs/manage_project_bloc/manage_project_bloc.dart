@@ -1,9 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../models/medias/media_model.dart';
 import '../../../../../models/medias/media_response_model.dart';
+import '../../../../../models/projects/project_model.dart';
+import '../../../../../models/projects/project_response_model.dart';
 import '../../../../../models/users/user_info_model.dart';
 import '../../../../../models/users/user_model.dart';
 import '../../../../../repositories/auth_repository.dart';
@@ -24,13 +27,7 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
     required this.storageRepository,
     required this.usersRepository,
   }) : super(const ManageProjectState()) {
-    on<CreateProject>((event, emit) async {
-      emit(
-        state.copyWith(
-          status: BlocStatus.loading,
-        ),
-      );
-
+    on<Init>((event, emit) async {
       await requestDelay();
 
       final User? user = authRepository.currentUser();
@@ -42,6 +39,42 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
       final String spaceId = response!.info.role == UserRole.manager
           ? response.userId!
           : response.spaceId!;
+
+      ProjectModel? project;
+      final List<ProjectModel> projects = [];
+
+      final ProjectResponseModel? savedProjects =
+          await projectsRepository.getProjects(spaceId: spaceId);
+
+      if (savedProjects != null) {
+        projects.addAll(savedProjects.projects);
+
+        project = projects.firstWhereOrNull(
+          (e) => e.id == event.id,
+        );
+      }
+
+      emit(
+        state.copyWith(
+          userData: response,
+          project: project,
+          projects: projects,
+        ),
+      );
+    });
+
+    on<CreateProject>((event, emit) async {
+      emit(
+        state.copyWith(
+          status: BlocStatus.loading,
+        ),
+      );
+
+      await requestDelay();
+
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<MediaModel> media = [];
 
@@ -106,15 +139,9 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
 
       await requestDelay();
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final List<MediaModel> media = [...event.savedMedia];
 
@@ -162,12 +189,12 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
 
       await projectsRepository.updateProject(
         spaceId: spaceId,
-        id: event.id,
+        id: state.project!.id,
         media: media.isNotEmpty ? media : null,
         name: event.name,
         location: event.location,
         description: event.description,
-        createdAt: event.createdAt,
+        createdAt: state.project!.metadata.createdAt,
       );
 
       emit(

@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../models/medias/media_model.dart';
 import '../../../models/medias/media_response_model.dart';
 import '../../../models/projects/project_info_model.dart';
-import '../../../models/projects/project_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/projects_repository.dart';
 import '../../../repositories/storage_repository.dart';
@@ -24,33 +23,22 @@ import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
+import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/border_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
 
-class ManageProjectPageArguments {
-  const ManageProjectPageArguments({
-    required this.count,
-    this.project,
-  });
-
-  final int count;
-  final ProjectModel? project;
-}
-
 class ManageProjectPage extends StatefulWidget {
   const ManageProjectPage({
     super.key,
-    required this.count,
-    this.project,
+    this.id,
     required this.navigateToMediaViewerPage,
     required this.navigateToProjectsPage,
   });
 
   static const routePath = '/projects_pages/manage_project';
 
-  final int count;
-  final ProjectModel? project;
+  final String? id;
   final void Function(MediaViewerPageArguments) navigateToMediaViewerPage;
   final void Function() navigateToProjectsPage;
 
@@ -64,6 +52,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
   final TextEditingController _controllerLocation = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
 
+  bool _dataLoaded = false;
   bool _isLoading = false;
   bool _nameValid = false;
   bool _locationValid = false;
@@ -73,38 +62,44 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
   String? _errorTextLocation;
   String? _errorTextDescription;
 
-  @override
-  void initState() {
-    _setInitialData();
-    super.initState();
+  void _setInitialData(ManageProjectState state) {
+    if (_dataLoaded) return;
+
+    if (state.project == null) {
+      return _switchDataLoaded(true);
+    }
+
+    final ProjectInfoModel info = state.project!.info;
+
+    if (info.media != null) {
+      for (int i = 0; i < info.media!.length; i++) {
+        final MediaModel media = info.media![i];
+
+        _media.add(
+          MediaResponseModel(
+            id: media.id,
+            dataUrl: media.data,
+            thumbnailUrl: media.thumbnail,
+            format: media.format,
+            name: media.name,
+          ),
+        );
+      }
+    }
+
+    _controllerName.text = info.name;
+    _validateName(info.name);
+    _controllerLocation.text = info.location;
+    _validateLocation(info.location);
+    _controllerDescription.text = info.description;
+    _validateDescription(info.description);
+
+    _switchDataLoaded(true);
   }
 
-  void _setInitialData() {
-    if (widget.project != null) {
-      final ProjectInfoModel info = widget.project!.info;
-
-      if (info.media != null) {
-        for (int i = 0; i < info.media!.length; i++) {
-          final MediaModel media = info.media![i];
-
-          _media.add(
-            MediaResponseModel(
-              id: media.id,
-              dataUrl: media.data,
-              thumbnailUrl: media.thumbnail,
-              format: media.format,
-              name: media.name,
-            ),
-          );
-        }
-      }
-
-      _controllerName.text = info.name;
-      _validateName(info.name);
-      _controllerLocation.text = info.location;
-      _validateLocation(info.location);
-      _controllerDescription.text = info.description;
-      _validateDescription(info.description);
+  void _switchDataLoaded(bool status) {
+    if (_dataLoaded != status) {
+      setState(() => _dataLoaded = status);
     }
   }
 
@@ -136,12 +131,15 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     setState(() => _descriptionValid = description.length > 1);
   }
 
-  void _createProject(BuildContext context) {
+  void _createProject({
+    required BuildContext context,
+    required ManageProjectState state,
+  }) {
     _switchErrorName();
     _switchErrorLocation();
     _switchErrorDescription();
 
-    if (widget.count > 9) {
+    if (state.projects.length > 9) {
       const String errorLimit =
           'The limit for creating projects for the workspace has been reached';
       return _showErrorMessage(errorMessage: errorLimit);
@@ -182,7 +180,10 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
         );
   }
 
-  void _updateProject(BuildContext context) {
+  void _updateProject({
+    required BuildContext context,
+    required ManageProjectState state,
+  }) {
     _switchErrorName();
     _switchErrorLocation();
     _switchErrorDescription();
@@ -212,7 +213,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
       return _showErrorMessage(errorMessage: errorDescription);
     }
 
-    final List<MediaModel>? media = widget.project!.info.media;
+    final List<MediaModel>? media = state.project!.info.media;
 
     final List<MediaModel> savedMedia = getSavedMedia(
       media: media,
@@ -231,14 +232,12 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
     context.read<ManageProjectBloc>().add(
           UpdateProject(
-            id: widget.project!.id,
             savedMedia: savedMedia,
             addedMedia: addedMedia,
             removedMedia: removedMedia,
             name: name,
             location: location,
             description: description,
-            createdAt: widget.project!.metadata.createdAt,
           ),
         );
   }
@@ -272,9 +271,17 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
         projectsRepository: context.read<ProjectsRepository>(),
         storageRepository: context.read<StorageRepository>(),
         usersRepository: context.read<UsersRepository>(),
-      ),
+      )..add(
+          Init(
+            id: widget.id,
+          ),
+        ),
       child: BlocConsumer<ManageProjectBloc, ManageProjectState>(
         listener: (_, state) {
+          if (state.userData != null) {
+            _setInitialData(state);
+          }
+
           if (state.status == BlocStatus.loading) {
             _switchLoading(true);
           }
@@ -285,7 +292,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: widget.project == null
+              title: state.project == null
                   ? 'Project successfully created'
                   : 'Project successfully updated',
               type: InAppNotificationType.success,
@@ -295,101 +302,115 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
           }
         },
         builder: (context, state) {
-          return ActionLoader(
-            isLoading: _isLoading,
-            child: PreviewLayout(
-              content: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0,
-                  vertical: 42.0,
-                ),
-                children: [
-                  Text(
-                    widget.project == null ? 'Add new project' : 'Edit project',
-                    style: AppTextStyles.head5SemiBold,
-                    textAlign: TextAlign.center,
+          if (_dataLoaded) {
+            return ActionLoader(
+              isLoading: _isLoading,
+              child: PreviewLayout(
+                content: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40.0,
+                    vertical: 42.0,
                   ),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    widget.project == null
-                        ? 'Create project card'
-                        : 'Edit project card',
-                    style: AppTextStyles.paragraphSRegular.copyWith(
-                      color: AppColors.iconPrimary,
+                  children: [
+                    Text(
+                      state.project == null
+                          ? 'Add new project'
+                          : 'Edit project',
+                      style: AppTextStyles.head5SemiBold,
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 28.0),
-                  CustomMediaPicker(
-                    labelText: 'Upload images',
-                    media: _media,
-                    onPickMedia: _onPickMedia,
-                    onDeleteMedia: _onDeleteMedia,
-                  ),
-                  const SizedBox(height: 8.0),
-                  BorderTextField(
-                    controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'Project name',
-                    errorText: _errorTextName,
-                    maxLines: 2,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(64),
-                    ],
-                    onChanged: _validateName,
-                  ),
-                  const SizedBox(height: 16.0),
-                  BorderTextField(
-                    controller: _controllerLocation,
-                    labelText: 'Location',
-                    hintText: 'Project location',
-                    errorText: _errorTextLocation,
-                    maxLines: 2,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(64),
-                    ],
-                    onChanged: _validateLocation,
-                  ),
-                  const SizedBox(height: 16.0),
-                  BorderTextField(
-                    controller: _controllerDescription,
-                    labelText: 'Description',
-                    hintText: 'Project description',
-                    errorText: _errorTextDescription,
-                    maxLines: 14,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(640),
-                    ],
-                    onChanged: _validateDescription,
-                  ),
-                  const SizedBox(height: 40.0),
-                  if (widget.project == null) ...[
-                    CustomButton(
-                      text: 'Create project',
-                      onTap: () => _createProject(context),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      state.project == null
+                          ? 'Create project card'
+                          : 'Edit project card',
+                      style: AppTextStyles.paragraphSRegular.copyWith(
+                        color: AppColors.iconPrimary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ] else ...[
-                    CustomButton(
-                      text: 'Save changes',
-                      onTap: () => _updateProject(context),
+                    const SizedBox(height: 28.0),
+                    CustomMediaPicker(
+                      labelText: 'Upload images',
+                      media: _media,
+                      onPickMedia: _onPickMedia,
+                      onDeleteMedia: _onDeleteMedia,
+                    ),
+                    const SizedBox(height: 8.0),
+                    BorderTextField(
+                      controller: _controllerName,
+                      labelText: 'Name',
+                      hintText: 'Project name',
+                      errorText: _errorTextName,
+                      maxLines: 2,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(64),
+                      ],
+                      onChanged: _validateName,
+                    ),
+                    const SizedBox(height: 16.0),
+                    BorderTextField(
+                      controller: _controllerLocation,
+                      labelText: 'Location',
+                      hintText: 'Project location',
+                      errorText: _errorTextLocation,
+                      maxLines: 2,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(64),
+                      ],
+                      onChanged: _validateLocation,
+                    ),
+                    const SizedBox(height: 16.0),
+                    BorderTextField(
+                      controller: _controllerDescription,
+                      labelText: 'Description',
+                      hintText: 'Project description',
+                      errorText: _errorTextDescription,
+                      maxLines: 14,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(640),
+                      ],
+                      onChanged: _validateDescription,
+                    ),
+                    const SizedBox(height: 40.0),
+                    if (state.project == null) ...[
+                      CustomButton(
+                        text: 'Create project',
+                        onTap: () => _createProject(
+                          context: context,
+                          state: state,
+                        ),
+                      ),
+                    ] else ...[
+                      CustomButton(
+                        text: 'Save changes',
+                        onTap: () => _updateProject(
+                          context: context,
+                          state: state,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 12.0),
+                    CustomTextButton(
+                      prefixIcon: AppIcons.arrowBack,
+                      text: 'Back to Projects page',
+                      onTap: widget.navigateToProjectsPage,
                     ),
                   ],
-                  const SizedBox(height: 12.0),
-                  CustomTextButton(
-                    prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Projects page',
-                    onTap: widget.navigateToProjectsPage,
-                  ),
-                ],
+                ),
+                preview: _ProjectPreview(
+                  media: _media,
+                  name: _controllerName.text,
+                  location: _controllerLocation.text,
+                  description: _controllerDescription.text,
+                  navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
+                ),
               ),
-              preview: _ProjectPreview(
-                media: _media,
-                name: _controllerName.text,
-                location: _controllerLocation.text,
-                description: _controllerDescription.text,
-                navigateToMediaViewerPage: widget.navigateToMediaViewerPage,
-              ),
-            ),
+            );
+          }
+
+          return const Center(
+            child: CustomLoader(),
           );
         },
       ),

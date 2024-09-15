@@ -14,7 +14,7 @@ class VerifyEmailPage extends StatelessWidget {
 
   static const routePath = '/auth_pages/verify_email';
 
-  final String email;
+  final String? email;
   final void Function() navigateToLogInPage;
 
   @override
@@ -28,7 +28,7 @@ class VerifyEmailPage extends StatelessWidget {
           ),
           const SizedBox(height: 8.0),
           Text(
-            'We have sent verification email link to\n$email',
+            'We have sent verification email link to\n${email ?? 'placeholder'}',
             style: AppTextStyles.paragraphSRegular.copyWith(
               color: AppColors.iconPrimary,
             ),

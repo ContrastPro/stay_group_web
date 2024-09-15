@@ -23,7 +23,6 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../manage_calculation_page/manage_calculation_page.dart';
 import 'blocs/calculations_bloc/calculations_bloc.dart';
 
 class CalculationsPage extends StatelessWidget {
@@ -36,8 +35,7 @@ class CalculationsPage extends StatelessWidget {
   static const routePath = '/calculations_pages/calculations';
 
   final GoRouterState state;
-  final void Function(ManageCalculationPageArguments)
-      navigateToManageCalculationPage;
+  final void Function([String?]) navigateToManageCalculationPage;
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +78,7 @@ class _CalculationsPageContent extends StatelessWidget {
   });
 
   final CalculationsState state;
-  final void Function(ManageCalculationPageArguments)
-      navigateToManageCalculationPage;
+  final void Function([String?]) navigateToManageCalculationPage;
 
   static const double _buttonWidth = 190.0;
 
@@ -153,11 +150,7 @@ class _CalculationsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add calculation',
                   backgroundColor: AppColors.info,
-                  onTap: () => navigateToManageCalculationPage(
-                    ManageCalculationPageArguments(
-                      count: state.calculations.length,
-                    ),
-                  ),
+                  onTap: navigateToManageCalculationPage,
                 ),
               ),
             ],
@@ -171,11 +164,7 @@ class _CalculationsPageContent extends StatelessWidget {
               "You don't added your first calculation yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add calculation',
-          onTap: () => navigateToManageCalculationPage(
-            ManageCalculationPageArguments(
-              count: state.calculations.length,
-            ),
-          ),
+          onTap: navigateToManageCalculationPage,
           content: Column(
             children: [
               TableItem(
@@ -273,10 +262,7 @@ class _CalculationsPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageCalculationPage(
-                                  ManageCalculationPageArguments(
-                                    count: state.calculations.length,
-                                    calculation: state.calculations[i],
-                                  ),
+                                  state.calculations[i].id,
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

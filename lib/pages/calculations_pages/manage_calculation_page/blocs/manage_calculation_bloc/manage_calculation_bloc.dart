@@ -1,8 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../models/calculations/calculation_extra_model.dart';
+import '../../../../../models/calculations/calculation_model.dart';
+import '../../../../../models/calculations/calculation_response_model.dart';
 import '../../../../../models/companies/company_model.dart';
 import '../../../../../models/companies/company_response_model.dart';
 import '../../../../../models/projects/project_model.dart';
@@ -43,24 +46,27 @@ class ManageCalculationBloc
           ? response.userId!
           : response.spaceId!;
 
-      final UserModel? spaceData;
+      UserModel? spaceData;
 
-      if (response.info.role == UserRole.manager) {
-        spaceData = null;
-      } else {
+      if (response.info.role == UserRole.worker) {
         spaceData = await usersRepository.getUserById(
           userId: spaceId,
         );
       }
 
+      CalculationModel? calculation;
       final List<CompanyModel> companies = [];
       final List<ProjectModel> projects = [];
+      final List<CalculationModel> calculations = [];
 
       final CompanyResponseModel? savedCompanies =
           await companiesRepository.getCompanies(spaceId: spaceId);
 
       final ProjectResponseModel? savedProjects =
           await projectsRepository.getProjects(spaceId: spaceId);
+
+      final CalculationResponseModel? savedCalculations =
+          await calculationsRepository.getCalculations(spaceId: spaceId);
 
       if (savedCompanies != null) {
         companies.addAll(savedCompanies.companies);
@@ -78,12 +84,22 @@ class ManageCalculationBloc
         );
       }
 
+      if (savedCalculations != null) {
+        calculations.addAll(savedCalculations.calculations);
+
+        calculation = calculations.firstWhereOrNull(
+          (e) => e.id == event.id,
+        );
+      }
+
       emit(
         state.copyWith(
           userData: response,
           spaceData: spaceData,
+          calculation: calculation,
           companies: companies,
           projects: projects,
+          calculations: calculations,
         ),
       );
     });
@@ -97,15 +113,9 @@ class ManageCalculationBloc
 
       await requestDelay();
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       final String id = uuid();
 
@@ -156,19 +166,13 @@ class ManageCalculationBloc
 
       await requestDelay();
 
-      final User? user = authRepository.currentUser();
-
-      final UserModel? response = await usersRepository.getUserById(
-        userId: user!.uid,
-      );
-
-      final String spaceId = response!.info.role == UserRole.manager
-          ? response.userId!
-          : response.spaceId!;
+      final String spaceId = state.userData!.info.role == UserRole.manager
+          ? state.userData!.userId!
+          : state.userData!.spaceId!;
 
       await calculationsRepository.updateCalculation(
         spaceId: spaceId,
-        id: event.id,
+        id: state.calculation!.id,
         companyId: event.companyId,
         projectId: event.projectId,
         section: event.section.isNotEmpty ? event.section : null,
@@ -189,7 +193,7 @@ class ManageCalculationBloc
         startInstallments: event.startInstallments,
         endInstallments: event.endInstallments,
         extra: event.extra.isNotEmpty ? event.extra : null,
-        createdAt: event.createdAt,
+        createdAt: state.calculation!.metadata.createdAt,
       );
 
       emit(

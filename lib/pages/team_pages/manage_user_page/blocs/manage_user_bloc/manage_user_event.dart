@@ -5,6 +5,14 @@ abstract class ManageUserEvent {
   const ManageUserEvent();
 }
 
+class Init extends ManageUserEvent {
+  const Init({
+    this.id,
+  });
+
+  final String? id;
+}
+
 class CreateUser extends ManageUserEvent {
   const CreateUser({
     required this.name,
@@ -19,10 +27,8 @@ class CreateUser extends ManageUserEvent {
 
 class UpdateUser extends ManageUserEvent {
   const UpdateUser({
-    required this.id,
     required this.name,
   });
 
-  final String id;
   final String name;
 }

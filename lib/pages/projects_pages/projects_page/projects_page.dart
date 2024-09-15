@@ -21,7 +21,6 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../manage_project_page/manage_project_page.dart';
 import 'blocs/projects_bloc/projects_bloc.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -34,7 +33,7 @@ class ProjectsPage extends StatelessWidget {
   static const routePath = '/projects_pages/projects';
 
   final GoRouterState state;
-  final void Function(ManageProjectPageArguments) navigateToManageProjectPage;
+  final void Function([String?]) navigateToManageProjectPage;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +76,7 @@ class _ProjectsPageContent extends StatelessWidget {
   });
 
   final ProjectsState state;
-  final void Function(ManageProjectPageArguments) navigateToManageProjectPage;
+  final void Function([String?]) navigateToManageProjectPage;
 
   static const double _buttonWidth = 160.0;
 
@@ -109,11 +108,7 @@ class _ProjectsPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add project',
                   backgroundColor: AppColors.info,
-                  onTap: () => navigateToManageProjectPage(
-                    ManageProjectPageArguments(
-                      count: state.projects.length,
-                    ),
-                  ),
+                  onTap: navigateToManageProjectPage,
                 ),
               ),
             ],
@@ -127,11 +122,7 @@ class _ProjectsPageContent extends StatelessWidget {
               "You don't added your first project yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add project',
-          onTap: () => navigateToManageProjectPage(
-            ManageProjectPageArguments(
-              count: state.projects.length,
-            ),
-          ),
+          onTap: navigateToManageProjectPage,
           content: Column(
             children: [
               TableItem(
@@ -214,10 +205,7 @@ class _ProjectsPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageProjectPage(
-                                  ManageProjectPageArguments(
-                                    count: state.projects.length,
-                                    project: state.projects[i],
-                                  ),
+                                  state.projects[i].id,
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(

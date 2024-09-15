@@ -88,6 +88,10 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
       users.removeAt(index);
 
+      users.sort(
+        (a, b) => b.metadata.createdAt.compareTo(a.metadata.createdAt),
+      );
+
       emit(
         state.copyWith(
           status: BlocStatus.loaded,

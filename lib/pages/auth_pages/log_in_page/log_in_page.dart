@@ -51,10 +51,6 @@ class _LogInPageState extends State<LogInPage> {
     setState(() => _isObscurePassword = !_isObscurePassword);
   }
 
-  void _switchError({String? error}) {
-    setState(() => _errorText = error);
-  }
-
   void _emailLogIn(BuildContext context) {
     final String email = _controllerEmail.text.trim();
     final String password = _controllerPassword.text.trim();
@@ -68,6 +64,19 @@ class _LogInPageState extends State<LogInPage> {
             password: password,
           ),
         );
+  }
+
+  void _switchError({String? error}) {
+    setState(() => _errorText = error);
+  }
+
+  void _showErrorMessage({
+    required String errorMessage,
+  }) {
+    InAppNotificationService.show(
+      title: errorMessage,
+      type: InAppNotificationType.error,
+    );
   }
 
   @override
@@ -94,11 +103,7 @@ class _LogInPageState extends State<LogInPage> {
 
           if (state.status == BlocStatus.failed) {
             _switchError(error: state.errorMessage);
-
-            InAppNotificationService.show(
-              title: state.errorMessage!,
-              type: InAppNotificationType.error,
-            );
+            _showErrorMessage(errorMessage: state.errorMessage!);
           }
         },
         builder: (context, _) {

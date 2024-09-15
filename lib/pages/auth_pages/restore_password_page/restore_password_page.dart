@@ -52,10 +52,6 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
     });
   }
 
-  void _switchError({String? error}) {
-    setState(() => _errorText = error);
-  }
-
   void _passwordRecovery(BuildContext context) {
     _switchError();
 
@@ -73,6 +69,10 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
             email: email,
           ),
         );
+  }
+
+  void _switchError({String? error}) {
+    setState(() => _errorText = error);
   }
 
   void _showErrorMessage({

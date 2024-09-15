@@ -21,7 +21,6 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/uncategorized/empty_state_view.dart';
-import '../manage_company_page/manage_company_page.dart';
 import 'blocs/dashboard_bloc/dashboard_bloc.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -34,7 +33,7 @@ class DashboardPage extends StatelessWidget {
   static const routePath = '/dashboard_pages/dashboard';
 
   final GoRouterState state;
-  final void Function(ManageCompanyPageArguments) navigateToManageCompanyPage;
+  final void Function([String?]) navigateToManageCompanyPage;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +76,7 @@ class _DashboardPageContent extends StatelessWidget {
   });
 
   final DashboardState state;
-  final void Function(ManageCompanyPageArguments) navigateToManageCompanyPage;
+  final void Function([String?]) navigateToManageCompanyPage;
 
   static const double _buttonWidth = 180.0;
 
@@ -109,11 +108,7 @@ class _DashboardPageContent extends StatelessWidget {
                   prefixIcon: AppIcons.add,
                   text: 'Add company',
                   backgroundColor: AppColors.info,
-                  onTap: () => navigateToManageCompanyPage(
-                    ManageCompanyPageArguments(
-                      count: state.companies.length,
-                    ),
-                  ),
+                  onTap: navigateToManageCompanyPage,
                 ),
               ),
             ],
@@ -127,11 +122,7 @@ class _DashboardPageContent extends StatelessWidget {
               "You don't added your first company yet.\nLet's get started!",
           buttonWidth: _buttonWidth,
           buttonText: 'Add company',
-          onTap: () => navigateToManageCompanyPage(
-            ManageCompanyPageArguments(
-              count: state.companies.length,
-            ),
-          ),
+          onTap: navigateToManageCompanyPage,
           content: Column(
             children: [
               TableItem(
@@ -205,10 +196,7 @@ class _DashboardPageContent extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () => navigateToManageCompanyPage(
-                                  ManageCompanyPageArguments(
-                                    count: state.companies.length,
-                                    company: state.companies[i],
-                                  ),
+                                  state.companies[i].id,
                                 ),
                                 behavior: HitTestBehavior.opaque,
                                 child: SvgPicture.asset(
