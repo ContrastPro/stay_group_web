@@ -19,12 +19,13 @@ import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/loaders/custom_loader.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
 
@@ -265,7 +266,9 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
               type: InAppNotificationType.success,
             );
 
-            widget.navigateToDashboardPage();
+            if (state.company == null) {
+              widget.navigateToDashboardPage();
+            }
           }
         },
         builder: (context, state) {
@@ -279,6 +282,19 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     vertical: 42.0,
                   ),
                   children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomIconButton(
+                          icon: AppIcons.arrowBack,
+                          iconColor: AppColors.primary,
+                          backgroundColor: AppColors.scaffoldSecondary,
+                          splashColor: AppColors.scaffoldPrimary,
+                          onTap: widget.navigateToDashboardPage,
+                        ),
+                        const SizedBox(height: 4.0),
+                      ],
+                    ),
                     Text(
                       state.company == null
                           ? 'Add new company'
@@ -305,7 +321,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       onDeleteMedia: _onDeleteMedia,
                     ),
                     const SizedBox(height: 8.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Company name',
@@ -317,7 +333,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerDescription,
                       labelText: 'Description',
                       hintText: 'Company description',

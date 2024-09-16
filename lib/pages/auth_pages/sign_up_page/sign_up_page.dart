@@ -13,7 +13,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/center_container_layout.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({
@@ -188,7 +188,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerEmail,
                     labelText: 'Email',
                     hintText: 'Placeholder',
@@ -197,7 +197,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     onChanged: _validateEmail,
                   ),
                   const SizedBox(height: 16.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerPassword,
                     labelText: 'Password',
                     hintText: 'Password',
@@ -211,7 +211,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     onChanged: _validatePassword,
                   ),
                   const SizedBox(height: 16.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerConfirm,
                     labelText: 'Confirm Password',
                     hintText: 'Confirm Password',

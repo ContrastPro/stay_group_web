@@ -14,7 +14,7 @@ import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/center_container_layout.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 
 class RestorePasswordPage extends StatefulWidget {
   const RestorePasswordPage({
@@ -132,7 +132,7 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerEmail,
                     labelText: 'Email',
                     hintText: 'Placeholder',

@@ -38,7 +38,6 @@ Future<Uint8List> pdfGenerateDocument({
   required DateTime? startInstallments,
   required DateTime? endInstallments,
   required List<CalculationExtraModel> extra,
-  required void Function(bool) switchLoading,
   required int? Function() getPrice,
   required int? Function() getRemainingPrice,
   required int? Function() getPaymentsCount,
@@ -67,32 +66,26 @@ Future<Uint8List> pdfGenerateDocument({
     color: pdfTextSecondary,
   );
 
-  if (project != null) {
-    switchLoading(true);
+  final pdf.Page projectInfo = await pdfGenerateProjectInfo(
+    format: format,
+    state: state,
+    company: company,
+    project: project,
+    section: section,
+    floor: floor,
+    number: number,
+    type: type,
+    rooms: rooms,
+    bathrooms: bathrooms,
+    total: total,
+    living: living,
+    stylePrimary: stylePrimary,
+    styleSecondary: styleSecondary,
+  );
 
-    final pdf.Page projectInfo = await pdfGenerateProjectInfo(
-      format: format,
-      state: state,
-      company: company,
-      project: project,
-      section: section,
-      floor: floor,
-      number: number,
-      type: type,
-      rooms: rooms,
-      bathrooms: bathrooms,
-      total: total,
-      living: living,
-      stylePrimary: stylePrimary,
-      styleSecondary: styleSecondary,
-    );
-
-    document.addPage(projectInfo);
-  }
+  document.addPage(projectInfo);
 
   if (calculationValid) {
-    switchLoading(true);
-
     final int? price = getPrice();
     final int? remainingPrice = getRemainingPrice();
     final int? paymentsCount = getPaymentsCount();
@@ -122,8 +115,6 @@ Future<Uint8List> pdfGenerateDocument({
   }
 
   final Uint8List savedDocument = await document.save();
-
-  switchLoading(false);
 
   return savedDocument;
 }

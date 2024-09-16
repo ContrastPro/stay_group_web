@@ -14,10 +14,11 @@ import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 import 'blocs/manage_user_bloc/manage_user_bloc.dart';
 
 class ManageUserPage extends StatefulWidget {
@@ -222,7 +223,9 @@ class _ManageUserPageState extends State<ManageUserPage> {
               type: InAppNotificationType.success,
             );
 
-            widget.navigateToTeamPage();
+            if (state.userData == null) {
+              widget.navigateToTeamPage();
+            }
           }
 
           if (state.status == BlocStatus.failed) {
@@ -241,6 +244,19 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     vertical: 42.0,
                   ),
                   children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomIconButton(
+                          icon: AppIcons.arrowBack,
+                          iconColor: AppColors.primary,
+                          backgroundColor: AppColors.scaffoldSecondary,
+                          splashColor: AppColors.scaffoldPrimary,
+                          onTap: widget.navigateToTeamPage,
+                        ),
+                        const SizedBox(height: 4.0),
+                      ],
+                    ),
                     Text(
                       state.userData == null
                           ? 'Add new team member'
@@ -259,7 +275,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 28.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'User name',
@@ -271,7 +287,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerEmail,
                       enabled: state.userData == null,
                       labelText: 'Email',
@@ -285,7 +301,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     ),
                     if (state.userData == null) ...[
                       const SizedBox(height: 16.0),
-                      BorderTextField(
+                      CustomTextField(
                         controller: _controllerPassword,
                         labelText: 'Password',
                         hintText: 'User password',

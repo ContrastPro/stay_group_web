@@ -19,12 +19,13 @@ import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/loaders/custom_loader.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
 
@@ -298,7 +299,9 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
               type: InAppNotificationType.success,
             );
 
-            widget.navigateToProjectsPage();
+            if (state.project == null) {
+              widget.navigateToProjectsPage();
+            }
           }
         },
         builder: (context, state) {
@@ -312,6 +315,19 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     vertical: 42.0,
                   ),
                   children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomIconButton(
+                          icon: AppIcons.arrowBack,
+                          iconColor: AppColors.primary,
+                          backgroundColor: AppColors.scaffoldSecondary,
+                          splashColor: AppColors.scaffoldPrimary,
+                          onTap: widget.navigateToProjectsPage,
+                        ),
+                        const SizedBox(height: 4.0),
+                      ],
+                    ),
                     Text(
                       state.project == null
                           ? 'Add new project'
@@ -337,7 +353,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                       onDeleteMedia: _onDeleteMedia,
                     ),
                     const SizedBox(height: 8.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Project name',
@@ -349,7 +365,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerLocation,
                       labelText: 'Location',
                       hintText: 'Project location',
@@ -361,7 +377,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                       onChanged: _validateLocation,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerDescription,
                       labelText: 'Description',
                       hintText: 'Project description',

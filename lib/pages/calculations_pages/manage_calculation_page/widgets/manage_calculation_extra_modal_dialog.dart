@@ -12,7 +12,7 @@ import '../../../../utils/helpers.dart';
 import '../../../../widgets/buttons/custom_button.dart';
 import '../../../../widgets/buttons/custom_text_button.dart';
 import '../../../../widgets/dropdowns/animated_dropdown.dart';
-import '../../../../widgets/text_fields/border_text_field.dart';
+import '../../../../widgets/text_fields/custom_text_field.dart';
 
 class ManageCalculationExtraModalDialog extends StatefulWidget {
   const ManageCalculationExtraModalDialog({
@@ -233,7 +233,7 @@ class _ManageCalculationExtraModalDialogState
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Extra expense name',
@@ -247,7 +247,7 @@ class _ManageCalculationExtraModalDialogState
                     Row(
                       children: [
                         Expanded(
-                          child: BorderTextField(
+                          child: CustomTextField(
                             controller: _controllerPriceVal,
                             labelText: 'Price in (${widget.currency})',
                             hintText: 'Enter value',
@@ -261,7 +261,7 @@ class _ManageCalculationExtraModalDialogState
                         ),
                         const SizedBox(width: 16.0),
                         Expanded(
-                          child: BorderTextField(
+                          child: CustomTextField(
                             controller: _controllerPricePct,
                             labelText: 'Price in (%)',
                             hintText: 'Enter percent',

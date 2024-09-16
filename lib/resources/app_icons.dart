@@ -16,6 +16,7 @@ class AppIcons {
   static const String lock = '$_path/lock.svg';
   static const String mail = '$_path/mail.svg';
   static const String placeholder = '$_path/placeholder.svg';
+  static const String print = '$_path/print.svg';
   static const String projects = '$_path/projects.svg';
   static const String settings = '$_path/settings.svg';
   static const String signOut = '$_path/sign_out.svg';

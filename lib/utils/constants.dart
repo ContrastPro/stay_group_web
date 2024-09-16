@@ -33,7 +33,7 @@ const List<CalculationPeriodModel> kPeriods = [
 
 const Duration kDebugRequestDuration = Duration(milliseconds: 50);
 
-const Duration kProdRequestDuration = Duration(milliseconds: 1400);
+const Duration kProdRequestDuration = Duration(milliseconds: 1200);
 
 const Duration kAnimationDuration = Duration(milliseconds: 250);
 

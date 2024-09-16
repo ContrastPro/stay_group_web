@@ -26,6 +26,7 @@ import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/data_pickers/custom_date_picker.dart';
 import '../../../widgets/dropdowns/animated_dropdown.dart';
@@ -34,7 +35,7 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/modals/modal_dialog.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
 import 'widgets/manage_calculation_extra_item.dart';
 import 'widgets/manage_calculation_extra_modal_dialog.dart';
@@ -307,6 +308,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
   }
 
   Future<void> _printPdf(ManageCalculationState state) async {
+    _switchLoading(true);
+
     final String section = _controllerSection.text.trim();
     final String floor = _controllerFloor.text.trim();
     final String number = _controllerNumber.text.trim();
@@ -318,7 +321,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final String depositVal = _controllerDepositVal.text.trim();
     final String depositPct = _controllerDepositPct.text.trim();
 
-    final bool isPrinted = await Printing.layoutPdf(
+    await Printing.layoutPdf(
       format: PdfPageFormat.a4,
       onLayout: (PdfPageFormat format) {
         return pdfGenerateDocument(
@@ -342,7 +345,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           startInstallments: _startInstallments,
           endInstallments: _endInstallments,
           extra: _extra,
-          switchLoading: _switchLoading,
           getPrice: _getPrice,
           getRemainingPrice: _getRemainingPrice,
           getPaymentsCount: _getPaymentsCount,
@@ -352,9 +354,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
       },
     );
 
-    if (isPrinted) {
-      // update counter
-    }
+    _switchLoading(false);
   }
 
   int? _getPrice() {
@@ -669,7 +669,9 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
               type: InAppNotificationType.success,
             );
 
-            widget.navigateToCalculationsPage();
+            if (state.calculation == null) {
+              widget.navigateToCalculationsPage();
+            }
           }
         },
         builder: (context, state) {
@@ -683,6 +685,19 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     vertical: 42.0,
                   ),
                   children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomIconButton(
+                          icon: AppIcons.arrowBack,
+                          iconColor: AppColors.primary,
+                          backgroundColor: AppColors.scaffoldSecondary,
+                          splashColor: AppColors.scaffoldPrimary,
+                          onTap: widget.navigateToCalculationsPage,
+                        ),
+                        const SizedBox(height: 4.0),
+                      ],
+                    ),
                     Text(
                       state.calculation == null
                           ? 'Add new calculation'
@@ -735,7 +750,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       Row(
                         children: [
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerSection,
                               labelText: 'Section',
                               hintText: 'Block or section',
@@ -747,7 +762,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                           const SizedBox(width: 16.0),
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerFloor,
                               labelText: 'Floor',
                               hintText: 'Floor apartment',
@@ -764,7 +779,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       Row(
                         children: [
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerNumber,
                               labelText: 'Unit number',
                               hintText: 'Enter number',
@@ -776,7 +791,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                           const SizedBox(width: 16.0),
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerType,
                               labelText: 'Unit type',
                               hintText: 'Enter type',
@@ -792,7 +807,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       Row(
                         children: [
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerRooms,
                               labelText: 'Rooms',
                               hintText: 'Number of rooms',
@@ -805,7 +820,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                           const SizedBox(width: 16.0),
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerBathrooms,
                               labelText: 'Bathrooms',
                               hintText: 'Number of bathrooms',
@@ -822,7 +837,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       Row(
                         children: [
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerTotal,
                               labelText: 'Total area (m2)',
                               hintText: 'Enter area',
@@ -837,7 +852,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           ),
                           const SizedBox(width: 16.0),
                           Expanded(
-                            child: BorderTextField(
+                            child: CustomTextField(
                               controller: _controllerLiving,
                               labelText: 'Living area (m2)',
                               hintText: 'Enter area',
@@ -859,7 +874,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       style: AppTextStyles.paragraphLMedium,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
                       hintText: 'Calculation name',
@@ -871,7 +886,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       onChanged: _validateName,
                     ),
                     const SizedBox(height: 16.0),
-                    BorderTextField(
+                    CustomTextField(
                       controller: _controllerDescription,
                       labelText: 'Calculation notes',
                       hintText: 'Field for notes, clients info, etc..',
@@ -891,7 +906,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         ),
                         const SizedBox(width: 8.0),
                         Expanded(
-                          child: BorderTextField(
+                          child: CustomTextField(
                             controller: _controllerPrice,
                             labelText: 'Unit price',
                             hintText: 'Enter value',
@@ -908,7 +923,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: BorderTextField(
+                          child: CustomTextField(
                             controller: _controllerDepositVal,
                             enabled: _priceValid,
                             labelText: 'First deposit in ($_currency)',
@@ -922,7 +937,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         ),
                         const SizedBox(width: 16.0),
                         Expanded(
-                          child: BorderTextField(
+                          child: CustomTextField(
                             controller: _controllerDepositPct,
                             enabled: _priceValid,
                             labelText: 'First deposit in (%)',
@@ -1014,13 +1029,13 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       text: 'Back to Calculations page',
                       onTap: widget.navigateToCalculationsPage,
                     ),
-                    const SizedBox(height: 12.0),
+                    /*const SizedBox(height: 12.0),
                     CustomButton(
                       prefixIcon: AppIcons.calculation,
                       text: 'Print PDF',
                       backgroundColor: AppColors.info,
                       onTap: () => _printPdf(state),
-                    ),
+                    ),*/
                   ],
                 ),
                 preview: _CalculationPreview(
@@ -1036,6 +1051,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   total: _controllerTotal.text,
                   living: _controllerLiving.text,
                   state: state,
+                  onPrint: _printPdf,
                 ),
               ),
             );
@@ -1064,6 +1080,7 @@ class _CalculationPreview extends StatelessWidget {
     required this.total,
     required this.living,
     required this.state,
+    required this.onPrint,
   });
 
   final bool calculationValid;
@@ -1078,51 +1095,65 @@ class _CalculationPreview extends StatelessWidget {
   final String total;
   final String living;
   final ManageCalculationState state;
+  final void Function(ManageCalculationState) onPrint;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 40.0,
-        vertical: 42.0,
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 640.0,
-            height: 940.0,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 42.0,
-              vertical: 72.0,
-            ),
-            decoration: const BoxDecoration(
-              color: AppColors.scaffoldSecondary,
-            ),
-            child: Column(
-              children: [
-                _ProjectHeader(
-                  state: state,
-                ),
-                _ProjectContent(
-                  company: company,
-                  project: project,
-                  section: section,
-                  floor: floor,
-                  number: number,
-                  type: type,
-                  rooms: rooms,
-                  bathrooms: bathrooms,
-                  total: total,
-                  living: living,
-                ),
-                _ProjectFooter(
-                  company: company,
-                ),
-              ],
-            ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 40.0,
+            vertical: 42.0,
           ),
-        ],
-      ),
+          child: Column(
+            children: [
+              Container(
+                width: 640.0,
+                height: 940.0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 42.0,
+                  vertical: 72.0,
+                ),
+                decoration: const BoxDecoration(
+                  color: AppColors.scaffoldSecondary,
+                ),
+                child: Column(
+                  children: [
+                    _ProjectHeader(
+                      state: state,
+                    ),
+                    _ProjectContent(
+                      project: project,
+                      section: section,
+                      floor: floor,
+                      number: number,
+                      type: type,
+                      rooms: rooms,
+                      bathrooms: bathrooms,
+                      total: total,
+                      living: living,
+                    ),
+                    _ProjectFooter(
+                      company: company,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 16.0,
+          bottom: 16.0,
+          child: CustomIconButton(
+            icon: AppIcons.print,
+            addBorder: false,
+            onTap: () => onPrint(state),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1219,7 +1250,6 @@ class _ProjectHeader extends StatelessWidget {
 
 class _ProjectContent extends StatelessWidget {
   const _ProjectContent({
-    this.company,
     this.project,
     required this.section,
     required this.floor,
@@ -1231,7 +1261,6 @@ class _ProjectContent extends StatelessWidget {
     required this.living,
   });
 
-  final CompanyModel? company;
   final ProjectModel? project;
   final String section;
   final String floor;

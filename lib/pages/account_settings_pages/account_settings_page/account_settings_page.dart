@@ -14,7 +14,7 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/flexible_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 import 'blocs/account_settings_bloc/account_settings_bloc.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -179,14 +179,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                 child: Column(
                                   children: [
                                     if (state.spaceData != null) ...[
-                                      BorderTextField(
+                                      CustomTextField(
                                         controller: _controllerWorkspace,
                                         enabled: false,
                                         labelText: 'Workspace name',
                                       ),
                                       const SizedBox(height: 16.0),
                                     ],
-                                    BorderTextField(
+                                    CustomTextField(
                                       controller: _controllerName,
                                       enabled: state.spaceData == null,
                                       labelText: 'Name',
@@ -200,13 +200,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                       onChanged: _validateName,
                                     ),
                                     const SizedBox(height: 16.0),
-                                    BorderTextField(
+                                    CustomTextField(
                                       controller: _controllerEmail,
                                       enabled: false,
                                       labelText: 'Email',
                                     ),
                                     const SizedBox(height: 16.0),
-                                    BorderTextField(
+                                    CustomTextField(
                                       controller: _controllerPhone,
                                       labelText: 'Phone',
                                       hintText: 'Contact phone',

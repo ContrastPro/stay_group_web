@@ -117,36 +117,6 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   );
 }
 
-pdf.Padding _pdfGetCalculationInfoItem({
-  required String title,
-  required String data,
-  required pdf.TextStyle stylePrimary,
-  required pdf.TextStyle styleSecondary,
-}) {
-  return pdf.Padding(
-    padding: const pdf.EdgeInsets.only(
-      bottom: 4.0,
-    ),
-    child: pdf.Row(
-      children: [
-        pdf.Text(
-          '• $title: ',
-          style: stylePrimary.copyWith(
-            fontSize: 10.0,
-          ),
-        ),
-        pdf.SizedBox(width: 2.0),
-        pdf.Text(
-          data,
-          style: styleSecondary.copyWith(
-            fontSize: 10.0,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 List<pdf.Widget> _pdfGetCalculations({
   required String currency,
   required List<CalculationExtraModel> extra,
@@ -193,6 +163,36 @@ List<pdf.Widget> _pdfGetCalculations({
   }
 
   return calculations;
+}
+
+pdf.Padding _pdfGetCalculationInfoItem({
+  required String title,
+  required String data,
+  required pdf.TextStyle stylePrimary,
+  required pdf.TextStyle styleSecondary,
+}) {
+  return pdf.Padding(
+    padding: const pdf.EdgeInsets.only(
+      bottom: 4.0,
+    ),
+    child: pdf.Row(
+      children: [
+        pdf.Text(
+          '• $title: ',
+          style: stylePrimary.copyWith(
+            fontSize: 10.0,
+          ),
+        ),
+        pdf.SizedBox(width: 2.0),
+        pdf.Text(
+          data,
+          style: styleSecondary.copyWith(
+            fontSize: 10.0,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 pdf.Container _pdfGetCalculationItem({

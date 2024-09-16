@@ -12,7 +12,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/center_container_layout.dart';
-import '../../../widgets/text_fields/border_text_field.dart';
+import '../../../widgets/text_fields/custom_text_field.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({
@@ -125,7 +125,7 @@ class _LogInPageState extends State<LogInPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 28.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerEmail,
                     labelText: 'Email',
                     hintText: 'Placeholder',
@@ -133,7 +133,7 @@ class _LogInPageState extends State<LogInPage> {
                     errorText: _errorText,
                   ),
                   const SizedBox(height: 16.0),
-                  BorderTextField(
+                  CustomTextField(
                     controller: _controllerPassword,
                     labelText: 'Password',
                     hintText: 'Password',
