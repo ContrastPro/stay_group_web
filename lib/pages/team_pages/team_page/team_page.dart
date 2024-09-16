@@ -184,8 +184,11 @@ class _TeamPageContent extends StatelessWidget {
                   itemCount: state.users.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      height: 60.0,
                       addBorder: i != state.users.length - 1,
-                      height: 68.0,
+                      onTap: () => navigateToManageUserPage(
+                        state.users[i].id,
+                      ),
                       cells: [
                         TableCellItem(
                           flex: 25,
@@ -231,21 +234,15 @@ class _TeamPageContent extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              GestureDetector(
-                                onTap: () => navigateToManageUserPage(
-                                  state.users[i].id,
-                                ),
-                                behavior: HitTestBehavior.opaque,
-                                child: SvgPicture.asset(
-                                  AppIcons.edit,
-                                  width: 22.0,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.iconPrimary,
-                                    BlendMode.srcIn,
-                                  ),
+                              const SizedBox(width: 12.0),
+                              SvgPicture.asset(
+                                AppIcons.edit,
+                                width: 22.0,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.iconPrimary,
+                                  BlendMode.srcIn,
                                 ),
                               ),
-                              const SizedBox(width: 12.0),
                               if (state.users[i].userId == null) ...[
                                 GestureDetector(
                                   onTap: () => _deleteUser(
@@ -254,12 +251,21 @@ class _TeamPageContent extends StatelessWidget {
                                     email: state.users[i].credential.email,
                                   ),
                                   behavior: HitTestBehavior.opaque,
-                                  child: SvgPicture.asset(
-                                    AppIcons.delete,
-                                    width: 22.0,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.iconPrimary,
-                                      BlendMode.srcIn,
+                                  child: SizedBox(
+                                    width: 44.0,
+                                    height: 44.0,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppIcons.delete,
+                                          width: 22.0,
+                                          colorFilter: const ColorFilter.mode(
+                                            AppColors.iconPrimary,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -271,14 +277,23 @@ class _TeamPageContent extends StatelessWidget {
                                     archived: state.users[i].archived,
                                   ),
                                   behavior: HitTestBehavior.opaque,
-                                  child: SvgPicture.asset(
-                                    state.users[i].archived
-                                        ? AppIcons.visibilityOn
-                                        : AppIcons.visibilityOff,
-                                    width: 22.0,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.iconPrimary,
-                                      BlendMode.srcIn,
+                                  child: SizedBox(
+                                    width: 44.0,
+                                    height: 44.0,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          state.users[i].archived
+                                              ? AppIcons.visibilityOn
+                                              : AppIcons.visibilityOff,
+                                          width: 22.0,
+                                          colorFilter: const ColorFilter.mode(
+                                            AppColors.iconPrimary,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

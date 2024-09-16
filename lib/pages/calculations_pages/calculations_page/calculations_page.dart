@@ -210,8 +210,11 @@ class _CalculationsPageContent extends StatelessWidget {
                   itemCount: state.calculations.length,
                   itemBuilder: (_, int i) {
                     return TableItem(
+                      height: 60.0,
                       addBorder: i != state.calculations.length - 1,
-                      height: 68.0,
+                      onTap: () => navigateToManageCalculationPage(
+                        state.calculations[i].id,
+                      ),
                       cells: [
                         TableCellItem(
                           flex: 25,
@@ -260,37 +263,42 @@ class _CalculationsPageContent extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              GestureDetector(
-                                onTap: () => navigateToManageCalculationPage(
-                                  state.calculations[i].id,
-                                ),
-                                behavior: HitTestBehavior.opaque,
-                                child: SvgPicture.asset(
-                                  AppIcons.edit,
-                                  width: 22.0,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.iconPrimary,
-                                    BlendMode.srcIn,
-                                  ),
+                              const SizedBox(width: 12.0),
+                              SvgPicture.asset(
+                                AppIcons.edit,
+                                width: 22.0,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.iconPrimary,
+                                  BlendMode.srcIn,
                                 ),
                               ),
                               if (state.userData!.spaceId == null) ...[
-                                const SizedBox(width: 12.0),
                                 GestureDetector(
                                   onTap: () => _deleteCalculation(
                                     context: context,
                                     id: state.calculations[i].id,
                                   ),
                                   behavior: HitTestBehavior.opaque,
-                                  child: SvgPicture.asset(
-                                    AppIcons.delete,
-                                    width: 22.0,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.iconPrimary,
-                                      BlendMode.srcIn,
+                                  child: SizedBox(
+                                    width: 44.0,
+                                    height: 44.0,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          AppIcons.delete,
+                                          width: 22.0,
+                                          colorFilter: const ColorFilter.mode(
+                                            AppColors.iconPrimary,
+                                            BlendMode.srcIn,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
+                              ] else ...[
+                                const SizedBox(width: 12.0),
                               ],
                             ],
                           ),
