@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -261,6 +262,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     } else {
       _controllerDepositPct.clear();
     }
+
+    _updateState();
   }
 
   void _validateDepositPct(String depositPct) {
@@ -276,6 +279,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     } else {
       _controllerDepositVal.clear();
     }
+
+    _updateState();
   }
 
   void _onSelectCalculationPeriod(String name) {
@@ -305,6 +310,76 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
         _endInstallments != null;
 
     setState(() => _calculationValid = calculationValid);
+  }
+
+  void _updateState([String? value]) {
+    setState(() {});
+  }
+
+  Future<void> _showManageExtraModal([
+    CalculationExtraModel? calculationExtra,
+  ]) async {
+    if (!_calculationValid) return;
+
+    final int? price = _getPrice();
+
+    final List<DateTime>? paymentsDates = _getPaymentsDates();
+    if (paymentsDates!.isEmpty) return;
+
+    await ModalDialog.show(
+      context: context,
+      builder: (ctx) => ManageCalculationExtraModalDialog(
+        currency: _currency!,
+        price: price!,
+        paymentsDates: paymentsDates,
+        calculationExtra: calculationExtra,
+        onCancel: ctx.pop,
+        onCreate: (CalculationExtraModel extra) => _createCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
+        onUpdate: (CalculationExtraModel extra) => _updateCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
+        onDelete: (CalculationExtraModel extra) => _deleteCalculationExtra(
+          context: ctx,
+          extra: extra,
+        ),
+      ),
+    );
+
+    setState(() {
+      _extra.sort(
+        (a, b) => a.date.compareTo(b.date),
+      );
+    });
+  }
+
+  void _createCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    setState(() => _extra.add(extra));
+    context.pop();
+  }
+
+  void _updateCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    final int index = _extra.indexWhere((e) => e.id == extra.id);
+    setState(() => _extra[index] = extra);
+    context.pop();
+  }
+
+  void _deleteCalculationExtra({
+    required BuildContext context,
+    required CalculationExtraModel extra,
+  }) {
+    final int index = _extra.indexWhere((e) => e.id == extra.id);
+    setState(() => _extra.removeAt(index));
+    context.pop();
   }
 
   Future<void> _printPdf(ManageCalculationState state) async {
@@ -346,7 +421,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
           endInstallments: _endInstallments,
           extra: _extra,
           getPrice: _getPrice,
-          getRemainingPrice: _getRemainingPrice,
           getPaymentsCount: _getPaymentsCount,
           getPayment: _getPayment,
           getPaymentsDates: _getPaymentsDates,
@@ -439,76 +513,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     }
 
     return dates;
-  }
-
-  Future<void> _showManageExtraModal([
-    CalculationExtraModel? calculationExtra,
-  ]) async {
-    if (!_calculationValid) return;
-
-    final int? price = _getPrice();
-
-    final List<DateTime>? paymentsDates = _getPaymentsDates();
-    if (paymentsDates!.isEmpty) return;
-
-    await ModalDialog.show(
-      context: context,
-      builder: (ctx) => ManageCalculationExtraModalDialog(
-        currency: _currency!,
-        price: price!,
-        paymentsDates: paymentsDates,
-        calculationExtra: calculationExtra,
-        onCancel: ctx.pop,
-        onCreate: (CalculationExtraModel extra) => _createCalculationExtra(
-          context: ctx,
-          extra: extra,
-        ),
-        onUpdate: (CalculationExtraModel extra) => _updateCalculationExtra(
-          context: ctx,
-          extra: extra,
-        ),
-        onDelete: (CalculationExtraModel extra) => _deleteCalculationExtra(
-          context: ctx,
-          extra: extra,
-        ),
-      ),
-    );
-
-    setState(() {
-      _extra.sort(
-        (a, b) => a.date.compareTo(b.date),
-      );
-    });
-  }
-
-  void _createCalculationExtra({
-    required BuildContext context,
-    required CalculationExtraModel extra,
-  }) {
-    setState(() => _extra.add(extra));
-    context.pop();
-  }
-
-  void _updateCalculationExtra({
-    required BuildContext context,
-    required CalculationExtraModel extra,
-  }) {
-    final int index = _extra.indexWhere((e) => e.id == extra.id);
-    setState(() => _extra[index] = extra);
-    context.pop();
-  }
-
-  void _deleteCalculationExtra({
-    required BuildContext context,
-    required CalculationExtraModel extra,
-  }) {
-    final int index = _extra.indexWhere((e) => e.id == extra.id);
-    setState(() => _extra.removeAt(index));
-    context.pop();
-  }
-
-  void _updateState(String value) {
-    setState(() {});
   }
 
   void _createCalculation({
@@ -968,7 +972,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             initialDate: _startInstallments,
                             lastDate: _endInstallments,
                             labelText: 'Start of installments',
-                            hintFormat: 'dd/MM/yy',
+                            hintFormat: kDatePattern,
                             onChanged: _onSelectStartInstallments,
                           ),
                         ),
@@ -979,7 +983,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                             initialDate: _endInstallments,
                             firstDate: _startInstallments,
                             labelText: 'End of installments',
-                            hintFormat: 'dd/MM/yy',
+                            hintFormat: kDatePattern,
                             onChanged: _onSelectEndInstallments,
                           ),
                         ),
@@ -1029,17 +1033,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       text: 'Back to Calculations page',
                       onTap: widget.navigateToCalculationsPage,
                     ),
-                    /*const SizedBox(height: 12.0),
-                    CustomButton(
-                      prefixIcon: AppIcons.calculation,
-                      text: 'Print PDF',
-                      backgroundColor: AppColors.info,
-                      onTap: () => _printPdf(state),
-                    ),*/
                   ],
                 ),
                 preview: _CalculationPreview(
-                  calculationValid: _calculationValid,
+                  state: state,
                   company: _company,
                   project: _project,
                   section: _controllerSection.text,
@@ -1050,7 +1047,18 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   bathrooms: _controllerBathrooms.text,
                   total: _controllerTotal.text,
                   living: _controllerLiving.text,
-                  state: state,
+                  calculationValid: _calculationValid,
+                  currency: _currency,
+                  depositVal: _controllerDepositVal.text,
+                  depositPct: _controllerDepositPct.text,
+                  period: _period,
+                  startInstallments: _startInstallments,
+                  endInstallments: _endInstallments,
+                  extra: _extra,
+                  getPrice: _getPrice,
+                  getPaymentsCount: _getPaymentsCount,
+                  getPayment: _getPayment,
+                  getPaymentsDates: _getPaymentsDates,
                   onPrint: _printPdf,
                 ),
               ),
@@ -1068,7 +1076,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
 class _CalculationPreview extends StatelessWidget {
   const _CalculationPreview({
-    required this.calculationValid,
+    required this.state,
     this.company,
     this.project,
     required this.section,
@@ -1079,11 +1087,22 @@ class _CalculationPreview extends StatelessWidget {
     required this.bathrooms,
     required this.total,
     required this.living,
-    required this.state,
+    required this.calculationValid,
+    this.currency,
+    required this.depositVal,
+    required this.depositPct,
+    this.period,
+    this.startInstallments,
+    this.endInstallments,
+    required this.extra,
+    required this.getPrice,
+    required this.getPaymentsCount,
+    required this.getPayment,
+    required this.getPaymentsDates,
     required this.onPrint,
   });
 
-  final bool calculationValid;
+  final ManageCalculationState state;
   final CompanyModel? company;
   final ProjectModel? project;
   final String section;
@@ -1094,7 +1113,18 @@ class _CalculationPreview extends StatelessWidget {
   final String bathrooms;
   final String total;
   final String living;
-  final ManageCalculationState state;
+  final bool calculationValid;
+  final String? currency;
+  final String depositVal;
+  final String depositPct;
+  final CalculationPeriodModel? period;
+  final DateTime? startInstallments;
+  final DateTime? endInstallments;
+  final List<CalculationExtraModel> extra;
+  final int? Function() getPrice;
+  final int? Function() getPaymentsCount;
+  final int? Function() getPayment;
+  final List<DateTime>? Function() getPaymentsDates;
   final void Function(ManageCalculationState) onPrint;
 
   @override
@@ -1109,38 +1139,36 @@ class _CalculationPreview extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Container(
-                width: 640.0,
-                height: 940.0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 42.0,
-                  vertical: 72.0,
-                ),
-                decoration: const BoxDecoration(
-                  color: AppColors.scaffoldSecondary,
-                ),
-                child: Column(
-                  children: [
-                    _ProjectHeader(
-                      state: state,
-                    ),
-                    _ProjectContent(
-                      project: project,
-                      section: section,
-                      floor: floor,
-                      number: number,
-                      type: type,
-                      rooms: rooms,
-                      bathrooms: bathrooms,
-                      total: total,
-                      living: living,
-                    ),
-                    _ProjectFooter(
-                      company: company,
-                    ),
-                  ],
-                ),
+              _ProjectInfo(
+                state: state,
+                company: company,
+                project: project,
+                section: section,
+                floor: floor,
+                number: number,
+                type: type,
+                rooms: rooms,
+                bathrooms: bathrooms,
+                total: total,
+                living: living,
               ),
+              if (calculationValid) ...[
+                const SizedBox(height: 12.0),
+                _CalculationInfo(
+                  project: project,
+                  currency: currency,
+                  depositVal: depositVal,
+                  depositPct: depositPct,
+                  period: period,
+                  startInstallments: startInstallments,
+                  endInstallments: endInstallments,
+                  extra: extra,
+                  getPrice: getPrice,
+                  getPaymentsCount: getPaymentsCount,
+                  getPayment: getPayment,
+                  getPaymentsDates: getPaymentsDates,
+                ),
+              ],
             ],
           ),
         ),
@@ -1154,6 +1182,68 @@ class _CalculationPreview extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ProjectInfo extends StatelessWidget {
+  const _ProjectInfo({
+    required this.state,
+    this.company,
+    this.project,
+    required this.section,
+    required this.floor,
+    required this.number,
+    required this.type,
+    required this.rooms,
+    required this.bathrooms,
+    required this.total,
+    required this.living,
+  });
+
+  final ManageCalculationState state;
+  final CompanyModel? company;
+  final ProjectModel? project;
+  final String section;
+  final String floor;
+  final String number;
+  final String type;
+  final String rooms;
+  final String bathrooms;
+  final String total;
+  final String living;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 640.0,
+      height: 940.0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 42.0,
+        vertical: 72.0,
+      ),
+      color: AppColors.scaffoldSecondary,
+      child: Column(
+        children: [
+          _ProjectHeader(
+            state: state,
+          ),
+          _ProjectContent(
+            project: project,
+            section: section,
+            floor: floor,
+            number: number,
+            type: type,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            total: total,
+            living: living,
+          ),
+          _ProjectFooter(
+            company: company,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1438,14 +1528,12 @@ class _ProjectFeatureItem extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppTextStyles.captionMedium.copyWith(
-              fontSize: 10.0,
-            ),
+            style: AppTextStyles.captionMedium,
           ),
           Text(
             data,
             style: AppTextStyles.captionRegular.copyWith(
-              fontSize: 8.0,
+              fontSize: 10.0,
             ),
             maxLines: 2,
           ),
@@ -1501,6 +1589,338 @@ class _ProjectFooter extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _CalculationInfo extends StatelessWidget {
+  const _CalculationInfo({
+    this.project,
+    this.currency,
+    required this.depositVal,
+    required this.depositPct,
+    this.period,
+    this.startInstallments,
+    this.endInstallments,
+    required this.extra,
+    required this.getPrice,
+    required this.getPaymentsCount,
+    required this.getPayment,
+    required this.getPaymentsDates,
+  });
+
+  final ProjectModel? project;
+  final String? currency;
+  final String depositVal;
+  final String depositPct;
+  final CalculationPeriodModel? period;
+  final DateTime? startInstallments;
+  final DateTime? endInstallments;
+  final List<CalculationExtraModel> extra;
+  final int? Function() getPrice;
+  final int? Function() getPaymentsCount;
+  final int? Function() getPayment;
+  final List<DateTime>? Function() getPaymentsDates;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 640.0,
+      height: 940.0,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 42.0,
+        vertical: 72.0,
+      ),
+      color: AppColors.scaffoldSecondary,
+      child: _calculationInfoContent(),
+    );
+  }
+
+  Widget _calculationInfoContent() {
+    final int? price = getPrice();
+    final int? paymentsCount = getPaymentsCount();
+    final int? payment = getPayment();
+
+    final DateFormat dateFormat = DateFormat.yMMMMd();
+    final String start = dateFormat.format(startInstallments!);
+    final String end = dateFormat.format(endInstallments!);
+
+    int totalPrice = price!;
+
+    for (int i = 0; i < extra.length; i++) {
+      totalPrice = totalPrice + parseStringInt(extra[i].priceVal);
+    }
+
+    final List<Widget> calculations = _getCalculations(
+      paymentsCount: paymentsCount!,
+      payment: payment!,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          project != null
+              ? 'Calculations for ${project!.info.name}'
+              : 'Calculations',
+          style: AppTextStyles.paragraphMSemiBold,
+          maxLines: 1,
+        ),
+        const SizedBox(height: 6.0),
+        _calculationInfoItem(
+          title: 'Unit price',
+          data: '$currency$price',
+        ),
+        if (depositVal.isNotEmpty) ...[
+          _calculationInfoItem(
+            title: 'First deposit',
+            data: '$currency$depositVal — $depositPct%',
+          ),
+        ],
+        if (payment > 0) ...[
+          _calculationInfoItem(
+            title: 'Installment plan',
+            data:
+                '${period!.name}(~$currency$payment) — $paymentsCount payment(s)',
+          ),
+          _calculationInfoItem(
+            title: 'Installment terms',
+            data: '$start — $end',
+          ),
+          if (price != totalPrice) ...[
+            _calculationInfoItem(
+              title: 'Total price (Unit price + Taxes and fees)',
+              data: '$currency$totalPrice',
+            ),
+          ],
+          const SizedBox(height: 12.0),
+          _calculationItem(
+            addColor: true,
+            number: '№',
+            date: 'Payment date',
+            total: 'Total',
+            payment: 'Installments',
+            extraPrice: 'Taxes and fees',
+            extraDescription: 'Description',
+          ),
+          ...calculations,
+        ],
+      ],
+    );
+  }
+
+  List<Widget> _getCalculations({
+    required int paymentsCount,
+    required int payment,
+  }) {
+    final List<Widget> calculations = [];
+
+    if (payment > 0) {
+      final DateFormat dateFormat = DateFormat(kDatePattern);
+      final List<DateTime>? paymentsDates = getPaymentsDates();
+
+      for (int i = 0; i < paymentsCount; i++) {
+        final DateTime paymentDate = paymentsDates![i];
+
+        int extraPrice = 0;
+        String extraDescription = '';
+
+        for (int y = 0; y < extra.length; y++) {
+          final CalculationExtraModel calculationExtra = extra[y];
+
+          if (calculationExtra.date.isAtSameMomentAs(paymentDate)) {
+            extraPrice = extraPrice + parseStringInt(calculationExtra.priceVal);
+
+            extraDescription = extraDescription.isNotEmpty
+                ? '$extraDescription; ${calculationExtra.name}'
+                : calculationExtra.name;
+          }
+        }
+
+        calculations.add(
+          _calculationItem(
+            number: '${i + 1}',
+            date: dateFormat.format(paymentDate),
+            total: '$currency${payment + extraPrice}',
+            payment: '$currency$payment',
+            extraPrice: '$currency$extraPrice',
+            extraDescription: extraDescription,
+          ),
+        );
+      }
+
+      const int kMaxPreviewLength = 25;
+
+      if (calculations.length > kMaxPreviewLength) {
+        const String kCropPattern = '...';
+        final List<Widget> croppedCalculations = [];
+
+        final List<Widget> firstRange =
+            calculations.getRange(0, kMaxPreviewLength - 4).toList();
+
+        final List<Widget> secondRange = calculations
+            .getRange(calculations.length - 4, calculations.length)
+            .toList();
+
+        croppedCalculations.addAll(firstRange);
+
+        croppedCalculations.add(
+          _calculationItem(
+            number: kCropPattern,
+            date: kCropPattern,
+            total: kCropPattern,
+            payment: kCropPattern,
+            extraPrice: kCropPattern,
+            extraDescription: kCropPattern,
+          ),
+        );
+
+        croppedCalculations.addAll(secondRange);
+
+        return croppedCalculations;
+      }
+
+      return calculations;
+    }
+
+    return calculations;
+  }
+
+  Widget _calculationItem({
+    bool addColor = false,
+    required String number,
+    required String date,
+    required String total,
+    required String payment,
+    required String extraPrice,
+    required String extraDescription,
+  }) {
+    return Container(
+      height: 24.0,
+      decoration: BoxDecoration(
+        color: addColor ? AppColors.iconPrimary : null,
+        border: !addColor
+            ? const Border(
+                bottom: BorderSide(
+                  color: AppColors.iconPrimary,
+                  width: 0.6,
+                ),
+              )
+            : null,
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 20.0,
+            child: Text(
+              number,
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 15,
+            child: Text(
+              date,
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 15,
+            child: Text(
+              total,
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 15,
+            child: Text(
+              payment,
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 20,
+            child: Text(
+              extraPrice,
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: 8.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            flex: 35,
+            child: Text(
+              extraDescription.isNotEmpty ? extraDescription : '—',
+              style: AppTextStyles.captionRegular.copyWith(
+                fontSize: addColor ? 8.0 : 6.0,
+                color: addColor ? AppColors.scaffoldSecondary : null,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 6.0),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                width: 8.0,
+                height: 8.0,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.iconPrimary,
+                    width: 0.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 6.0),
+        ],
+      ),
+    );
+  }
+
+  Widget _calculationInfoItem({
+    required String title,
+    required String data,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 4.0,
+      ),
+      child: Row(
+        children: [
+          Text(
+            '• $title: ',
+            style: AppTextStyles.captionMedium,
+          ),
+          const SizedBox(width: 2.0),
+          Text(
+            data,
+            style: AppTextStyles.captionRegular,
+          ),
         ],
       ),
     );

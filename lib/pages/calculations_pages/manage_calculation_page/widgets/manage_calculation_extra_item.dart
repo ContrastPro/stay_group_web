@@ -6,6 +6,7 @@ import '../../../../models/calculations/calculation_extra_model.dart';
 import '../../../../resources/app_colors.dart';
 import '../../../../resources/app_icons.dart';
 import '../../../../resources/app_text_styles.dart';
+import '../../../../utils/constants.dart';
 
 class ManageCalculationExtraItem extends StatelessWidget {
   const ManageCalculationExtraItem({
@@ -20,7 +21,7 @@ class ManageCalculationExtraItem extends StatelessWidget {
   final void Function(CalculationExtraModel) onManage;
 
   String _getFormatDate() {
-    final DateFormat dateFormat = DateFormat('dd/MM/yy');
+    final DateFormat dateFormat = DateFormat(kDatePattern);
     return dateFormat.format(calculationExtra.date);
   }
 

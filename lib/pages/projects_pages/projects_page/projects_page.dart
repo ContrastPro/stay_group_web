@@ -196,7 +196,7 @@ class _ProjectsPageContent extends StatelessWidget {
                           alignment: Alignment.center,
                           title: utcToLocal(
                             state.projects[i].metadata.createdAt,
-                            format: 'dd/MM/yy',
+                            format: kDatePattern,
                           ),
                           maxLines: 1,
                         ),

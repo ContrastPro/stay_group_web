@@ -12,6 +12,8 @@ const int kFileWeightMin = 1048576;
 // Max file weight 10 MB
 const int kFileWeightMax = 10485760;
 
+const String kDatePattern = 'dd/MM/yy';
+
 const List<String> kImageFormats = ['jpg', 'jpeg', 'png'];
 
 const List<String> kCurrencies = ['€', '\$', '£', '¥', '₹'];

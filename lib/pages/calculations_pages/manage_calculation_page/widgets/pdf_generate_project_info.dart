@@ -11,8 +11,8 @@ import 'pdf_generate_document.dart';
 Future<pdf.Page> pdfGenerateProjectInfo({
   required PdfPageFormat format,
   required ManageCalculationState state,
-  required CompanyModel? company,
-  required ProjectModel? project,
+  CompanyModel? company,
+  ProjectModel? project,
   required String section,
   required String floor,
   required String number,
@@ -163,7 +163,7 @@ pdf.Container _pdfGetProjectHeader({
 }
 
 pdf.Expanded _pdfGetProjectContent({
-  required ProjectModel? project,
+  ProjectModel? project,
   required List<pdf.ImageProvider> projectImages,
   required pdf.ImageProvider imageLocation,
   required String section,
@@ -361,7 +361,7 @@ pdf.Padding _pdfGetProjectFeatureItem({
 }
 
 pdf.Container _pdfGetProjectFooter({
-  required CompanyModel? company,
+  CompanyModel? company,
   required pdf.TextStyle stylePrimary,
   required pdf.TextStyle styleSecondary,
 }) {

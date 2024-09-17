@@ -224,7 +224,7 @@ class _TeamPageContent extends StatelessWidget {
                           alignment: Alignment.center,
                           title: utcToLocal(
                             state.users[i].metadata.createdAt,
-                            format: 'dd/MM/yy',
+                            format: kDatePattern,
                           ),
                           maxLines: 1,
                         ),

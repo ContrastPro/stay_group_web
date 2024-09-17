@@ -20,8 +20,8 @@ const PdfColor pdfIconPrimary = PdfColor.fromInt(0xFF637083);
 Future<Uint8List> pdfGenerateDocument({
   required PdfPageFormat format,
   required ManageCalculationState state,
-  required CompanyModel? company,
-  required ProjectModel? project,
+  CompanyModel? company,
+  ProjectModel? project,
   required String section,
   required String floor,
   required String number,
@@ -31,15 +31,14 @@ Future<Uint8List> pdfGenerateDocument({
   required String total,
   required String living,
   required bool calculationValid,
-  required String? currency,
+  String? currency,
   required String depositVal,
   required String depositPct,
-  required CalculationPeriodModel? period,
-  required DateTime? startInstallments,
-  required DateTime? endInstallments,
+  CalculationPeriodModel? period,
+  DateTime? startInstallments,
+  DateTime? endInstallments,
   required List<CalculationExtraModel> extra,
   required int? Function() getPrice,
-  required int? Function() getRemainingPrice,
   required int? Function() getPaymentsCount,
   required int? Function() getPayment,
   required List<DateTime>? Function() getPaymentsDates,
@@ -87,7 +86,6 @@ Future<Uint8List> pdfGenerateDocument({
 
   if (calculationValid) {
     final int? price = getPrice();
-    final int? remainingPrice = getRemainingPrice();
     final int? paymentsCount = getPaymentsCount();
     final int? payment = getPayment();
     final List<DateTime>? paymentsDates = getPaymentsDates();
@@ -103,7 +101,6 @@ Future<Uint8List> pdfGenerateDocument({
       startInstallments: startInstallments!,
       endInstallments: endInstallments!,
       extra: extra,
-      remainingPrice: remainingPrice!,
       paymentsCount: paymentsCount!,
       payment: payment!,
       paymentsDates: paymentsDates!,

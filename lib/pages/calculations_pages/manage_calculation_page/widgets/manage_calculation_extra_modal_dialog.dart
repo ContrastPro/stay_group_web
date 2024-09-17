@@ -8,6 +8,7 @@ import '../../../../models/calculations/calculation_date_model.dart';
 import '../../../../models/calculations/calculation_extra_model.dart';
 import '../../../../resources/app_colors.dart';
 import '../../../../resources/app_icons.dart';
+import '../../../../utils/constants.dart';
 import '../../../../utils/helpers.dart';
 import '../../../../widgets/buttons/custom_button.dart';
 import '../../../../widgets/buttons/custom_text_button.dart';
@@ -62,7 +63,7 @@ class _ManageCalculationExtraModalDialogState
   }
 
   void _setInitialData() {
-    final DateFormat dateFormat = DateFormat('dd/MM/yy');
+    final DateFormat dateFormat = DateFormat(kDatePattern);
 
     for (int i = 0; i < widget.paymentsDates.length; i++) {
       final DateTime dateTime = widget.paymentsDates[i];

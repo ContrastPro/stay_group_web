@@ -187,7 +187,7 @@ class _DashboardPageContent extends StatelessWidget {
                           alignment: Alignment.center,
                           title: utcToLocal(
                             state.companies[i].metadata.createdAt,
-                            format: 'dd/MM/yy',
+                            format: kDatePattern,
                           ),
                           maxLines: 1,
                         ),

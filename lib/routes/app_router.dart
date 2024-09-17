@@ -201,8 +201,9 @@ class AppRouter {
                   state: state,
                   child: ManageCompanyPage(
                     id: args,
-                    navigateToMediaViewerPage: (media) => context.push(
-                      MediaViewerPage.routePath,
+                    navigateToMediaViewerPage: (media) => _push(
+                      context: context,
+                      routePath: MediaViewerPage.routePath,
                       extra: media,
                     ),
                     navigateToDashboardPage: () => _go(
@@ -242,8 +243,9 @@ class AppRouter {
                   state: state,
                   child: ManageProjectPage(
                     id: args,
-                    navigateToMediaViewerPage: (media) => context.push(
-                      MediaViewerPage.routePath,
+                    navigateToMediaViewerPage: (media) => _push(
+                      context: context,
+                      routePath: MediaViewerPage.routePath,
                       extra: media,
                     ),
                     navigateToProjectsPage: () => _go(
@@ -388,8 +390,26 @@ class AppRouter {
     );
   }
 
+  static Future<void> _push({
+    required BuildContext context,
+    required String routePath,
+    Object? extra,
+  }) {
+    return context.push(routePath, extra: extra);
+  }
+
   static String? _query(GoRouterState state) {
-    return state.uri.queryParameters['data'];
+    final String? query = state.uri.queryParameters['data'];
+
+    if (query != null) {
+      final String data = query.trim();
+
+      if (data.isNotEmpty) return data;
+
+      return null;
+    }
+
+    return null;
   }
 
   static CustomTransitionPage _customTransition<T>({
