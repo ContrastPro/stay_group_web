@@ -400,17 +400,17 @@ class _CompanyPreview extends StatelessWidget {
             color: AppColors.scaffoldSecondary,
             borderRadius: BorderRadius.circular(24.0),
           ),
-          child: Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name.isNotEmpty ? name : 'Company Name',
-                  style: AppTextStyles.subtitleSemiBold,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name.isNotEmpty ? name : 'Company Name',
+                style: AppTextStyles.subtitleSemiBold,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Expanded(
+                child: Text(
                   description.isNotEmpty
                       ? description
                       : 'Ownership, Location, etc..',
@@ -418,8 +418,8 @@ class _CompanyPreview extends StatelessWidget {
                   maxLines: 12,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],

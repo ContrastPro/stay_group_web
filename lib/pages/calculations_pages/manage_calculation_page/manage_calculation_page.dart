@@ -1537,6 +1537,8 @@ class _ProjectFeatureItem extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.captionMedium,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
             data,
