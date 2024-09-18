@@ -461,7 +461,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
 
     final Jiffy endInstallments = Jiffy.parseFromDateTime(
-      _endInstallments!.add(const Duration(days: 1)),
+      _endInstallments!,
     );
 
     final num differenceNum = startInstallments.diff(
@@ -470,12 +470,12 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     );
 
     final int differenceInt = differenceNum.toInt();
-    if (differenceInt == 0) return differenceInt;
 
     final int differenceRound = differenceInt < 0 ? differenceInt * -1 : 0;
+
     final int difference = differenceRound ~/ _period!.month;
 
-    return difference;
+    return difference + 1;
   }
 
   int? _getPayment() {
@@ -1282,6 +1282,7 @@ class _ProjectHeader extends StatelessWidget {
                       color: AppColors.scaffoldSecondary,
                     ),
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1297,6 +1298,7 @@ class _ProjectHeader extends StatelessWidget {
                       color: AppColors.scaffoldSecondary,
                     ),
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     _getUserContact(),
@@ -1304,6 +1306,7 @@ class _ProjectHeader extends StatelessWidget {
                       color: AppColors.scaffoldSecondary,
                     ),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1320,6 +1323,7 @@ class _ProjectHeader extends StatelessWidget {
                       color: AppColors.scaffoldSecondary,
                     ),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     state.userData!.credential.email,
@@ -1327,6 +1331,7 @@ class _ProjectHeader extends StatelessWidget {
                       color: AppColors.scaffoldSecondary,
                     ),
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1414,6 +1419,7 @@ class _ProjectContent extends StatelessWidget {
               project!.info.name,
               style: AppTextStyles.paragraphMSemiBold,
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Row(
               children: [
@@ -1431,6 +1437,7 @@ class _ProjectContent extends StatelessWidget {
                     project!.info.location,
                     style: AppTextStyles.captionRegular,
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -1440,6 +1447,7 @@ class _ProjectContent extends StatelessWidget {
               project!.info.description,
               style: AppTextStyles.captionRegular,
               maxLines: 8,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 18.0),
             Expanded(
@@ -1536,6 +1544,7 @@ class _ProjectFeatureItem extends StatelessWidget {
               fontSize: 10.0,
             ),
             maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -1579,6 +1588,7 @@ class _ProjectFooter extends StatelessWidget {
                 color: AppColors.scaffoldSecondary,
               ),
               maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ] else ...[
             Text(
@@ -1667,6 +1677,7 @@ class _CalculationInfo extends StatelessWidget {
               : 'Calculations',
           style: AppTextStyles.paragraphMSemiBold,
           maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 6.0),
         _calculationInfoItem(
@@ -1906,22 +1917,32 @@ class _CalculationInfo extends StatelessWidget {
     required String title,
     required String data,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 4.0,
-      ),
-      child: Row(
-        children: [
-          Text(
-            '• $title: ',
-            style: AppTextStyles.captionMedium,
-          ),
-          const SizedBox(width: 2.0),
-          Text(
-            data,
-            style: AppTextStyles.captionRegular,
-          ),
-        ],
+    return Flexible(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          bottom: 4.0,
+        ),
+        child: Row(
+          children: [
+            Flexible(
+              child: Text(
+                '• $title: ',
+                style: AppTextStyles.captionMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 2.0),
+            Flexible(
+              child: Text(
+                data,
+                style: AppTextStyles.captionRegular,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

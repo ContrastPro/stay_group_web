@@ -40,6 +40,14 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
           ? response.userId!
           : response.spaceId!;
 
+      UserModel? spaceData;
+
+      if (response.info.role == UserRole.worker) {
+        spaceData = await usersRepository.getUserById(
+          userId: spaceId,
+        );
+      }
+
       CompanyModel? company;
       final List<CompanyModel> companies = [];
 
@@ -57,6 +65,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
       emit(
         state.copyWith(
           userData: response,
+          spaceData: spaceData,
           company: company,
           companies: companies,
         ),

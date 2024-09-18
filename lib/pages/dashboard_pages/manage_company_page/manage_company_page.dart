@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../models/companies/company_info_model.dart';
 import '../../../models/medias/media_model.dart';
@@ -17,13 +16,10 @@ import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/action_loader.dart';
-import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
-import '../../../widgets/data_pickers/custom_media_picker.dart';
 import '../../../widgets/layouts/preview_layout.dart';
-import '../../../widgets/loaders/cached_network_image_loader.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
@@ -103,16 +99,6 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     if (_isLoading != status) {
       setState(() => _isLoading = status);
     }
-  }
-
-  void _onPickMedia(MediaResponseModel media) {
-    setState(() => _media.add(media));
-  }
-
-  void _onDeleteMedia(MediaResponseModel media) {
-    setState(() {
-      _media.removeWhere((e) => e.id == media.id);
-    });
   }
 
   void _validateName(String name) {
@@ -313,14 +299,6 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 28.0),
-                    CustomMediaPicker(
-                      labelText: 'Upload banner',
-                      maxLength: 1,
-                      media: _media,
-                      onPickMedia: _onPickMedia,
-                      onDeleteMedia: _onDeleteMedia,
-                    ),
-                    const SizedBox(height: 8.0),
                     CustomTextField(
                       controller: _controllerName,
                       labelText: 'Name',
@@ -338,9 +316,9 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                       labelText: 'Description',
                       hintText: 'Company description',
                       errorText: _errorTextDescription,
-                      maxLines: 6,
+                      maxLines: 14,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(256),
+                        LengthLimitingTextInputFormatter(640),
                       ],
                       onChanged: _validateDescription,
                     ),
@@ -408,13 +386,11 @@ class _CompanyPreview extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          width: 640.0,
-          height: 384.0,
+          width: 448.0,
+          height: 320.0,
           padding: const EdgeInsets.symmetric(
-            vertical: 16.0,
-          ).copyWith(
-            left: 16.0,
-            right: 22.0,
+            horizontal: 24.0,
+            vertical: 20.0,
           ),
           margin: const EdgeInsets.symmetric(
             horizontal: 40.0,
@@ -422,94 +398,28 @@ class _CompanyPreview extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: AppColors.scaffoldSecondary,
-            borderRadius: BorderRadius.circular(32.0),
+            borderRadius: BorderRadius.circular(24.0),
           ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 256.0,
-                height: double.infinity,
-                child: media.isNotEmpty
-                    ? FadeInAnimation(
-                        child: GestureDetector(
-                          onTap: () => navigateToMediaViewerPage(
-                            MediaViewerPageArguments(
-                              index: 0,
-                              media: media,
-                            ),
-                          ),
-                          behavior: HitTestBehavior.opaque,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(26.0),
-                            child: media.first.dataUrl != null
-                                ? CachedNetworkImageLoader(
-                                    imageUrl: media.first.dataUrl!,
-                                  )
-                                : Image.memory(
-                                    media.first.data!,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.border,
-                          borderRadius: BorderRadius.circular(26.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              AppIcons.placeholder,
-                              width: 64.0,
-                              colorFilter: ColorFilter.mode(
-                                AppColors.iconPrimary.withOpacity(0.4),
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Text(
-                              'Max file size: ${formatMediaSize(kFileWeightMax)}',
-                              style: AppTextStyles.captionBold.copyWith(
-                                color: AppColors.iconPrimary.withOpacity(0.6),
-                              ),
-                            ),
-                            Text(
-                              '.jpg .jpeg .png',
-                              style: AppTextStyles.captionRegular.copyWith(
-                                color: AppColors.iconPrimary.withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-              ),
-              const SizedBox(width: 28.0),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.only(
-                    right: 12.0,
-                  ),
-                  children: [
-                    const SizedBox(height: 16.0),
-                    Text(
-                      name.isNotEmpty ? name : 'Company Name',
-                      style: AppTextStyles.subtitleSemiBold,
-                      maxLines: 3,
-                    ),
-                    Text(
-                      description.isNotEmpty
-                          ? description
-                          : 'Ownership, Location, etc..',
-                      style: AppTextStyles.paragraphSRegular,
-                    ),
-                  ],
+          child: Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name.isNotEmpty ? name : 'Company Name',
+                  style: AppTextStyles.subtitleSemiBold,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                Text(
+                  description.isNotEmpty
+                      ? description
+                      : 'Ownership, Location, etc..',
+                  style: AppTextStyles.paragraphSRegular,
+                  maxLines: 12,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ),
       ],

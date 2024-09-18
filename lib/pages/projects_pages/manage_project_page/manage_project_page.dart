@@ -370,7 +370,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                       labelText: 'Location',
                       hintText: 'Project location',
                       errorText: _errorTextLocation,
-                      maxLines: 2,
+                      maxLines: 1,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(64),
                       ],
@@ -509,6 +509,7 @@ class _ProjectPreview extends StatelessWidget {
                       name.isNotEmpty ? name : 'Project Name',
                       style: AppTextStyles.subtitleSemiBold,
                       maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Row(
                       children: [

@@ -40,6 +40,14 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
           ? response.userId!
           : response.spaceId!;
 
+      UserModel? spaceData;
+
+      if (response.info.role == UserRole.worker) {
+        spaceData = await usersRepository.getUserById(
+          userId: spaceId,
+        );
+      }
+
       ProjectModel? project;
       final List<ProjectModel> projects = [];
 
@@ -57,6 +65,7 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
       emit(
         state.copyWith(
           userData: response,
+          spaceData: spaceData,
           project: project,
           projects: projects,
         ),
