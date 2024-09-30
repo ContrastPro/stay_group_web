@@ -207,7 +207,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final String id = uuid();
 
       final DateTime dueDate = currentTime().add(
-        const Duration(days: 7),
+        const Duration(days: 30),
       );
 
       await usersRepository.createUser(
