@@ -1,9 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/center_container_layout.dart';
+import '../../../widgets/layouts/container_layout.dart';
 
 class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage({
@@ -19,12 +20,14 @@ class VerifyEmailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CenterContainerLayout(
+    return ContainerLayout(
       body: Column(
         children: [
-          Text(
+          AutoSizeText(
             'Check your email',
             style: AppTextStyles.head5SemiBold,
+            maxLines: 1,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8.0),
           Text(

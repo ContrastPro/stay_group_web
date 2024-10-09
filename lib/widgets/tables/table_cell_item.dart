@@ -7,7 +7,7 @@ class TableCellItem extends StatelessWidget {
     super.key,
     this.flex = 1,
     this.padding = const EdgeInsets.symmetric(
-      horizontal: 4.0,
+      horizontal: 6.0,
       vertical: 8.0,
     ),
     this.alignment = Alignment.centerLeft,

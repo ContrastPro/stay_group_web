@@ -15,7 +15,8 @@ import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
+import '../../../widgets/layouts/drawer_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
@@ -46,7 +47,7 @@ class ProjectsPage extends StatelessWidget {
       )..add(
           const Init(),
         ),
-      child: FlexibleLayout(
+      child: DrawerLayout(
         state: state,
         builder: (Size size) {
           return BlocBuilder<ProjectsBloc, ProjectsState>(
@@ -54,6 +55,7 @@ class ProjectsPage extends StatelessWidget {
               if (state.status == BlocStatus.success) {
                 return _ProjectsPageContent(
                   state: state,
+                  screenSize: size,
                   navigateToManageProjectPage: navigateToManageProjectPage,
                 );
               }
@@ -72,13 +74,13 @@ class ProjectsPage extends StatelessWidget {
 class _ProjectsPageContent extends StatelessWidget {
   const _ProjectsPageContent({
     required this.state,
+    required this.screenSize,
     required this.navigateToManageProjectPage,
   });
 
   final ProjectsState state;
+  final Size screenSize;
   final void Function([String?]) navigateToManageProjectPage;
-
-  static const double _buttonWidth = 160.0;
 
   void _deleteProject({
     required BuildContext context,
@@ -102,15 +104,21 @@ class _ProjectsPageContent extends StatelessWidget {
                 'Projects',
                 style: AppTextStyles.head6Medium,
               ),
-              SizedBox(
-                width: _buttonWidth,
-                child: CustomButton(
+              if (screenSize.width >= kMobileScreenWidth) ...[
+                CustomButton(
                   prefixIcon: AppIcons.add,
                   text: 'Add project',
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageProjectPage,
                 ),
-              ),
+              ] else ...[
+                CustomIconButton(
+                  icon: AppIcons.add,
+                  addBorder: false,
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageProjectPage,
+                ),
+              ],
             ],
           ),
         ),
@@ -120,7 +128,6 @@ class _ProjectsPageContent extends StatelessWidget {
           title: 'Add first project',
           description:
               "You don't added your first project yet.\nLet's get started!",
-          buttonWidth: _buttonWidth,
           buttonText: 'Add project',
           onTap: navigateToManageProjectPage,
           content: Column(
@@ -129,34 +136,52 @@ class _ProjectsPageContent extends StatelessWidget {
                 backgroundColor: AppColors.border,
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
-                  TableCellItem(
-                    flex: 25,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                    ).copyWith(
-                      left: 16.0,
-                      right: 4.0,
+                  if (screenSize.width >= kMobileScreenWidth) ...[
+                    TableCellItem(
+                      flex: 25,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Project Name',
                     ),
-                    title: 'Project Name',
-                  ),
-                  const TableCellItem(
-                    flex: 20,
-                    title: 'Location',
-                  ),
-                  const TableCellItem(
-                    flex: 25,
-                    title: 'Description',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Date Creation',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Actions',
-                  ),
+                    const TableCellItem(
+                      flex: 20,
+                      title: 'Location',
+                    ),
+                    const TableCellItem(
+                      flex: 25,
+                      title: 'Description',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Date Creation',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ] else ...[
+                    TableCellItem(
+                      flex: 60,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Project Name',
+                    ),
+                    const TableCellItem(
+                      flex: 40,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ],
                 ],
               ),
               Expanded(
@@ -170,82 +195,120 @@ class _ProjectsPageContent extends StatelessWidget {
                         state.projects[i].id,
                       ),
                       cells: [
-                        TableCellItem(
-                          flex: 25,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                          ).copyWith(
-                            left: 16.0,
-                            right: 4.0,
+                        if (screenSize.width >= kMobileScreenWidth) ...[
+                          TableCellItem(
+                            flex: 25,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.projects[i].info.name,
+                            textAlign: TextAlign.start,
                           ),
-                          title: state.projects[i].info.name,
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 20,
-                          title: state.projects[i].info.location,
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 25,
-                          title: state.projects[i].info.description,
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          title: utcToLocal(
-                            state.projects[i].metadata.createdAt,
-                            format: kDatePattern,
+                          TableCellItem(
+                            flex: 20,
+                            title: state.projects[i].info.location,
+                            textAlign: TextAlign.start,
                           ),
-                          maxLines: 1,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 12.0),
-                              SvgPicture.asset(
-                                AppIcons.edit,
-                                width: 22.0,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.iconPrimary,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                              if (state.userData!.spaceId == null) ...[
-                                GestureDetector(
-                                  onTap: () => _deleteProject(
-                                    context: context,
-                                    id: state.projects[i].id,
+                          TableCellItem(
+                            flex: 25,
+                            title: state.projects[i].info.description,
+                            textAlign: TextAlign.start,
+                          ),
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            title: utcToLocal(
+                              state.projects[i].metadata.createdAt,
+                              format: kDatePattern,
+                            ),
+                            maxLines: 1,
+                          ),
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
                                   ),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: SizedBox(
-                                    width: 44.0,
-                                    height: 44.0,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppIcons.delete,
-                                          width: 22.0,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.iconPrimary,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ],
+                                ),
+                                if (state.userData!.spaceId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteProject(
+                                      context: context,
+                                      id: state.projects[i].id,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ] else ...[
-                                const SizedBox(width: 12.0),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
+                        ] else ...[
+                          TableCellItem(
+                            flex: 60,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.projects[i].info.name,
+                            textAlign: TextAlign.start,
+                          ),
+                          TableCellItem(
+                            flex: 40,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                if (state.userData!.spaceId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteProject(
+                                      context: context,
+                                      id: state.projects[i].id,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     );
                   },

@@ -683,358 +683,359 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 42.0,
-                  ),
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomIconButton(
-                          icon: AppIcons.arrowBack,
-                          iconColor: AppColors.primary,
-                          backgroundColor: AppColors.scaffoldSecondary,
-                          splashColor: AppColors.scaffoldPrimary,
-                          onTap: widget.navigateToCalculationsPage,
-                        ),
-                        const SizedBox(height: 4.0),
-                      ],
-                    ),
-                    Text(
-                      state.calculation == null
-                          ? 'Add new calculation'
-                          : 'Edit calculation',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      state.calculation == null
-                          ? 'Create calculation for your clients'
-                          : 'Edit calculation info',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    if (state.projects.isNotEmpty) ...[
-                      const SizedBox(height: 28.0),
-                      Text(
-                        'Info for clients',
-                        style: AppTextStyles.paragraphLMedium,
-                      ),
-                      const SizedBox(height: 16.0),
-                      if (state.companies.isNotEmpty) ...[
-                        AnimatedDropdown(
-                          initialData: _company?.info.name,
-                          labelText: 'Company',
-                          hintText: 'Select company',
-                          values:
-                              state.companies.map((e) => e.info.name).toList(),
-                          onChanged: (String name) => _onSelectCompany(
-                            name: name,
-                            companies: state.companies,
-                          ),
-                        ),
-                        const SizedBox(height: 16.0),
-                      ],
-                      AnimatedDropdown(
-                        initialData: _project?.info.name,
-                        labelText: 'Project',
-                        hintText: 'Select project',
-                        values: state.projects.map((e) => e.info.name).toList(),
-                        onChanged: (String name) => _onSelectProject(
-                          name: name,
-                          projects: state.projects,
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerSection,
-                              labelText: 'Section',
-                              hintText: 'Block or section',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(32),
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerFloor,
-                              labelText: 'Floor',
-                              hintText: 'Floor apartment',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(3),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerNumber,
-                              labelText: 'Unit number',
-                              hintText: 'Enter number',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(32),
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerType,
-                              labelText: 'Unit type',
-                              hintText: 'Enter type',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(32),
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerRooms,
-                              labelText: 'Rooms',
-                              hintText: 'Number of rooms',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(3),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerBathrooms,
-                              labelText: 'Bathrooms',
-                              hintText: 'Number of bathrooms',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(3),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerTotal,
-                              labelText: 'Total area (m2)',
-                              hintText: 'Enter area',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(10),
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+\.?\d*'),
-                                ),
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                          const SizedBox(width: 16.0),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: _controllerLiving,
-                              labelText: 'Living area (m2)',
-                              hintText: 'Enter area',
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(10),
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d+\.?\d*'),
-                                ),
-                              ],
-                              onChanged: _updateState,
-                            ),
-                          ),
-                        ],
+                content: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomIconButton(
+                        icon: AppIcons.arrowBack,
+                        iconColor: AppColors.primary,
+                        backgroundColor: AppColors.scaffoldSecondary,
+                        splashColor: AppColors.scaffoldPrimary,
+                        onTap: widget.navigateToCalculationsPage,
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    state.calculation == null
+                        ? 'Add new calculation'
+                        : 'Edit calculation',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    state.calculation == null
+                        ? 'Create calculation for your clients'
+                        : 'Edit calculation info',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (state.projects.isNotEmpty) ...[
                     const SizedBox(height: 28.0),
                     Text(
-                      'Calculation data',
+                      'Info for clients',
                       style: AppTextStyles.paragraphLMedium,
                     ),
                     const SizedBox(height: 16.0),
-                    CustomTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Calculation name',
-                      errorText: _errorTextName,
-                      maxLines: 2,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    CustomTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Calculation notes',
-                      hintText: 'Field for notes, clients info, etc..',
-                      maxLines: 14,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1024),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      children: [
-                        IconDropdown(
-                          initialData: _currency!,
-                          values: kCurrencies,
-                          labelText: 'Currency',
-                          onChanged: _onSelectCurrency,
+                    if (state.companies.isNotEmpty) ...[
+                      AnimatedDropdown(
+                        initialData: _company?.info.name,
+                        labelText: 'Company',
+                        hintText: 'Select company',
+                        values:
+                            state.companies.map((e) => e.info.name).toList(),
+                        onChanged: (String name) => _onSelectCompany(
+                          name: name,
+                          companies: state.companies,
                         ),
-                        const SizedBox(width: 8.0),
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _controllerPrice,
-                            labelText: 'Unit price',
-                            hintText: 'Enter value',
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(10),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            onChanged: _validatePrice,
-                          ),
-                        ),
-                      ],
+                      ),
+                      const SizedBox(height: 16.0),
+                    ],
+                    AnimatedDropdown(
+                      initialData: _project?.info.name,
+                      labelText: 'Project',
+                      hintText: 'Select project',
+                      values: state.projects.map((e) => e.info.name).toList(),
+                      onChanged: (String name) => _onSelectProject(
+                        name: name,
+                        projects: state.projects,
+                      ),
                     ),
                     const SizedBox(height: 16.0),
                     Row(
                       children: [
                         Expanded(
                           child: CustomTextField(
-                            controller: _controllerDepositVal,
-                            enabled: _priceValid,
-                            labelText: 'First deposit in ($_currency)',
-                            hintText: 'Enter value',
+                            controller: _controllerSection,
+                            labelText: 'Section',
+                            hintText: 'Block or section',
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(10),
-                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(32),
                             ],
-                            onChanged: _validateDepositVal,
+                            onChanged: _updateState,
                           ),
                         ),
                         const SizedBox(width: 16.0),
                         Expanded(
                           child: CustomTextField(
-                            controller: _controllerDepositPct,
-                            enabled: _priceValid,
-                            labelText: 'First deposit in (%)',
-                            hintText: 'Enter percent',
+                            controller: _controllerFloor,
+                            labelText: 'Floor',
+                            hintText: 'Floor apartment',
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(3),
                               FilteringTextInputFormatter.digitsOnly,
                             ],
-                            onChanged: _validateDepositPct,
+                            onChanged: _updateState,
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 16.0),
-                    AnimatedDropdown(
-                      initialData: _period?.name,
-                      labelText: 'Calculation period',
-                      hintText: 'Select period',
-                      values: kPeriods.map((e) => e.name).toList(),
-                      onChanged: _onSelectCalculationPeriod,
                     ),
                     const SizedBox(height: 16.0),
                     Row(
                       children: [
                         Expanded(
-                          child: CustomDatePicker(
-                            addDay: false,
-                            initialDate: _startInstallments,
-                            lastDate: _endInstallments,
-                            labelText: 'Start of installments',
-                            hintFormat: kDatePattern,
-                            onChanged: _onSelectStartInstallments,
+                          child: CustomTextField(
+                            controller: _controllerNumber,
+                            labelText: 'Unit number',
+                            hintText: 'Enter number',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(32),
+                            ],
+                            onChanged: _updateState,
                           ),
                         ),
                         const SizedBox(width: 16.0),
                         Expanded(
-                          child: CustomDatePicker(
-                            addDay: true,
-                            initialDate: _endInstallments,
-                            firstDate: _startInstallments,
-                            labelText: 'End of installments',
-                            hintFormat: kDatePattern,
-                            onChanged: _onSelectEndInstallments,
+                          child: CustomTextField(
+                            controller: _controllerType,
+                            labelText: 'Unit type',
+                            hintText: 'Enter type',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(32),
+                            ],
+                            onChanged: _updateState,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 28.0),
-                    Text(
-                      'Extra expense',
-                      style: AppTextStyles.paragraphLMedium,
+                    const SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _controllerRooms,
+                            labelText: 'Rooms',
+                            hintText: 'Number of rooms',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(3),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: _updateState,
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _controllerBathrooms,
+                            labelText: 'Bathrooms',
+                            hintText: 'Number of bathrooms',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(3),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: _updateState,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16.0),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _extra.length,
-                      itemBuilder: (_, int i) {
-                        return ManageCalculationExtraItem(
-                          currency: _currency!,
-                          calculationExtra: _extra[i],
-                          onManage: _showManageExtraModal,
-                        );
-                      },
-                    ),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.add,
-                      text: 'Add extra expense',
-                      onTap: _showManageExtraModal,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (state.calculation == null) ...[
-                      CustomButton(
-                        text: 'Create calculation',
-                        onTap: () => _createCalculation(
-                          context: context,
-                          state: state,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _controllerTotal,
+                            labelText: 'Total area (m2)',
+                            hintText: 'Enter area',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+\.?\d*'),
+                              ),
+                            ],
+                            onChanged: _updateState,
+                          ),
                         ),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateCalculation(context),
-                      ),
-                    ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Calculations page',
-                      onTap: widget.navigateToCalculationsPage,
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: CustomTextField(
+                            controller: _controllerLiving,
+                            labelText: 'Living area (m2)',
+                            hintText: 'Enter area',
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+\.?\d*'),
+                              ),
+                            ],
+                            onChanged: _updateState,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
+                  const SizedBox(height: 28.0),
+                  Text(
+                    'Calculation data',
+                    style: AppTextStyles.paragraphLMedium,
+                  ),
+                  const SizedBox(height: 16.0),
+                  CustomTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Calculation name',
+                    errorText: _errorTextName,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(64),
+                    ],
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  CustomTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Calculation notes',
+                    hintText: 'Field for notes, clients info, etc..',
+                    maxLines: 14,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1024),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    children: [
+                      IconDropdown(
+                        initialData: _currency!,
+                        values: kCurrencies,
+                        labelText: 'Currency',
+                        onChanged: _onSelectCurrency,
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: CustomTextField(
+                          controller: _controllerPrice,
+                          labelText: 'Unit price',
+                          hintText: 'Enter value',
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(10),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: _validatePrice,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextField(
+                          controller: _controllerDepositVal,
+                          enabled: _priceValid,
+                          labelText: 'First deposit in ($_currency)',
+                          hintText: 'Enter value',
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(10),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: _validateDepositVal,
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: CustomTextField(
+                          controller: _controllerDepositPct,
+                          enabled: _priceValid,
+                          labelText: 'First deposit in (%)',
+                          hintText: 'Enter percent',
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(3),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: _validateDepositPct,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  AnimatedDropdown(
+                    initialData: _period?.name,
+                    labelText: 'Calculation period',
+                    hintText: 'Select period',
+                    values: kPeriods.map((e) => e.name).toList(),
+                    onChanged: _onSelectCalculationPeriod,
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomDatePicker(
+                          addDay: false,
+                          initialDate: _startInstallments,
+                          lastDate: _endInstallments,
+                          labelText: 'Start of installments',
+                          hintFormat: kDatePattern,
+                          onChanged: _onSelectStartInstallments,
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: CustomDatePicker(
+                          addDay: true,
+                          initialDate: _endInstallments,
+                          firstDate: _startInstallments,
+                          labelText: 'End of installments',
+                          hintFormat: kDatePattern,
+                          onChanged: _onSelectEndInstallments,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28.0),
+                  Text(
+                    'Extra expense',
+                    style: AppTextStyles.paragraphLMedium,
+                  ),
+                  const SizedBox(height: 16.0),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _extra.length,
+                    itemBuilder: (_, int i) {
+                      return ManageCalculationExtraItem(
+                        currency: _currency!,
+                        calculationExtra: _extra[i],
+                        onManage: _showManageExtraModal,
+                      );
+                    },
+                  ),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.add,
+                    text: 'Add extra expense',
+                    onTap: _showManageExtraModal,
+                  ),
+                  const SizedBox(height: 12.0),
+                  CustomButton(
+                    prefixIcon: AppIcons.print,
+                    text: 'Print PDF',
+                    backgroundColor: AppColors.info,
+                    onTap: () => _printPdf(state),
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (state.calculation == null) ...[
+                    CustomButton(
+                      text: 'Create calculation',
+                      onTap: () => _createCalculation(
+                        context: context,
+                        state: state,
+                      ),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateCalculation(context),
+                    ),
+                  ],
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Calculations page',
+                    onTap: widget.navigateToCalculationsPage,
+                  ),
+                ],
                 preview: _CalculationPreview(
                   state: state,
                   company: _company,
@@ -1059,7 +1060,6 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   getPaymentsCount: _getPaymentsCount,
                   getPayment: _getPayment,
                   getPaymentsDates: _getPaymentsDates,
-                  onPrint: _printPdf,
                 ),
               ),
             );
@@ -1099,7 +1099,6 @@ class _CalculationPreview extends StatelessWidget {
     required this.getPaymentsCount,
     required this.getPayment,
     required this.getPaymentsDates,
-    required this.onPrint,
   });
 
   final ManageCalculationState state;
@@ -1125,63 +1124,48 @@ class _CalculationPreview extends StatelessWidget {
   final int? Function() getPaymentsCount;
   final int? Function() getPayment;
   final List<DateTime>? Function() getPaymentsDates;
-  final void Function(ManageCalculationState) onPrint;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 40.0,
-            vertical: 42.0,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 32.0,
+      ),
+      child: Column(
+        children: [
+          _ProjectInfo(
+            state: state,
+            company: company,
+            project: project,
+            section: section,
+            floor: floor,
+            number: number,
+            type: type,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            total: total,
+            living: living,
           ),
-          child: Column(
-            children: [
-              _ProjectInfo(
-                state: state,
-                company: company,
-                project: project,
-                section: section,
-                floor: floor,
-                number: number,
-                type: type,
-                rooms: rooms,
-                bathrooms: bathrooms,
-                total: total,
-                living: living,
-              ),
-              if (calculationValid) ...[
-                const SizedBox(height: 12.0),
-                _CalculationInfo(
-                  project: project,
-                  currency: currency,
-                  depositVal: depositVal,
-                  depositPct: depositPct,
-                  period: period,
-                  startInstallments: startInstallments,
-                  endInstallments: endInstallments,
-                  extra: extra,
-                  getPrice: getPrice,
-                  getPaymentsCount: getPaymentsCount,
-                  getPayment: getPayment,
-                  getPaymentsDates: getPaymentsDates,
-                ),
-              ],
-            ],
-          ),
-        ),
-        Positioned(
-          left: 16.0,
-          bottom: 16.0,
-          child: CustomIconButton(
-            icon: AppIcons.print,
-            addBorder: false,
-            onTap: () => onPrint(state),
-          ),
-        ),
-      ],
+          if (calculationValid) ...[
+            const SizedBox(height: 18.0),
+            _CalculationInfo(
+              project: project,
+              currency: currency,
+              depositVal: depositVal,
+              depositPct: depositPct,
+              period: period,
+              startInstallments: startInstallments,
+              endInstallments: endInstallments,
+              extra: extra,
+              getPrice: getPrice,
+              getPaymentsCount: getPaymentsCount,
+              getPayment: getPayment,
+              getPaymentsDates: getPaymentsDates,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -1216,13 +1200,20 @@ class _ProjectInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 640.0,
-      height: 940.0,
       padding: const EdgeInsets.symmetric(
         horizontal: 42.0,
         vertical: 72.0,
       ),
-      color: AppColors.scaffoldSecondary,
+      constraints: const BoxConstraints(
+        minWidth: 640.0,
+        minHeight: 940.0,
+        maxWidth: 640.0,
+        maxHeight: 940.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldSecondary,
+        boxShadow: AppColors.cardShadow,
+      ),
       child: Column(
         children: [
           _ProjectHeader(
@@ -1639,13 +1630,20 @@ class _CalculationInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 640.0,
-      height: 940.0,
       padding: const EdgeInsets.symmetric(
         horizontal: 42.0,
         vertical: 72.0,
       ),
-      color: AppColors.scaffoldSecondary,
+      constraints: const BoxConstraints(
+        minWidth: 640.0,
+        minHeight: 940.0,
+        maxWidth: 640.0,
+        maxHeight: 940.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldSecondary,
+        boxShadow: AppColors.cardShadow,
+      ),
       child: _calculationInfoContent(),
     );
   }

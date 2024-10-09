@@ -7,13 +7,11 @@ class FadeInAnimation extends StatefulWidget {
     super.key,
     this.curve = kCurveAnimations,
     this.duration = kFadeInDuration,
-    this.placeholder,
     required this.child,
   });
 
   final Curve curve;
   final Duration duration;
-  final Widget? placeholder;
   final Widget child;
 
   @override
@@ -57,15 +55,9 @@ class _FadeInAnimationState extends State<FadeInAnimation>
   Widget build(BuildContext context) {
     _controller.forward();
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (widget.placeholder != null) widget.placeholder!,
-        FadeTransition(
-          opacity: _animation,
-          child: widget.child,
-        ),
-      ],
+    return FadeTransition(
+      opacity: _animation,
+      child: widget.child,
     );
   }
 }

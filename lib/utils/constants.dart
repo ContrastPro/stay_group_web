@@ -6,13 +6,21 @@ enum BlocStatus { initial, loading, loaded, success, failed }
 
 enum DateDifference { seconds, minutes, days }
 
+const String kDatePattern = 'dd/MM/yy';
+
 // Min file weight 1 MB
 const int kFileWeightMin = 1048576;
 
 // Max file weight 10 MB
 const int kFileWeightMax = 10485760;
 
-const String kDatePattern = 'dd/MM/yy';
+const double kMobileScreenWidth = 600.0;
+
+const double kTabletScreenWidth = 840.0;
+
+const double kLaptopScreenWidth = 1024.0;
+
+const double kDesktopScreenWidth = 1280.0;
 
 const List<String> kImageFormats = ['jpg', 'jpeg', 'png'];
 

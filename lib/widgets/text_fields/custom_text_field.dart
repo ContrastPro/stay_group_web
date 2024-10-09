@@ -66,7 +66,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   void _setDisposeData() {
     _focusNode.removeListener(_focusNodeListener);
-
     _focusNode.dispose();
   }
 

@@ -23,11 +23,12 @@ class ActionLoader extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           child,
-          if (isLoading)
+          if (isLoading) ...[
             Container(
               color: AppColors.scaffoldPrimary.withOpacity(opacity),
               child: const CustomLoader(),
             ),
+          ],
         ],
       ),
     );

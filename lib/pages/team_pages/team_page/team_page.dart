@@ -13,7 +13,8 @@ import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
+import '../../../widgets/layouts/drawer_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
@@ -43,7 +44,7 @@ class TeamPage extends StatelessWidget {
       )..add(
           const Init(),
         ),
-      child: FlexibleLayout(
+      child: DrawerLayout(
         state: state,
         builder: (Size size) {
           return BlocBuilder<TeamBloc, TeamState>(
@@ -51,6 +52,7 @@ class TeamPage extends StatelessWidget {
               if (state.status == BlocStatus.success) {
                 return _TeamPageContent(
                   state: state,
+                  screenSize: size,
                   navigateToManageUserPage: navigateToManageUserPage,
                 );
               }
@@ -69,13 +71,13 @@ class TeamPage extends StatelessWidget {
 class _TeamPageContent extends StatelessWidget {
   const _TeamPageContent({
     required this.state,
+    required this.screenSize,
     required this.navigateToManageUserPage,
   });
 
   final TeamState state;
+  final Size screenSize;
   final void Function([String?]) navigateToManageUserPage;
-
-  static const double _buttonWidth = 140.0;
 
   void _deleteUser({
     required BuildContext context,
@@ -116,15 +118,21 @@ class _TeamPageContent extends StatelessWidget {
                 'Team',
                 style: AppTextStyles.head6Medium,
               ),
-              SizedBox(
-                width: _buttonWidth,
-                child: CustomButton(
+              if (screenSize.width >= kMobileScreenWidth) ...[
+                CustomButton(
                   prefixIcon: AppIcons.add,
                   text: 'Add user',
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageUserPage,
                 ),
-              ),
+              ] else ...[
+                CustomIconButton(
+                  icon: AppIcons.add,
+                  addBorder: false,
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageUserPage,
+                ),
+              ],
             ],
           ),
         ),
@@ -134,7 +142,6 @@ class _TeamPageContent extends StatelessWidget {
           title: 'Add first user',
           description:
               "You don't added your first user yet.\nLet's get started!",
-          buttonWidth: _buttonWidth,
           buttonText: 'Add user',
           onTap: navigateToManageUserPage,
           content: Column(
@@ -143,40 +150,58 @@ class _TeamPageContent extends StatelessWidget {
                 backgroundColor: AppColors.border,
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
-                  TableCellItem(
-                    flex: 25,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                    ).copyWith(
-                      left: 16.0,
-                      right: 4.0,
+                  if (screenSize.width >= kMobileScreenWidth) ...[
+                    TableCellItem(
+                      flex: 25,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Customer Name',
                     ),
-                    title: 'Customer Full Name',
-                  ),
-                  const TableCellItem(
-                    flex: 20,
-                    title: 'Email',
-                  ),
-                  const TableCellItem(
-                    flex: 10,
-                    alignment: Alignment.center,
-                    title: 'Role',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Status',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Date Joined',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Actions',
-                  ),
+                    const TableCellItem(
+                      flex: 20,
+                      title: 'Email',
+                    ),
+                    const TableCellItem(
+                      flex: 10,
+                      alignment: Alignment.center,
+                      title: 'Role',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Status',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Date Joined',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ] else ...[
+                    TableCellItem(
+                      flex: 60,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Customer Name',
+                    ),
+                    const TableCellItem(
+                      flex: 40,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ],
                 ],
               ),
               Expanded(
@@ -190,117 +215,170 @@ class _TeamPageContent extends StatelessWidget {
                         state.users[i].id,
                       ),
                       cells: [
-                        TableCellItem(
-                          flex: 25,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                          ).copyWith(
-                            left: 16.0,
-                            right: 4.0,
+                        if (screenSize.width >= kMobileScreenWidth) ...[
+                          TableCellItem(
+                            flex: 25,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.users[i].info.name,
+                            maxLines: 1,
                           ),
-                          title: state.users[i].info.name,
-                          maxLines: 1,
-                        ),
-                        TableCellItem(
-                          flex: 20,
-                          title: state.users[i].credential.email,
-                          maxLines: 1,
-                        ),
-                        const TableCellItem(
-                          flex: 10,
-                          alignment: Alignment.center,
-                          title: 'Worker',
-                          maxLines: 1,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          child: UserStatus(
-                            archived: state.users[i].archived,
+                          TableCellItem(
+                            flex: 20,
+                            title: state.users[i].credential.email,
+                            maxLines: 1,
                           ),
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          title: utcToLocal(
-                            state.users[i].metadata.createdAt,
-                            format: kDatePattern,
+                          const TableCellItem(
+                            flex: 10,
+                            alignment: Alignment.center,
+                            title: 'Worker',
+                            maxLines: 1,
                           ),
-                          maxLines: 1,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 12.0),
-                              SvgPicture.asset(
-                                AppIcons.edit,
-                                width: 22.0,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.iconPrimary,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                              if (state.users[i].userId == null) ...[
-                                GestureDetector(
-                                  onTap: () => _deleteUser(
-                                    context: context,
-                                    id: state.users[i].id,
-                                    email: state.users[i].credential.email,
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            child: UserStatus(
+                              archived: state.users[i].archived,
+                            ),
+                          ),
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            title: utcToLocal(
+                              state.users[i].metadata.createdAt,
+                              format: kDatePattern,
+                            ),
+                            maxLines: 1,
+                          ),
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
                                   ),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: SizedBox(
-                                    width: 44.0,
-                                    height: 44.0,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppIcons.delete,
-                                          width: 22.0,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.iconPrimary,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ],
+                                ),
+                                if (state.users[i].userId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteUser(
+                                      context: context,
+                                      id: state.users[i].id,
+                                      email: state.users[i].credential.email,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ] else ...[
-                                GestureDetector(
-                                  onTap: () => _switchUserArchive(
-                                    context: context,
-                                    id: state.users[i].id,
-                                    archived: state.users[i].archived,
-                                  ),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: SizedBox(
-                                    width: 44.0,
-                                    height: 44.0,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          state.users[i].archived
-                                              ? AppIcons.visibilityOn
-                                              : AppIcons.visibilityOff,
-                                          width: 22.0,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.iconPrimary,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ],
+                                ] else ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _switchUserArchive(
+                                      context: context,
+                                      id: state.users[i].id,
+                                      archived: state.users[i].archived,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      state.users[i].archived
+                                          ? AppIcons.visibilityOn
+                                          : AppIcons.visibilityOff,
+                                      width: 22.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
+                        ] else ...[
+                          TableCellItem(
+                            flex: 60,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.users[i].info.name,
+                            maxLines: 1,
+                          ),
+                          TableCellItem(
+                            flex: 40,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                if (state.users[i].userId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteUser(
+                                      context: context,
+                                      id: state.users[i].id,
+                                      email: state.users[i].credential.email,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _switchUserArchive(
+                                      context: context,
+                                      id: state.users[i].id,
+                                      archived: state.users[i].archived,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      state.users[i].archived
+                                          ? AppIcons.visibilityOn
+                                          : AppIcons.visibilityOff,
+                                      width: 22.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     );
                   },

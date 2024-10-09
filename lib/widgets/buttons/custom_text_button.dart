@@ -25,7 +25,6 @@ class CustomTextButton extends StatelessWidget {
       splashColor: AppColors.scaffoldPrimary,
       borderRadius: BorderRadius.circular(10.0),
       child: Container(
-        width: double.infinity,
         height: 44.0,
         decoration: BoxDecoration(
           border: Border.all(

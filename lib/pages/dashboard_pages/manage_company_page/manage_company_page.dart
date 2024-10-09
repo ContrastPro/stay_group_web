@@ -262,92 +262,84 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 42.0,
-                  ),
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomIconButton(
-                          icon: AppIcons.arrowBack,
-                          iconColor: AppColors.primary,
-                          backgroundColor: AppColors.scaffoldSecondary,
-                          splashColor: AppColors.scaffoldPrimary,
-                          onTap: widget.navigateToDashboardPage,
-                        ),
-                        const SizedBox(height: 4.0),
-                      ],
-                    ),
-                    Text(
-                      state.company == null
-                          ? 'Add new company'
-                          : 'Edit company',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      state.company == null
-                          ? 'Create building company card'
-                          : 'Edit building company card',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28.0),
-                    CustomTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Company name',
-                      errorText: _errorTextName,
-                      maxLines: 2,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    CustomTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Company description',
-                      errorText: _errorTextDescription,
-                      maxLines: 14,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(640),
-                      ],
-                      onChanged: _validateDescription,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (state.company == null) ...[
-                      CustomButton(
-                        text: 'Create company',
-                        onTap: () => _createCompany(
-                          context: context,
-                          state: state,
-                        ),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateCompany(
-                          context: context,
-                          state: state,
-                        ),
+                content: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomIconButton(
+                        icon: AppIcons.arrowBack,
+                        iconColor: AppColors.primary,
+                        backgroundColor: AppColors.scaffoldSecondary,
+                        splashColor: AppColors.scaffoldPrimary,
+                        onTap: widget.navigateToDashboardPage,
                       ),
                     ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Dashboard page',
-                      onTap: widget.navigateToDashboardPage,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    state.company == null ? 'Add new company' : 'Edit company',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    state.company == null
+                        ? 'Create building company card'
+                        : 'Edit building company card',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28.0),
+                  CustomTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Company name',
+                    errorText: _errorTextName,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(64),
+                    ],
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  CustomTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Description',
+                    hintText: 'Company description',
+                    errorText: _errorTextDescription,
+                    maxLines: 14,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(640),
+                    ],
+                    onChanged: _validateDescription,
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (state.company == null) ...[
+                    CustomButton(
+                      text: 'Create company',
+                      onTap: () => _createCompany(
+                        context: context,
+                        state: state,
+                      ),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateCompany(
+                        context: context,
+                        state: state,
+                      ),
                     ),
                   ],
-                ),
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Dashboard page',
+                    onTap: widget.navigateToDashboardPage,
+                  ),
+                ],
                 preview: _CompanyPreview(
                   media: _media,
                   name: _controllerName.text,
@@ -382,47 +374,38 @@ class _CompanyPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: 448.0,
-          height: 320.0,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24.0,
-            vertical: 20.0,
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 40.0,
+        vertical: 32.0,
+      ),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 32.0,
+      ),
+      constraints: const BoxConstraints(
+        minWidth: 512.0,
+        minHeight: 256.0,
+        maxWidth: 512.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldSecondary,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            name.isNotEmpty ? name : 'Company Name',
+            style: AppTextStyles.subtitleSemiBold,
           ),
-          margin: const EdgeInsets.symmetric(
-            horizontal: 40.0,
-            vertical: 42.0,
+          Text(
+            description.isNotEmpty ? description : 'Ownership, Location, etc..',
+            style: AppTextStyles.paragraphSRegular,
           ),
-          decoration: BoxDecoration(
-            color: AppColors.scaffoldSecondary,
-            borderRadius: BorderRadius.circular(24.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name.isNotEmpty ? name : 'Company Name',
-                style: AppTextStyles.subtitleSemiBold,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Expanded(
-                child: Text(
-                  description.isNotEmpty
-                      ? description
-                      : 'Ownership, Location, etc..',
-                  style: AppTextStyles.paragraphSRegular,
-                  maxLines: 12,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -17,7 +17,8 @@ import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/buttons/custom_icon_button.dart';
+import '../../../widgets/layouts/drawer_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
@@ -47,7 +48,7 @@ class CalculationsPage extends StatelessWidget {
       )..add(
           const Init(),
         ),
-      child: FlexibleLayout(
+      child: DrawerLayout(
         state: state,
         builder: (Size size) {
           return BlocBuilder<CalculationsBloc, CalculationsState>(
@@ -55,6 +56,7 @@ class CalculationsPage extends StatelessWidget {
               if (state.status == BlocStatus.success) {
                 return _CalculationsPageContent(
                   state: state,
+                  screenSize: size,
                   navigateToManageCalculationPage:
                       navigateToManageCalculationPage,
                 );
@@ -74,13 +76,13 @@ class CalculationsPage extends StatelessWidget {
 class _CalculationsPageContent extends StatelessWidget {
   const _CalculationsPageContent({
     required this.state,
+    required this.screenSize,
     required this.navigateToManageCalculationPage,
   });
 
   final CalculationsState state;
+  final Size screenSize;
   final void Function([String?]) navigateToManageCalculationPage;
-
-  static const double _buttonWidth = 190.0;
 
   void _deleteCalculation({
     required BuildContext context,
@@ -144,15 +146,21 @@ class _CalculationsPageContent extends StatelessWidget {
                 'Calculations',
                 style: AppTextStyles.head6Medium,
               ),
-              SizedBox(
-                width: _buttonWidth,
-                child: CustomButton(
+              if (screenSize.width >= kMobileScreenWidth) ...[
+                CustomButton(
                   prefixIcon: AppIcons.add,
                   text: 'Add calculation',
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageCalculationPage,
                 ),
-              ),
+              ] else ...[
+                CustomIconButton(
+                  icon: AppIcons.add,
+                  addBorder: false,
+                  backgroundColor: AppColors.info,
+                  onTap: navigateToManageCalculationPage,
+                ),
+              ],
             ],
           ),
         ),
@@ -162,7 +170,6 @@ class _CalculationsPageContent extends StatelessWidget {
           title: 'Add first calculation',
           description:
               "You don't added your first calculation yet.\nLet's get started!",
-          buttonWidth: _buttonWidth,
           buttonText: 'Add calculation',
           onTap: navigateToManageCalculationPage,
           content: Column(
@@ -171,38 +178,56 @@ class _CalculationsPageContent extends StatelessWidget {
                 backgroundColor: AppColors.border,
                 borderRadius: BorderRadius.circular(8.0),
                 cells: [
-                  TableCellItem(
-                    flex: 25,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                    ).copyWith(
-                      left: 16.0,
-                      right: 4.0,
+                  if (screenSize.width >= kMobileScreenWidth) ...[
+                    TableCellItem(
+                      flex: 25,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Calculation Name',
                     ),
-                    title: 'Calculation Name',
-                  ),
-                  const TableCellItem(
-                    flex: 12,
-                    title: 'Unit price',
-                  ),
-                  const TableCellItem(
-                    flex: 21,
-                    title: 'Installment terms',
-                  ),
-                  const TableCellItem(
-                    flex: 12,
-                    title: 'Installment plan',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Date Creation',
-                  ),
-                  const TableCellItem(
-                    flex: 15,
-                    alignment: Alignment.center,
-                    title: 'Actions',
-                  ),
+                    const TableCellItem(
+                      flex: 12,
+                      title: 'Unit price',
+                    ),
+                    const TableCellItem(
+                      flex: 21,
+                      title: 'Installment terms',
+                    ),
+                    const TableCellItem(
+                      flex: 12,
+                      title: 'Installment plan',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Date Creation',
+                    ),
+                    const TableCellItem(
+                      flex: 15,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ] else ...[
+                    TableCellItem(
+                      flex: 60,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                      ).copyWith(
+                        left: 16.0,
+                        right: 4.0,
+                      ),
+                      title: 'Calculation Name',
+                    ),
+                    const TableCellItem(
+                      flex: 40,
+                      alignment: Alignment.center,
+                      title: 'Actions',
+                    ),
+                  ],
                 ],
               ),
               Expanded(
@@ -216,93 +241,131 @@ class _CalculationsPageContent extends StatelessWidget {
                         state.calculations[i].id,
                       ),
                       cells: [
-                        TableCellItem(
-                          flex: 25,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                          ).copyWith(
-                            left: 16.0,
-                            right: 4.0,
+                        if (screenSize.width >= kMobileScreenWidth) ...[
+                          TableCellItem(
+                            flex: 25,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.calculations[i].info.name,
+                            textAlign: TextAlign.start,
                           ),
-                          title: state.calculations[i].info.name,
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 12,
-                          title: _getCalculationPrice(
-                            state.calculations[i].info,
+                          TableCellItem(
+                            flex: 12,
+                            title: _getCalculationPrice(
+                              state.calculations[i].info,
+                            ),
+                            textAlign: TextAlign.start,
                           ),
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 21,
-                          title: _getCalculationTerms(
-                            state.calculations[i].info,
+                          TableCellItem(
+                            flex: 21,
+                            title: _getCalculationTerms(
+                              state.calculations[i].info,
+                            ),
+                            textAlign: TextAlign.start,
                           ),
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 12,
-                          title: _getCalculationPlan(
-                            state.calculations[i].info,
+                          TableCellItem(
+                            flex: 12,
+                            title: _getCalculationPlan(
+                              state.calculations[i].info,
+                            ),
+                            textAlign: TextAlign.start,
                           ),
-                          textAlign: TextAlign.start,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          title: utcToLocal(
-                            state.calculations[i].metadata.createdAt,
-                            format: kDatePattern,
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            title: utcToLocal(
+                              state.calculations[i].metadata.createdAt,
+                              format: kDatePattern,
+                            ),
+                            maxLines: 1,
                           ),
-                          maxLines: 1,
-                        ),
-                        TableCellItem(
-                          flex: 15,
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 12.0),
-                              SvgPicture.asset(
-                                AppIcons.edit,
-                                width: 22.0,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.iconPrimary,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
-                              if (state.userData!.spaceId == null) ...[
-                                GestureDetector(
-                                  onTap: () => _deleteCalculation(
-                                    context: context,
-                                    id: state.calculations[i].id,
+                          TableCellItem(
+                            flex: 15,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
                                   ),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: SizedBox(
-                                    width: 44.0,
-                                    height: 44.0,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          AppIcons.delete,
-                                          width: 22.0,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.iconPrimary,
-                                            BlendMode.srcIn,
-                                          ),
-                                        ),
-                                      ],
+                                ),
+                                if (state.userData!.spaceId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteCalculation(
+                                      context: context,
+                                      id: state.calculations[i].id,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ] else ...[
-                                const SizedBox(width: 12.0),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
+                        ] else ...[
+                          TableCellItem(
+                            flex: 60,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                            ).copyWith(
+                              left: 16.0,
+                              right: 4.0,
+                            ),
+                            title: state.calculations[i].info.name,
+                            textAlign: TextAlign.start,
+                          ),
+                          TableCellItem(
+                            flex: 40,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppIcons.edit,
+                                  width: 22.0,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.iconPrimary,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                if (state.userData!.spaceId == null) ...[
+                                  const SizedBox(width: 8.0),
+                                  GestureDetector(
+                                    onTap: () => _deleteCalculation(
+                                      context: context,
+                                      id: state.calculations[i].id,
+                                    ),
+                                    behavior: HitTestBehavior.opaque,
+                                    child: SvgPicture.asset(
+                                      AppIcons.delete,
+                                      width: 24.0,
+                                      colorFilter: const ColorFilter.mode(
+                                        AppColors.iconPrimary,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     );
                   },

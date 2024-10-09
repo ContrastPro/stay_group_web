@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../blocs/navigation_bloc/navigation_bloc.dart';
 import '../../models/uncategorized/bottom_navigation_bar_item_model.dart';
 import '../../models/users/user_info_model.dart';
-import '../../models/users/user_model.dart';
 import '../../pages/account_settings_pages/account_settings_page/account_settings_page.dart';
 import '../../pages/calculations_pages/calculations_page/calculations_page.dart';
 import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
@@ -14,6 +13,7 @@ import '../../pages/team_pages/team_page/team_page.dart';
 import '../../resources/app_colors.dart';
 import '../../resources/app_icons.dart';
 import '../../resources/app_text_styles.dart';
+import '../../utils/constants.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -86,14 +86,6 @@ class CustomDrawer extends StatelessWidget {
     ),
   ];
 
-  List<BottomNavigationBarItemModel> _getTabs(UserModel user) {
-    if (user.info.role == UserRole.manager) {
-      return _tabsManager;
-    }
-
-    return _tabsWorker;
-  }
-
   void _onSelect({
     required BuildContext context,
     required String routePath,
@@ -117,115 +109,167 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
-        if (screenSize.width >= 1200.0) {
-          return SizedBox(
-            width: 240.0,
-            child: Column(
-              children: _getTabs(state.userData!).map((e) {
-                return Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: InkWell(
-                      onTap: () => _onSelect(
-                        context: context,
-                        routePath: e.routePath,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: e.routePath == fullPath
-                              ? AppColors.scaffoldSecondary
-                              : AppColors.transparent,
-                          border: Border.all(
-                            color: e.routePath == fullPath
-                                ? AppColors.border
-                                : AppColors.transparent,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              e.icon,
-                              width: 20.0,
-                              colorFilter: ColorFilter.mode(
-                                e.routePath == fullPath
-                                    ? AppColors.primary
-                                    : AppColors.secondary,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            Text(
-                              e.title,
-                              style: AppTextStyles.paragraphSRegular.copyWith(
-                                color: e.routePath == fullPath
-                                    ? AppColors.textPrimary
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+        if (screenSize.width >= kTabletScreenWidth) {
+          return _TextButton(
+            state: state,
+            fullPath: fullPath,
+            tabs: state.userData!.info.role == UserRole.manager
+                ? _tabsManager
+                : _tabsWorker,
+            onSelect: (String routePath) => _onSelect(
+              context: context,
+              routePath: routePath,
             ),
           );
         }
 
-        return SizedBox(
-          width: 45.0,
-          child: Column(
-            children: _getTabs(state.userData!).map((e) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: InkWell(
-                  onTap: () => _onSelect(
-                    context: context,
-                    routePath: e.routePath,
-                  ),
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0,
-                      vertical: 10.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: e.routePath == fullPath
-                          ? AppColors.scaffoldSecondary
-                          : AppColors.transparent,
-                      border: Border.all(
-                        color: e.routePath == fullPath
-                            ? AppColors.border
-                            : AppColors.transparent,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: SvgPicture.asset(
-                      e.icon,
-                      width: 20.0,
-                      colorFilter: ColorFilter.mode(
-                        e.routePath == fullPath
-                            ? AppColors.primary
-                            : AppColors.secondary,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+        return _IconButton(
+          state: state,
+          fullPath: fullPath,
+          tabs: state.userData!.info.role == UserRole.manager
+              ? _tabsManager
+              : _tabsWorker,
+          onSelect: (String routePath) => _onSelect(
+            context: context,
+            routePath: routePath,
           ),
         );
       },
+    );
+  }
+}
+
+class _TextButton extends StatelessWidget {
+  const _TextButton({
+    required this.state,
+    required this.fullPath,
+    required this.tabs,
+    required this.onSelect,
+  });
+
+  final NavigationState state;
+  final String? fullPath;
+  final List<BottomNavigationBarItemModel> tabs;
+  final void Function(String) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 240.0,
+      child: Column(
+        children: tabs.map((e) {
+          return Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: InkWell(
+                onTap: () => onSelect(e.routePath),
+                borderRadius: BorderRadius.circular(8.0),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 8.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: e.routePath == fullPath
+                        ? AppColors.scaffoldSecondary
+                        : AppColors.transparent,
+                    border: Border.all(
+                      color: e.routePath == fullPath
+                          ? AppColors.border
+                          : AppColors.transparent,
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        e.icon,
+                        width: 20.0,
+                        colorFilter: ColorFilter.mode(
+                          e.routePath == fullPath
+                              ? AppColors.primary
+                              : AppColors.secondary,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        e.title,
+                        style: AppTextStyles.paragraphSRegular.copyWith(
+                          color: e.routePath == fullPath
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _IconButton extends StatelessWidget {
+  const _IconButton({
+    required this.state,
+    required this.fullPath,
+    required this.tabs,
+    required this.onSelect,
+  });
+
+  final NavigationState state;
+  final String? fullPath;
+  final List<BottomNavigationBarItemModel> tabs;
+  final void Function(String) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 45.0,
+      child: Column(
+        children: tabs.map((e) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: InkWell(
+              onTap: () => onSelect(e.routePath),
+              borderRadius: BorderRadius.circular(8.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 10.0,
+                ),
+                decoration: BoxDecoration(
+                  color: e.routePath == fullPath
+                      ? AppColors.scaffoldSecondary
+                      : AppColors.transparent,
+                  border: Border.all(
+                    color: e.routePath == fullPath
+                        ? AppColors.border
+                        : AppColors.transparent,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: SvgPicture.asset(
+                  e.icon,
+                  width: 20.0,
+                  colorFilter: ColorFilter.mode(
+                    e.routePath == fullPath
+                        ? AppColors.primary
+                        : AppColors.secondary,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

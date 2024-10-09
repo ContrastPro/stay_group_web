@@ -13,7 +13,6 @@ class EmptyStateView extends StatelessWidget {
     required this.animation,
     required this.title,
     required this.description,
-    required this.buttonWidth,
     required this.buttonText,
     required this.content,
     required this.onTap,
@@ -23,7 +22,6 @@ class EmptyStateView extends StatelessWidget {
   final String animation;
   final String title;
   final String description;
-  final double buttonWidth;
   final String buttonText;
   final Widget content;
   final void Function() onTap;
@@ -55,14 +53,11 @@ class EmptyStateView extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24.0),
-              SizedBox(
-                width: buttonWidth,
-                child: CustomButton(
-                  prefixIcon: AppIcons.add,
-                  text: buttonText,
-                  backgroundColor: AppColors.info,
-                  onTap: onTap,
-                ),
+              CustomButton(
+                prefixIcon: AppIcons.add,
+                text: buttonText,
+                backgroundColor: AppColors.info,
+                onTap: onTap,
               ),
             ],
           ),

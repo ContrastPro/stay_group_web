@@ -28,8 +28,10 @@ class CustomButton extends StatelessWidget {
       backgroundColor: backgroundColor,
       borderRadius: BorderRadius.circular(10.0),
       child: Container(
-        width: double.infinity,
         height: 44.0,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12.0,
+        ),
         decoration: BoxDecoration(
           boxShadow: AppColors.regularShadow,
         ),

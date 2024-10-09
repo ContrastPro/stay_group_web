@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +12,7 @@ import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/center_container_layout.dart';
+import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 
 class LogInPage extends StatefulWidget {
@@ -109,12 +110,14 @@ class _LogInPageState extends State<LogInPage> {
         builder: (context, _) {
           return ActionLoader(
             isLoading: _isLoading,
-            child: CenterContainerLayout(
+            child: ContainerLayout(
               body: Column(
                 children: [
-                  Text(
+                  AutoSizeText(
                     'Welcome back',
                     style: AppTextStyles.head5SemiBold,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
@@ -168,8 +171,9 @@ class _LogInPageState extends State<LogInPage> {
                   GestureDetector(
                     onTap: widget.navigateToSignUpPage,
                     behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           "Don't have an account?",

@@ -18,7 +18,7 @@ class CachedNetworkImageLoader extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       fit: fit,
-      progressIndicatorBuilder: (_, __, progress) {
+      progressIndicatorBuilder: (_, __, DownloadProgress progress) {
         return Stack(
           alignment: Alignment.center,
           children: [

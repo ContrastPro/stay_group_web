@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +13,7 @@ import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/center_container_layout.dart';
+import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -172,12 +173,14 @@ class _SignUpPageState extends State<SignUpPage> {
         builder: (context, _) {
           return ActionLoader(
             isLoading: _isLoading,
-            child: CenterContainerLayout(
+            child: ContainerLayout(
               body: Column(
                 children: [
-                  Text(
+                  AutoSizeText(
                     'Join us today',
                     style: AppTextStyles.head5SemiBold,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
@@ -233,8 +236,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   GestureDetector(
                     onTap: widget.navigateToLogInPage,
                     behavior: HitTestBehavior.opaque,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           'Already have an account?',

@@ -42,9 +42,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       );
 
       final StreamSubscription<DatabaseEvent> userChanges;
+      final StreamSubscription<DatabaseEvent>? spaceChanges;
       final Timer timerDueDate;
-
-      StreamSubscription<DatabaseEvent>? spaceChanges;
 
       if (response!.info.role == UserRole.manager) {
         userChanges = usersRepository.userChanges(
@@ -57,6 +56,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
             );
           },
         );
+
+        spaceChanges = null;
 
         timerDueDate = timerService.startTimer(
           addInitialTick: true,

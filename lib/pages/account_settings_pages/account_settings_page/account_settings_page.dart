@@ -11,7 +11,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
-import '../../../widgets/layouts/flexible_layout.dart';
+import '../../../widgets/layouts/drawer_layout.dart';
 import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
@@ -125,7 +125,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       )..add(
           const Init(),
         ),
-      child: FlexibleLayout(
+      child: DrawerLayout(
         state: widget.state,
         builder: (Size size) {
           return BlocConsumer<AccountSettingsBloc, AccountSettingsState>(

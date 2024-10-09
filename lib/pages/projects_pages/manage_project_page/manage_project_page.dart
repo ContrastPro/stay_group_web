@@ -309,111 +309,103 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
             return ActionLoader(
               isLoading: _isLoading,
               child: PreviewLayout(
-                content: ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 42.0,
-                  ),
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomIconButton(
-                          icon: AppIcons.arrowBack,
-                          iconColor: AppColors.primary,
-                          backgroundColor: AppColors.scaffoldSecondary,
-                          splashColor: AppColors.scaffoldPrimary,
-                          onTap: widget.navigateToProjectsPage,
-                        ),
-                        const SizedBox(height: 4.0),
-                      ],
-                    ),
-                    Text(
-                      state.project == null
-                          ? 'Add new project'
-                          : 'Edit project',
-                      style: AppTextStyles.head5SemiBold,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      state.project == null
-                          ? 'Create project card'
-                          : 'Edit project card',
-                      style: AppTextStyles.paragraphSRegular.copyWith(
-                        color: AppColors.iconPrimary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28.0),
-                    CustomMediaPicker(
-                      labelText: 'Upload images',
-                      media: _media,
-                      onPickMedia: _onPickMedia,
-                      onDeleteMedia: _onDeleteMedia,
-                    ),
-                    const SizedBox(height: 8.0),
-                    CustomTextField(
-                      controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Project name',
-                      errorText: _errorTextName,
-                      maxLines: 2,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
-                      ],
-                      onChanged: _validateName,
-                    ),
-                    const SizedBox(height: 16.0),
-                    CustomTextField(
-                      controller: _controllerLocation,
-                      labelText: 'Location',
-                      hintText: 'Project location',
-                      errorText: _errorTextLocation,
-                      maxLines: 1,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(64),
-                      ],
-                      onChanged: _validateLocation,
-                    ),
-                    const SizedBox(height: 16.0),
-                    CustomTextField(
-                      controller: _controllerDescription,
-                      labelText: 'Description',
-                      hintText: 'Project description',
-                      errorText: _errorTextDescription,
-                      maxLines: 14,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(640),
-                      ],
-                      onChanged: _validateDescription,
-                    ),
-                    const SizedBox(height: 40.0),
-                    if (state.project == null) ...[
-                      CustomButton(
-                        text: 'Create project',
-                        onTap: () => _createProject(
-                          context: context,
-                          state: state,
-                        ),
-                      ),
-                    ] else ...[
-                      CustomButton(
-                        text: 'Save changes',
-                        onTap: () => _updateProject(
-                          context: context,
-                          state: state,
-                        ),
+                content: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomIconButton(
+                        icon: AppIcons.arrowBack,
+                        iconColor: AppColors.primary,
+                        backgroundColor: AppColors.scaffoldSecondary,
+                        splashColor: AppColors.scaffoldPrimary,
+                        onTap: widget.navigateToProjectsPage,
                       ),
                     ],
-                    const SizedBox(height: 12.0),
-                    CustomTextButton(
-                      prefixIcon: AppIcons.arrowBack,
-                      text: 'Back to Projects page',
-                      onTap: widget.navigateToProjectsPage,
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    state.project == null ? 'Add new project' : 'Edit project',
+                    style: AppTextStyles.head5SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    state.project == null
+                        ? 'Create project card'
+                        : 'Edit project card',
+                    style: AppTextStyles.paragraphSRegular.copyWith(
+                      color: AppColors.iconPrimary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28.0),
+                  CustomMediaPicker(
+                    labelText: 'Upload images',
+                    media: _media,
+                    onPickMedia: _onPickMedia,
+                    onDeleteMedia: _onDeleteMedia,
+                  ),
+                  const SizedBox(height: 8.0),
+                  CustomTextField(
+                    controller: _controllerName,
+                    labelText: 'Name',
+                    hintText: 'Project name',
+                    errorText: _errorTextName,
+                    maxLines: 2,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(64),
+                    ],
+                    onChanged: _validateName,
+                  ),
+                  const SizedBox(height: 16.0),
+                  CustomTextField(
+                    controller: _controllerLocation,
+                    labelText: 'Location',
+                    hintText: 'Project location',
+                    errorText: _errorTextLocation,
+                    maxLines: 1,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(64),
+                    ],
+                    onChanged: _validateLocation,
+                  ),
+                  const SizedBox(height: 16.0),
+                  CustomTextField(
+                    controller: _controllerDescription,
+                    labelText: 'Description',
+                    hintText: 'Project description',
+                    errorText: _errorTextDescription,
+                    maxLines: 14,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(640),
+                    ],
+                    onChanged: _validateDescription,
+                  ),
+                  const SizedBox(height: 40.0),
+                  if (state.project == null) ...[
+                    CustomButton(
+                      text: 'Create project',
+                      onTap: () => _createProject(
+                        context: context,
+                        state: state,
+                      ),
+                    ),
+                  ] else ...[
+                    CustomButton(
+                      text: 'Save changes',
+                      onTap: () => _updateProject(
+                        context: context,
+                        state: state,
+                      ),
                     ),
                   ],
-                ),
+                  const SizedBox(height: 12.0),
+                  CustomTextButton(
+                    prefixIcon: AppIcons.arrowBack,
+                    text: 'Back to Projects page',
+                    onTap: widget.navigateToProjectsPage,
+                  ),
+                ],
                 preview: _ProjectPreview(
                   media: _media,
                   name: _controllerName.text,
@@ -451,102 +443,98 @@ class _ProjectPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 40.0,
-        vertical: 42.0,
+        horizontal: 16.0,
+      ).copyWith(
+        top: 16.0,
+        bottom: 32.0,
+      ),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: 32.0,
+      ),
+      constraints: const BoxConstraints(
+        minWidth: 640.0,
+        maxWidth: 640.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldSecondary,
+        borderRadius: BorderRadius.circular(32.0),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(
         children: [
-          Container(
-            width: 640.0,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-            ).copyWith(
-              top: 16.0,
-              bottom: 32.0,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.scaffoldSecondary,
-              borderRadius: BorderRadius.circular(32.0),
-            ),
-            child: Column(
+          SizedBox(
+            height: 384.0,
+            child: Row(
               children: [
-                SizedBox(
-                  height: 384.0,
-                  child: Row(
-                    children: [
-                      _BannerItem(
-                        media: media,
-                        navigateToMediaViewerPage: navigateToMediaViewerPage,
-                      ),
-                      const SizedBox(width: 12.0),
-                      Column(
-                        children: [
-                          _ImageItem(
-                            index: 1,
-                            media: media,
-                            navigateToMediaViewerPage:
-                                navigateToMediaViewerPage,
-                          ),
-                          const SizedBox(height: 8.0),
-                          _ImageItem(
-                            index: 2,
-                            media: media,
-                            navigateToMediaViewerPage:
-                                navigateToMediaViewerPage,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                _BannerItem(
+                  media: media,
+                  navigateToMediaViewerPage: navigateToMediaViewerPage,
                 ),
-                const SizedBox(height: 28.0),
+                const SizedBox(width: 12.0),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name.isNotEmpty ? name : 'Project Name',
-                      style: AppTextStyles.subtitleSemiBold,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    _ImageItem(
+                      index: 1,
+                      media: media,
+                      navigateToMediaViewerPage: navigateToMediaViewerPage,
                     ),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          AppIcons.location,
-                          width: 16.0,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.textPrimary,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        const SizedBox(width: 6.0),
-                        Flexible(
-                          child: Text(
-                            location.isNotEmpty ? location : 'location',
-                            style: AppTextStyles.paragraphSRegular,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18.0),
-                    Text(
-                      'Project details',
-                      style: AppTextStyles.paragraphMSemiBold,
-                    ),
-                    Text(
-                      description.isNotEmpty
-                          ? description
-                          : 'Ownership, Date of construction, etc..',
-                      style: AppTextStyles.paragraphSRegular,
+                    const SizedBox(height: 8.0),
+                    _ImageItem(
+                      index: 2,
+                      media: media,
+                      navigateToMediaViewerPage: navigateToMediaViewerPage,
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 28.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name.isNotEmpty ? name : 'Project Name',
+                style: AppTextStyles.subtitleSemiBold,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    AppIcons.location,
+                    width: 16.0,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.textPrimary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const SizedBox(width: 6.0),
+                  Flexible(
+                    child: Text(
+                      location.isNotEmpty ? location : 'location',
+                      style: AppTextStyles.paragraphSRegular,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18.0),
+              Text(
+                'Project details',
+                style: AppTextStyles.paragraphMSemiBold,
+              ),
+              Text(
+                description.isNotEmpty
+                    ? description
+                    : 'Ownership, Date of construction, etc..',
+                style: AppTextStyles.paragraphSRegular,
+              ),
+            ],
           ),
         ],
       ),

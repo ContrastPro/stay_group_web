@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,7 @@ import '../../../utils/constants.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
-import '../../../widgets/layouts/center_container_layout.dart';
+import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 
 class RestorePasswordPage extends StatefulWidget {
@@ -116,12 +117,14 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
         builder: (context, _) {
           return ActionLoader(
             isLoading: _isLoading,
-            child: CenterContainerLayout(
+            child: ContainerLayout(
               body: Column(
                 children: [
-                  Text(
+                  AutoSizeText(
                     'Reset your password',
                     style: AppTextStyles.head5SemiBold,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(

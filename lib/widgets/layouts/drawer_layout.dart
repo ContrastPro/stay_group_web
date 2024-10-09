@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../resources/app_colors.dart';
 import '../navigation/custom_drawer.dart';
 
-class FlexibleLayout extends StatelessWidget {
-  const FlexibleLayout({
+class DrawerLayout extends StatelessWidget {
+  const DrawerLayout({
     super.key,
     required this.state,
     required this.builder,
@@ -23,13 +23,10 @@ class FlexibleLayout extends StatelessWidget {
         builder: (_, BoxConstraints constraints) {
           final Size size = Size(
             constraints.maxWidth,
-            constraints.maxWidth,
+            constraints.maxHeight,
           );
 
-          log(
-            '${constraints.maxWidth} x ${constraints.maxHeight}',
-            name: 'Screen size',
-          );
+          log('${size.width} x ${size.height}', name: 'Screen size');
 
           return Padding(
             padding: const EdgeInsets.symmetric(
