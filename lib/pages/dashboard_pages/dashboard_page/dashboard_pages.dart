@@ -13,16 +13,19 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
-import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../../../widgets/views/empty_state_view.dart';
+import '../../../widgets/views/table_view.dart';
 import 'blocs/dashboard_bloc/dashboard_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('dashboard.dashboard');
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({
@@ -41,9 +44,9 @@ class DashboardPage extends StatelessWidget {
     return BlocProvider<DashboardBloc>(
       create: (_) => DashboardBloc(
         authRepository: context.read<AuthRepository>(),
+        usersRepository: context.read<UsersRepository>(),
         companiesRepository: context.read<CompaniesRepository>(),
         storageRepository: context.read<StorageRepository>(),
-        usersRepository: context.read<UsersRepository>(),
       )..add(
           const Init(),
         ),
@@ -94,20 +97,21 @@ class _DashboardPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: TablesLayout(
+      child: TableView(
+        screenSize: screenSize,
         header: SizedBox(
           height: 40.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Companies', //Dashboard
+                _locale.tr('companies'),
                 style: AppTextStyles.head6Medium,
               ),
               if (screenSize.width >= kMobileScreenWidth) ...[
                 CustomButton(
                   prefixIcon: AppIcons.add,
-                  text: 'Add company',
+                  text: _locale.tr('add_company'),
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageCompanyPage,
                 ),
@@ -123,12 +127,12 @@ class _DashboardPageContent extends StatelessWidget {
           ),
         ),
         body: EmptyStateView(
+          screenSize: screenSize,
           isEmpty: state.companies.isEmpty,
           animation: AppAnimations.addCompany,
-          title: 'Add first company',
-          description:
-              "You don't added your first company yet.\nLet's get started!",
-          buttonText: 'Add company',
+          title: _locale.tr('add_first_company'),
+          description: _locale.tr('not_company'),
+          buttonText: _locale.tr('add_company'),
           onTap: navigateToManageCompanyPage,
           content: Column(
             children: [
@@ -145,21 +149,21 @@ class _DashboardPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Company Name',
+                      title: _locale.tr('company_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 45,
-                      title: 'Description',
+                      title: _locale.tr('description'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Date Creation',
+                      title: _locale.tr('date_creation'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ] else ...[
                     TableCellItem(
@@ -170,12 +174,12 @@ class _DashboardPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Company Name',
+                      title: _locale.tr('company_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 40,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ],
                 ],

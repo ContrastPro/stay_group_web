@@ -24,8 +24,8 @@ class UserStatus extends StatelessWidget {
         borderRadius: BorderRadius.circular(6.0),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             width: 6.0,

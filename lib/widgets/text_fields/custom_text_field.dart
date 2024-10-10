@@ -136,7 +136,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   focusNode: _focusNode,
                   minLines: 1,
                   maxLines: widget.maxLines,
-                  //cursorHeight: 16.0,
                   style: AppTextStyles.paragraphMRegular,
                   decoration: InputDecoration(
                     isDense: true,

@@ -110,7 +110,7 @@ class CustomDrawer extends StatelessWidget {
     return BlocBuilder<NavigationBloc, NavigationState>(
       builder: (context, state) {
         if (screenSize.width >= kTabletScreenWidth) {
-          return _TextButton(
+          return _ExpandedMenu(
             state: state,
             fullPath: fullPath,
             tabs: state.userData!.info.role == UserRole.manager
@@ -123,7 +123,7 @@ class CustomDrawer extends StatelessWidget {
           );
         }
 
-        return _IconButton(
+        return _CollapsedMenu(
           state: state,
           fullPath: fullPath,
           tabs: state.userData!.info.role == UserRole.manager
@@ -139,8 +139,8 @@ class CustomDrawer extends StatelessWidget {
   }
 }
 
-class _TextButton extends StatelessWidget {
-  const _TextButton({
+class _ExpandedMenu extends StatelessWidget {
+  const _ExpandedMenu({
     required this.state,
     required this.fullPath,
     required this.tabs,
@@ -215,8 +215,8 @@ class _TextButton extends StatelessWidget {
   }
 }
 
-class _IconButton extends StatelessWidget {
-  const _IconButton({
+class _CollapsedMenu extends StatelessWidget {
+  const _CollapsedMenu({
     required this.state,
     required this.fullPath,
     required this.tabs,

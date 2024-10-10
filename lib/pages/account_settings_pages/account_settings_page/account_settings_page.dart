@@ -8,14 +8,19 @@ import '../../../repositories/users_repository.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
+import '../../../widgets/views/table_view.dart';
 import 'blocs/account_settings_bloc/account_settings_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale(
+  'account_settings.account_settings',
+);
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({
@@ -87,9 +92,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     final String phone = _controllerPhone.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      final String errorName = state.spaceData != null
-          ? 'User name is too short'
-          : 'Workspace name is too short';
+      final String errorName = _locale.tr(
+        state.spaceData != null ? 'name_short' : 'workspace_name_short',
+      );
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
@@ -144,7 +149,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
               if (state.status == BlocStatus.success) {
                 InAppNotificationService.show(
-                  title: 'Profile successfully updated',
+                  title: _locale.tr('profile_updated'),
                   type: InAppNotificationType.success,
                 );
               }
@@ -154,14 +159,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 return FadeInAnimation(
                   child: ActionLoader(
                     isLoading: _isLoading,
-                    child: TablesLayout(
+                    child: TableView(
+                      screenSize: size,
                       header: SizedBox(
                         height: 40.0,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Account settings',
+                              _locale.tr('account_settings'),
                               style: AppTextStyles.head6Medium,
                             ),
                           ],
@@ -182,17 +188,19 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                       CustomTextField(
                                         controller: _controllerWorkspace,
                                         enabled: false,
-                                        labelText: 'Workspace name',
+                                        labelText: _locale.tr('workspace_name'),
                                       ),
                                       const SizedBox(height: 16.0),
                                     ],
                                     CustomTextField(
                                       controller: _controllerName,
                                       enabled: state.spaceData == null,
-                                      labelText: 'Name',
-                                      hintText: state.spaceData != null
-                                          ? 'User name'
-                                          : 'Workspace name',
+                                      labelText: _locale.tr('name'),
+                                      hintText: _locale.tr(
+                                        state.spaceData != null
+                                            ? 'user_name'
+                                            : 'workspace_name',
+                                      ),
                                       errorText: _errorTextName,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(64),
@@ -203,13 +211,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                     CustomTextField(
                                       controller: _controllerEmail,
                                       enabled: false,
-                                      labelText: 'Email',
+                                      labelText: _locale.tr('email'),
                                     ),
                                     const SizedBox(height: 16.0),
                                     CustomTextField(
                                       controller: _controllerPhone,
-                                      labelText: 'Phone',
-                                      hintText: 'Contact phone',
+                                      labelText: _locale.tr('phone'),
+                                      hintText: _locale.tr('contact_phone'),
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(
                                           RegExp(r'^\+?\d{0,15}$'),
@@ -218,7 +226,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                     ),
                                     const SizedBox(height: 40.0),
                                     CustomButton(
-                                      text: 'Save changes',
+                                      text: _locale.tr('save_changes'),
                                       onTap: () => _updateAccountInfo(
                                         context: context,
                                         state: state,

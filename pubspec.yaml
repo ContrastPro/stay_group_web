@@ -46,6 +46,7 @@ dependencies:
   # Services
   collection: ^1.18.0
   crypt: ^4.3.1
+  easy_localization: ^3.0.7
   email_validator: ^3.0.0
   file_sizes: ^1.0.6
   flutter_bloc: ^8.1.6
@@ -93,6 +94,7 @@ flutter:
     - assets/animations/
     - assets/icons/
     - assets/images/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

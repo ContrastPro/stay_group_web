@@ -15,6 +15,7 @@ import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
@@ -24,6 +25,8 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_company_bloc/manage_company_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('dashboard.manage_company');
 
 class ManageCompanyPage extends StatefulWidget {
   const ManageCompanyPage({
@@ -222,9 +225,9 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     return BlocProvider<ManageCompanyBloc>(
       create: (_) => ManageCompanyBloc(
         authRepository: context.read<AuthRepository>(),
+        usersRepository: context.read<UsersRepository>(),
         companiesRepository: context.read<CompaniesRepository>(),
         storageRepository: context.read<StorageRepository>(),
-        usersRepository: context.read<UsersRepository>(),
       )..add(
           Init(
             id: widget.id,

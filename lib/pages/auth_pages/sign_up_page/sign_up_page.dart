@@ -11,10 +11,13 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
+
+const TranslateLocale _locale = TranslateLocale('auth.sign_up');
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({
@@ -92,21 +95,21 @@ class _SignUpPageState extends State<SignUpPage> {
     final String confirm = _controllerConfirm.text.trim();
 
     if (email.isEmpty || !_emailValid) {
-      const String errorFormat = 'Wrong email format';
+      final String errorFormat = _locale.tr('wrong_format');
 
       _switchErrorEmail(error: errorFormat);
       return _showErrorMessage(errorMessage: errorFormat);
     }
 
     if (password.isEmpty || !_passwordValid) {
-      const String errorLength = 'Your password is too short';
+      final String errorLength = _locale.tr('password_short');
 
       _switchErrorPassword(error: errorLength);
       return _showErrorMessage(errorMessage: errorLength);
     }
 
     if (confirm.isEmpty || !_confirmValid) {
-      const String errorMatch = 'Confirm passwords do NOT match';
+      final String errorMatch = _locale.tr('confirm_passwords_match');
 
       _switchErrorConfirm(error: errorMatch);
       return _showErrorMessage(errorMessage: errorMatch);
@@ -177,14 +180,14 @@ class _SignUpPageState extends State<SignUpPage> {
               body: Column(
                 children: [
                   AutoSizeText(
-                    'Join us today',
+                    _locale.tr('join_today'),
                     style: AppTextStyles.head5SemiBold,
                     maxLines: 1,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    'Sign up today and unlock a world of possibilities. Your adventure begins here.',
+                    _locale.tr('sign_up_today'),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -193,8 +196,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 28.0),
                   CustomTextField(
                     controller: _controllerEmail,
-                    labelText: 'Email',
-                    hintText: 'Placeholder',
+                    labelText: _locale.tr('email'),
+                    hintText: _locale.tr('placeholder'),
                     prefixIcon: AppIcons.mail,
                     errorText: _errorTextEmail,
                     onChanged: _validateEmail,
@@ -202,8 +205,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerPassword,
-                    labelText: 'Password',
-                    hintText: 'Password',
+                    labelText: _locale.tr('password'),
+                    hintText: _locale.tr('password'),
                     isObscureText: _isObscurePassword,
                     prefixIcon: AppIcons.lock,
                     suffixIcon: _isObscurePassword
@@ -216,8 +219,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerConfirm,
-                    labelText: 'Confirm Password',
-                    hintText: 'Confirm Password',
+                    labelText: _locale.tr('confirm_password'),
+                    hintText: _locale.tr('confirm_password'),
                     isObscureText: _isObscureConfirm,
                     prefixIcon: AppIcons.lock,
                     suffixIcon: _isObscureConfirm
@@ -229,7 +232,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   const SizedBox(height: 40.0),
                   CustomButton(
-                    text: 'Sign up',
+                    text: _locale.tr('sign_up'),
                     onTap: () => _emailSignUp(context),
                   ),
                   const SizedBox(height: 40.0),
@@ -241,14 +244,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          'Already have an account?',
+                          _locale.tr('already_account'),
                           style: AppTextStyles.paragraphSMedium.copyWith(
                             color: AppColors.iconPrimary,
                           ),
                         ),
                         const SizedBox(width: 8.0),
                         Text(
-                          'Log in',
+                          _locale.tr('log_in'),
                           style: AppTextStyles.paragraphSMedium,
                         ),
                       ],

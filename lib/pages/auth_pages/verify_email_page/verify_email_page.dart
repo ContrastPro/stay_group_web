@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/container_layout.dart';
+
+const TranslateLocale _locale = TranslateLocale('auth.verify_email');
 
 class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage({
@@ -24,14 +27,16 @@ class VerifyEmailPage extends StatelessWidget {
       body: Column(
         children: [
           AutoSizeText(
-            'Check your email',
+            _locale.tr('check_email'),
             style: AppTextStyles.head5SemiBold,
             maxLines: 1,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8.0),
           Text(
-            'We have sent verification email link to\n${email ?? 'placeholder'}',
+            _locale.tr('we_sent_email', args: [
+              email ?? 'placeholder',
+            ]),
             style: AppTextStyles.paragraphSRegular.copyWith(
               color: AppColors.iconPrimary,
             ),
@@ -39,7 +44,7 @@ class VerifyEmailPage extends StatelessWidget {
           ),
           const SizedBox(height: 40.0),
           CustomButton(
-            text: 'Back to login',
+            text: _locale.tr('back_to_login'),
             onTap: navigateToLogInPage,
           ),
         ],

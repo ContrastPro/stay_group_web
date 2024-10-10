@@ -7,10 +7,13 @@ import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../utils/constants.dart';
 import '../../utils/helpers.dart';
+import '../../utils/translate_locale.dart';
 
 part 'auth_event.dart';
 
 part 'auth_state.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
@@ -64,8 +67,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           return emit(
             state.copyWith(
               status: BlocStatus.failed,
-              errorMessage:
-                  'The email address is not verified. Check your mailbox',
+              errorMessage: _locale.tr(
+                'email_not_verified',
+              ),
             ),
           );
         }
@@ -98,7 +102,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           return emit(
             state.copyWith(
               status: BlocStatus.failed,
-              errorMessage: 'The email or password is incorrect',
+              errorMessage: _locale.tr(
+                'email_password_incorrect',
+              ),
             ),
           );
         }
@@ -150,7 +156,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'The email or password is incorrect',
+            errorMessage: _locale.tr(
+              'email_password_incorrect',
+            ),
           ),
         );
       }
@@ -164,7 +172,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return emit(
         state.copyWith(
           status: BlocStatus.failed,
-          errorMessage: 'The email or password is incorrect',
+          errorMessage: _locale.tr(
+            'email_password_incorrect',
+          ),
         ),
       );
     });
@@ -192,7 +202,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'A user with this email address already exists',
+            errorMessage: _locale.tr(
+              'user_exists',
+            ),
           ),
         );
       }
@@ -259,7 +271,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'User with this email does not exist',
+            errorMessage: _locale.tr(
+              'user_not_exist',
+            ),
           ),
         );
       }
@@ -274,7 +288,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return emit(
           state.copyWith(
             status: BlocStatus.failed,
-            errorMessage: 'User with this email does not exist',
+            errorMessage: _locale.tr(
+              'user_not_exist',
+            ),
           ),
         );
       }

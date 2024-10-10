@@ -15,16 +15,19 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/layouts/tables_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
-import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../../../widgets/views/empty_state_view.dart';
+import '../../../widgets/views/table_view.dart';
 import 'blocs/calculations_bloc/calculations_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('calculations.calculations');
 
 class CalculationsPage extends StatelessWidget {
   const CalculationsPage({
@@ -43,8 +46,8 @@ class CalculationsPage extends StatelessWidget {
     return BlocProvider<CalculationsBloc>(
       create: (_) => CalculationsBloc(
         authRepository: context.read<AuthRepository>(),
-        calculationsRepository: context.read<CalculationsRepository>(),
         usersRepository: context.read<UsersRepository>(),
+        calculationsRepository: context.read<CalculationsRepository>(),
       )..add(
           const Init(),
         ),
@@ -136,20 +139,21 @@ class _CalculationsPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: TablesLayout(
+      child: TableView(
+        screenSize: screenSize,
         header: SizedBox(
           height: 40.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Calculations',
+                _locale.tr('calculations'),
                 style: AppTextStyles.head6Medium,
               ),
               if (screenSize.width >= kMobileScreenWidth) ...[
                 CustomButton(
                   prefixIcon: AppIcons.add,
-                  text: 'Add calculation',
+                  text: _locale.tr('add_calculation'),
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageCalculationPage,
                 ),
@@ -165,12 +169,12 @@ class _CalculationsPageContent extends StatelessWidget {
           ),
         ),
         body: EmptyStateView(
+          screenSize: screenSize,
           isEmpty: state.calculations.isEmpty,
           animation: AppAnimations.addCalculation,
-          title: 'Add first calculation',
-          description:
-              "You don't added your first calculation yet.\nLet's get started!",
-          buttonText: 'Add calculation',
+          title: _locale.tr('add_first_calculation'),
+          description: _locale.tr('not_calculation'),
+          buttonText: _locale.tr('add_calculation'),
           onTap: navigateToManageCalculationPage,
           content: Column(
             children: [
@@ -187,29 +191,29 @@ class _CalculationsPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Calculation Name',
+                      title: _locale.tr('calculation_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 12,
-                      title: 'Unit price',
+                      title: _locale.tr('unit_price'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 21,
-                      title: 'Installment terms',
+                      title: _locale.tr('installment_terms'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 12,
-                      title: 'Installment plan',
+                      title: _locale.tr('installment_plan'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Date Creation',
+                      title: _locale.tr('date_creation'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ] else ...[
                     TableCellItem(
@@ -220,12 +224,12 @@ class _CalculationsPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Calculation Name',
+                      title: _locale.tr('calculation_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 40,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ],
                 ],

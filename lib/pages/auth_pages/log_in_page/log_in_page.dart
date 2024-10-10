@@ -10,10 +10,13 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
+
+const TranslateLocale _locale = TranslateLocale('auth.log_in');
 
 class LogInPage extends StatefulWidget {
   const LogInPage({
@@ -114,14 +117,14 @@ class _LogInPageState extends State<LogInPage> {
               body: Column(
                 children: [
                   AutoSizeText(
-                    'Welcome back',
+                    _locale.tr('welcome_back'),
                     style: AppTextStyles.head5SemiBold,
                     maxLines: 1,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    "Dive back into your world with a simple sign-in. Your next adventure awaits - let's get started!",
+                    _locale.tr('dive_back'),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -130,16 +133,16 @@ class _LogInPageState extends State<LogInPage> {
                   const SizedBox(height: 28.0),
                   CustomTextField(
                     controller: _controllerEmail,
-                    labelText: 'Email',
-                    hintText: 'Placeholder',
+                    labelText: _locale.tr('email'),
+                    hintText: _locale.tr('placeholder'),
                     prefixIcon: AppIcons.mail,
                     errorText: _errorText,
                   ),
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerPassword,
-                    labelText: 'Password',
-                    hintText: 'Password',
+                    labelText: _locale.tr('password'),
+                    hintText: _locale.tr('password'),
                     isObscureText: _isObscurePassword,
                     prefixIcon: AppIcons.lock,
                     suffixIcon: _isObscurePassword
@@ -156,7 +159,7 @@ class _LogInPageState extends State<LogInPage> {
                         onTap: widget.navigateToRestorePasswordPage,
                         behavior: HitTestBehavior.opaque,
                         child: Text(
-                          'Forgot password?',
+                          _locale.tr('forgot_password'),
                           style: AppTextStyles.paragraphSMedium,
                         ),
                       ),
@@ -164,7 +167,7 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                   const SizedBox(height: 40.0),
                   CustomButton(
-                    text: 'Log in',
+                    text: _locale.tr('log_in'),
                     onTap: () => _emailLogIn(context),
                   ),
                   const SizedBox(height: 40.0),
@@ -176,14 +179,14 @@ class _LogInPageState extends State<LogInPage> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account?",
+                          _locale.tr('not_account'),
                           style: AppTextStyles.paragraphSMedium.copyWith(
                             color: AppColors.iconPrimary,
                           ),
                         ),
                         const SizedBox(width: 8.0),
                         Text(
-                          'Register now!',
+                          _locale.tr('register_now'),
                           style: AppTextStyles.paragraphSMedium,
                         ),
                       ],

@@ -23,9 +23,9 @@ part 'manage_company_state.dart';
 class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
   ManageCompanyBloc({
     required this.authRepository,
+    required this.usersRepository,
     required this.companiesRepository,
     required this.storageRepository,
-    required this.usersRepository,
   }) : super(const ManageCompanyState()) {
     on<Init>((event, emit) async {
       await requestDelay();
@@ -223,7 +223,7 @@ class ManageCompanyBloc extends Bloc<ManageCompanyEvent, ManageCompanyState> {
   }
 
   final AuthRepository authRepository;
+  final UsersRepository usersRepository;
   final CompaniesRepository companiesRepository;
   final StorageRepository storageRepository;
-  final UsersRepository usersRepository;
 }

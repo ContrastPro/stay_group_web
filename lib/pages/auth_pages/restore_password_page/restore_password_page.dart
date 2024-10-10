@@ -11,11 +11,14 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/layouts/container_layout.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
+
+const TranslateLocale _locale = TranslateLocale('auth.restore_password');
 
 class RestorePasswordPage extends StatefulWidget {
   const RestorePasswordPage({
@@ -121,14 +124,14 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
               body: Column(
                 children: [
                   AutoSizeText(
-                    'Reset your password',
+                    _locale.tr('reset_your_password'),
                     style: AppTextStyles.head5SemiBold,
                     maxLines: 1,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    "Enter your email, and we'll help ou reset it in snap. Security made simple",
+                    _locale.tr('enter_email'),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -137,21 +140,21 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
                   const SizedBox(height: 28.0),
                   CustomTextField(
                     controller: _controllerEmail,
-                    labelText: 'Email',
-                    hintText: 'Placeholder',
+                    labelText: _locale.tr('email'),
+                    hintText: _locale.tr('placeholder'),
                     prefixIcon: AppIcons.mail,
                     errorText: _errorText,
                     onChanged: _validateEmail,
                   ),
                   const SizedBox(height: 40.0),
                   CustomButton(
-                    text: 'Reset password',
+                    text: _locale.tr('reset_password'),
                     onTap: () => _passwordRecovery(context),
                   ),
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Log in',
+                    text: _locale.tr('back_to_login'),
                     onTap: widget.navigateToLogInPage,
                   ),
                 ],

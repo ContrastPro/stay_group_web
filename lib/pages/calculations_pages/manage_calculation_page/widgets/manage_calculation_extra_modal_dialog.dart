@@ -10,10 +10,15 @@ import '../../../../resources/app_colors.dart';
 import '../../../../resources/app_icons.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/helpers.dart';
+import '../../../../utils/translate_locale.dart';
 import '../../../../widgets/buttons/custom_button.dart';
 import '../../../../widgets/buttons/custom_text_button.dart';
 import '../../../../widgets/dropdowns/animated_dropdown.dart';
 import '../../../../widgets/text_fields/custom_text_field.dart';
+
+const TranslateLocale _locale = TranslateLocale(
+  'calculations.manage_calculation',
+);
 
 class ManageCalculationExtraModalDialog extends StatefulWidget {
   const ManageCalculationExtraModalDialog({
@@ -140,13 +145,13 @@ class _ManageCalculationExtraModalDialogState
     final String pricePct = _controllerPricePct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Extra name is too short';
+      final String errorName = _locale.tr('extra_name_short');
 
       return _switchErrorName(error: errorName);
     }
 
     if (priceVal.isEmpty || pricePct.isEmpty || !_priceValid) {
-      const String errorPriceVal = 'Price is too short';
+      final String errorPriceVal = _locale.tr('price_short');
 
       return _switchErrorPrice(error: errorPriceVal);
     }
@@ -175,13 +180,13 @@ class _ManageCalculationExtraModalDialogState
     final String pricePct = _controllerPricePct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Extra name is too short';
+      final String errorName = _locale.tr('extra_name_short');
 
       return _switchErrorName(error: errorName);
     }
 
     if (priceVal.isEmpty || pricePct.isEmpty || !_priceValid) {
-      const String errorPriceVal = 'Price is too short';
+      final String errorPriceVal = _locale.tr('price_short');
 
       return _switchErrorPrice(error: errorPriceVal);
     }
@@ -236,8 +241,8 @@ class _ManageCalculationExtraModalDialogState
                   children: [
                     CustomTextField(
                       controller: _controllerName,
-                      labelText: 'Name',
-                      hintText: 'Extra expense name',
+                      labelText: _locale.tr('name'),
+                      hintText: _locale.tr('extra_name'),
                       errorText: _errorTextName,
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(110),
@@ -250,8 +255,10 @@ class _ManageCalculationExtraModalDialogState
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerPriceVal,
-                            labelText: 'Price in (${widget.currency})',
-                            hintText: 'Enter value',
+                            labelText: _locale.tr('price_in_currency', args: [
+                              widget.currency,
+                            ]),
+                            hintText: _locale.tr('enter_value'),
                             errorText: _errorTextPrice,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(10),
@@ -264,8 +271,8 @@ class _ManageCalculationExtraModalDialogState
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerPricePct,
-                            labelText: 'Price in (%)',
-                            hintText: 'Enter percent',
+                            labelText: _locale.tr('price_in_percent'),
+                            hintText: _locale.tr('enter_percent'),
                             errorText: _errorTextPrice,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(4),
@@ -281,8 +288,8 @@ class _ManageCalculationExtraModalDialogState
                     const SizedBox(height: 16.0),
                     AnimatedDropdown(
                       initialData: _date?.name,
-                      labelText: 'Extra expense date',
-                      hintText: 'Select date',
+                      labelText: _locale.tr('extra_date'),
+                      hintText: _locale.tr('select_date'),
                       values: _dates.map((e) => e.name).toList(),
                       onChanged: _onSelectDate,
                     ),
@@ -291,7 +298,7 @@ class _ManageCalculationExtraModalDialogState
                       children: [
                         Expanded(
                           child: CustomTextButton(
-                            text: 'Cancel',
+                            text: _locale.tr('cancel'),
                             onTap: widget.onCancel,
                           ),
                         ),
@@ -299,14 +306,14 @@ class _ManageCalculationExtraModalDialogState
                         if (widget.calculationExtra == null) ...[
                           Expanded(
                             child: CustomButton(
-                              text: 'Create',
+                              text: _locale.tr('create'),
                               onTap: _createCalculationExtra,
                             ),
                           ),
                         ] else ...[
                           Expanded(
                             child: CustomButton(
-                              text: 'Save changes',
+                              text: _locale.tr('save_changes'),
                               onTap: _updateCalculationExtra,
                             ),
                           ),

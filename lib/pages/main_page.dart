@@ -32,9 +32,9 @@ class MainPage extends StatelessWidget {
       providers: [
         BlocProvider<NavigationBloc>(
           create: (_) => NavigationBloc(
-            timerService: TimerService.instance,
             authRepository: context.read<AuthRepository>(),
             usersRepository: context.read<UsersRepository>(),
+            timerService: TimerService.instance,
           )..add(
               const StartSubscription(),
             ),

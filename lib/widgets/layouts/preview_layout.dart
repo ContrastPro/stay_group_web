@@ -43,12 +43,12 @@ class PreviewLayout extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: size.width >= kLaptopScreenWidth
-                  ? _Row(
+                  ? _RowLayout(
                       screenSize: size,
                       content: content,
                       preview: preview,
                     )
-                  : _Column(
+                  : _ColumnLayout(
                       screenSize: size,
                       content: content,
                       preview: preview,
@@ -61,8 +61,8 @@ class PreviewLayout extends StatelessWidget {
   }
 }
 
-class _Row extends StatelessWidget {
-  const _Row({
+class _RowLayout extends StatelessWidget {
+  const _RowLayout({
     required this.screenSize,
     required this.content,
     required this.preview,
@@ -114,8 +114,8 @@ class _Row extends StatelessWidget {
   }
 }
 
-class _Column extends StatelessWidget {
-  const _Column({
+class _ColumnLayout extends StatelessWidget {
+  const _ColumnLayout({
     required this.screenSize,
     required this.content,
     required this.preview,

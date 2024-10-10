@@ -20,9 +20,9 @@ part 'dashboard_state.dart';
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   DashboardBloc({
     required this.authRepository,
+    required this.usersRepository,
     required this.companiesRepository,
     required this.storageRepository,
-    required this.usersRepository,
   }) : super(const DashboardState()) {
     on<Init>((event, emit) async {
       emit(
@@ -133,7 +133,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   }
 
   final AuthRepository authRepository;
+  final UsersRepository usersRepository;
   final CompaniesRepository companiesRepository;
   final StorageRepository storageRepository;
-  final UsersRepository usersRepository;
 }

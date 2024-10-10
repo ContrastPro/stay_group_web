@@ -13,10 +13,13 @@ import '../../repositories/users_repository.dart';
 import '../../services/timer_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/helpers.dart';
+import '../../utils/translate_locale.dart';
 
 part 'navigation_event.dart';
 
 part 'navigation_state.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   NavigationBloc({
@@ -128,19 +131,22 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     on<CheckUserStatus>((event, emit) async {
       if (event.userData.archived) {
         return add(
-          const StopSubscription(
+          StopSubscription(
             status: NavigationStatus.auth,
-            errorMessage:
-                'You have been logged out due to account archived or deleted',
+            errorMessage: _locale.tr(
+              'account_archived_deleted',
+            ),
           ),
         );
       }
 
       if (event.userData.blocked) {
         return add(
-          const StopSubscription(
+          StopSubscription(
             status: NavigationStatus.auth,
-            errorMessage: 'You have been logged out due to account blocking',
+            errorMessage: _locale.tr(
+              'account_blocking',
+            ),
           ),
         );
       }
@@ -154,9 +160,11 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
       if (difference < 0) {
         return add(
-          const StopSubscription(
+          StopSubscription(
             status: NavigationStatus.pricing,
-            errorMessage: 'Your subscription is expired',
+            errorMessage: _locale.tr(
+              'subscription_expired',
+            ),
           ),
         );
       }
@@ -208,7 +216,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     });
   }
 
-  final TimerService timerService;
   final AuthRepository authRepository;
   final UsersRepository usersRepository;
+  final TimerService timerService;
 }

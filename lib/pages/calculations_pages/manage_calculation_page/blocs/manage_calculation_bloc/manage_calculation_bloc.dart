@@ -28,10 +28,10 @@ class ManageCalculationBloc
     extends Bloc<ManageCalculationEvent, ManageCalculationState> {
   ManageCalculationBloc({
     required this.authRepository,
-    required this.calculationsRepository,
+    required this.usersRepository,
     required this.companiesRepository,
     required this.projectsRepository,
-    required this.usersRepository,
+    required this.calculationsRepository,
   }) : super(const ManageCalculationState()) {
     on<Init>((event, emit) async {
       await requestDelay();
@@ -211,8 +211,8 @@ class ManageCalculationBloc
   }
 
   final AuthRepository authRepository;
-  final CalculationsRepository calculationsRepository;
+  final UsersRepository usersRepository;
   final CompaniesRepository companiesRepository;
   final ProjectsRepository projectsRepository;
-  final UsersRepository usersRepository;
+  final CalculationsRepository calculationsRepository;
 }

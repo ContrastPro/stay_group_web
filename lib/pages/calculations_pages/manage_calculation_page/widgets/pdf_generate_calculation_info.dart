@@ -7,7 +7,12 @@ import '../../../../models/calculations/calculation_period_model.dart';
 import '../../../../models/projects/project_model.dart';
 import '../../../../utils/constants.dart';
 import '../../../../utils/helpers.dart';
+import '../../../../utils/translate_locale.dart';
 import 'pdf_generate_document.dart';
+
+const TranslateLocale _locale = TranslateLocale(
+  'calculations.manage_calculation',
+);
 
 Future<pdf.MultiPage> pdfGenerateCalculationInfo({
   required PdfPageFormat format,
@@ -55,8 +60,10 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
       return [
         pdf.Text(
           project != null
-              ? 'Calculations for ${project.info.name}'
-              : 'Calculations',
+              ? _locale.tr('calculations_for', args: [
+                  project.info.name,
+                ])
+              : _locale.tr('calculations'),
           style: stylePrimary.copyWith(
             fontSize: 14.0,
           ),
@@ -64,14 +71,14 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
         ),
         pdf.SizedBox(height: 6.0),
         _pdfGetCalculationInfoItem(
-          title: 'Unit price',
+          title: _locale.tr('unit_price'),
           data: '$currency$price',
           stylePrimary: stylePrimary,
           styleSecondary: styleSecondary,
         ),
         if (depositVal.isNotEmpty) ...[
           _pdfGetCalculationInfoItem(
-            title: 'First deposit',
+            title: _locale.tr('first_deposit'),
             data: '$currency$depositVal — $depositPct%',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
@@ -79,21 +86,22 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
         ],
         if (payment > 0) ...[
           _pdfGetCalculationInfoItem(
-            title: 'Installment plan',
-            data:
-                '${period.name}(~$currency$payment) — $paymentsCount payment(s)',
+            title: _locale.tr('installment_plan'),
+            data: _locale.tr('payments', args: [
+              '${period.name}(~$currency$payment) — $paymentsCount',
+            ]),
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           _pdfGetCalculationInfoItem(
-            title: 'Installment terms',
+            title: _locale.tr('installment_terms'),
             data: '$start — $end',
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,
           ),
           if (price != totalPrice) ...[
             _pdfGetCalculationInfoItem(
-              title: 'Total price (Unit price + Taxes and fees)',
+              title: _locale.tr('total_price'),
               data: '$currency$totalPrice',
               stylePrimary: stylePrimary,
               styleSecondary: styleSecondary,
@@ -103,11 +111,11 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
           _pdfGetCalculationItem(
             addColor: true,
             number: '№',
-            date: 'Payment date',
-            total: 'Total',
-            payment: 'Installments',
-            extraPrice: 'Taxes and fees',
-            extraDescription: 'Description',
+            date: _locale.tr('payment_date'),
+            total: _locale.tr('total'),
+            payment: _locale.tr('installments'),
+            extraPrice: _locale.tr('taxes_fees'),
+            extraDescription: _locale.tr('description'),
             styleSecondary: styleSecondary,
           ),
           ...calculations,

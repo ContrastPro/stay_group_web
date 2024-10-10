@@ -5,8 +5,13 @@ import 'package:printing/printing.dart';
 import '../../../../models/companies/company_model.dart';
 import '../../../../models/projects/project_model.dart';
 import '../../../../resources/app_images.dart';
+import '../../../../utils/translate_locale.dart';
 import '../blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
 import 'pdf_generate_document.dart';
+
+const TranslateLocale _locale = TranslateLocale(
+  'calculations.manage_calculation',
+);
 
 Future<pdf.Page> pdfGenerateProjectInfo({
   required PdfPageFormat format,
@@ -148,7 +153,7 @@ pdf.Container _pdfGetProjectHeader({
                 maxLines: 2,
               ),
               pdf.Text(
-                state.userData!.credential.email,
+                state.userData!.info.phone ?? state.userData!.credential.email,
                 style: styleSecondary.copyWith(
                   color: pdfScaffoldSecondary,
                 ),
@@ -258,7 +263,7 @@ pdf.Expanded _pdfGetProjectContent({
               children: [
                 if (section.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Section',
+                    title: _locale.tr('section'),
                     data: section,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -266,7 +271,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (floor.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Floor',
+                    title: _locale.tr('floor'),
                     data: floor,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -274,7 +279,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (number.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Unit number',
+                    title: _locale.tr('unit_number'),
                     data: number,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -282,7 +287,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (type.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Unit type',
+                    title: _locale.tr('unit_type'),
                     data: type,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -290,7 +295,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (rooms.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Rooms',
+                    title: _locale.tr('rooms'),
                     data: rooms,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -298,7 +303,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (bathrooms.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Bathrooms',
+                    title: _locale.tr('bathrooms'),
                     data: bathrooms,
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -306,7 +311,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (total.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Total area',
+                    title: _locale.tr('total_area'),
                     data: '$total m2',
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -314,7 +319,7 @@ pdf.Expanded _pdfGetProjectContent({
                 ],
                 if (living.isNotEmpty) ...[
                   _pdfGetProjectFeatureItem(
-                    title: 'Living area',
+                    title: _locale.tr('living_area'),
                     data: '$living m2',
                     stylePrimary: stylePrimary,
                     styleSecondary: styleSecondary,
@@ -378,7 +383,7 @@ pdf.Container _pdfGetProjectFooter({
       children: [
         if (company != null) ...[
           pdf.Text(
-            'About company',
+            _locale.tr('about_company'),
             style: stylePrimary.copyWith(
               fontSize: 10.0,
               color: pdfScaffoldSecondary,

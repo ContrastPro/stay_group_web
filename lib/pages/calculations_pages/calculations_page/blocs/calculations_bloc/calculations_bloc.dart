@@ -19,8 +19,8 @@ part 'calculations_state.dart';
 class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
   CalculationsBloc({
     required this.authRepository,
-    required this.calculationsRepository,
     required this.usersRepository,
+    required this.calculationsRepository,
   }) : super(const CalculationsState()) {
     on<Init>((event, emit) async {
       emit(
@@ -115,6 +115,6 @@ class CalculationsBloc extends Bloc<CalculationsEvent, CalculationsState> {
   }
 
   final AuthRepository authRepository;
-  final CalculationsRepository calculationsRepository;
   final UsersRepository usersRepository;
+  final CalculationsRepository calculationsRepository;
 }

@@ -25,6 +25,7 @@ import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
@@ -41,6 +42,10 @@ import 'blocs/manage_calculation_bloc/manage_calculation_bloc.dart';
 import 'widgets/manage_calculation_extra_item.dart';
 import 'widgets/manage_calculation_extra_modal_dialog.dart';
 import 'widgets/pdf_generate_document.dart';
+
+const TranslateLocale _locale = TranslateLocale(
+  'calculations.manage_calculation',
+);
 
 class ManageCalculationPage extends StatefulWidget {
   const ManageCalculationPage({
@@ -522,8 +527,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     _switchErrorName();
 
     if (state.calculations.length > 18) {
-      const String errorLimit =
-          'The limit for creating calculations for the workspace has been reached';
+      final String errorLimit = _locale.tr('limit_reached');
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
@@ -542,7 +546,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final String depositPct = _controllerDepositPct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Calculation name is too short';
+      final String errorName = _locale.tr('calculation_name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
@@ -592,7 +596,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     final String depositPct = _controllerDepositPct.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Calculation name is too short';
+      final String errorName = _locale.tr('calculation_name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
@@ -642,10 +646,10 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
     return BlocProvider<ManageCalculationBloc>(
       create: (_) => ManageCalculationBloc(
         authRepository: context.read<AuthRepository>(),
-        calculationsRepository: context.read<CalculationsRepository>(),
+        usersRepository: context.read<UsersRepository>(),
         companiesRepository: context.read<CompaniesRepository>(),
         projectsRepository: context.read<ProjectsRepository>(),
-        usersRepository: context.read<UsersRepository>(),
+        calculationsRepository: context.read<CalculationsRepository>(),
       )..add(
           Init(
             id: widget.id,
@@ -667,9 +671,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: state.calculation == null
-                  ? 'Calculation successfully created'
-                  : 'Calculation successfully updated',
+              title: _locale.tr(
+                state.calculation == null
+                    ? 'calculation_created'
+                    : 'calculation_updated',
+              ),
               type: InAppNotificationType.success,
             );
 
@@ -698,17 +704,21 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    state.calculation == null
-                        ? 'Add new calculation'
-                        : 'Edit calculation',
+                    _locale.tr(
+                      state.calculation == null
+                          ? 'add_calculation'
+                          : 'edit_calculation',
+                    ),
                     style: AppTextStyles.head5SemiBold,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    state.calculation == null
-                        ? 'Create calculation for your clients'
-                        : 'Edit calculation info',
+                    _locale.tr(
+                      state.calculation == null
+                          ? 'create_calculation_clients'
+                          : 'edit_calculation_info',
+                    ),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -717,15 +727,15 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   if (state.projects.isNotEmpty) ...[
                     const SizedBox(height: 28.0),
                     Text(
-                      'Info for clients',
+                      _locale.tr('info_clients'),
                       style: AppTextStyles.paragraphLMedium,
                     ),
                     const SizedBox(height: 16.0),
                     if (state.companies.isNotEmpty) ...[
                       AnimatedDropdown(
                         initialData: _company?.info.name,
-                        labelText: 'Company',
-                        hintText: 'Select company',
+                        labelText: _locale.tr('company'),
+                        hintText: _locale.tr('select_company'),
                         values:
                             state.companies.map((e) => e.info.name).toList(),
                         onChanged: (String name) => _onSelectCompany(
@@ -737,8 +747,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     ],
                     AnimatedDropdown(
                       initialData: _project?.info.name,
-                      labelText: 'Project',
-                      hintText: 'Select project',
+                      labelText: _locale.tr('project'),
+                      hintText: _locale.tr('select_project'),
                       values: state.projects.map((e) => e.info.name).toList(),
                       onChanged: (String name) => _onSelectProject(
                         name: name,
@@ -751,8 +761,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerSection,
-                            labelText: 'Section',
-                            hintText: 'Block or section',
+                            labelText: _locale.tr('section'),
+                            hintText: _locale.tr('block_section'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(32),
                             ],
@@ -763,8 +773,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerFloor,
-                            labelText: 'Floor',
-                            hintText: 'Floor apartment',
+                            labelText: _locale.tr('floor'),
+                            hintText: _locale.tr('floor_apartment'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(3),
                               FilteringTextInputFormatter.digitsOnly,
@@ -780,8 +790,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerNumber,
-                            labelText: 'Unit number',
-                            hintText: 'Enter number',
+                            labelText: _locale.tr('unit_number'),
+                            hintText: _locale.tr('enter_number'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(32),
                             ],
@@ -792,8 +802,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerType,
-                            labelText: 'Unit type',
-                            hintText: 'Enter type',
+                            labelText: _locale.tr('unit_type'),
+                            hintText: _locale.tr('enter_type'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(32),
                             ],
@@ -808,8 +818,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerRooms,
-                            labelText: 'Rooms',
-                            hintText: 'Number of rooms',
+                            labelText: _locale.tr('rooms'),
+                            hintText: _locale.tr('number_rooms'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(3),
                               FilteringTextInputFormatter.digitsOnly,
@@ -821,8 +831,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerBathrooms,
-                            labelText: 'Bathrooms',
-                            hintText: 'Number of bathrooms',
+                            labelText: _locale.tr('bathrooms'),
+                            hintText: _locale.tr('number_bathrooms'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(3),
                               FilteringTextInputFormatter.digitsOnly,
@@ -838,8 +848,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerTotal,
-                            labelText: 'Total area (m2)',
-                            hintText: 'Enter area',
+                            labelText: _locale.tr('total_area_m'),
+                            hintText: _locale.tr('enter_area'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(10),
                               FilteringTextInputFormatter.allow(
@@ -853,8 +863,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         Expanded(
                           child: CustomTextField(
                             controller: _controllerLiving,
-                            labelText: 'Living area (m2)',
-                            hintText: 'Enter area',
+                            labelText: _locale.tr('living_area_m'),
+                            hintText: _locale.tr('enter_area'),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(10),
                               FilteringTextInputFormatter.allow(
@@ -869,14 +879,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ],
                   const SizedBox(height: 28.0),
                   Text(
-                    'Calculation data',
+                    _locale.tr('calculation_data'),
                     style: AppTextStyles.paragraphLMedium,
                   ),
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'Calculation name',
+                    labelText: _locale.tr('name'),
+                    hintText: _locale.tr('calculation_name'),
                     errorText: _errorTextName,
                     maxLines: 2,
                     inputFormatters: [
@@ -887,8 +897,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerDescription,
-                    labelText: 'Calculation notes',
-                    hintText: 'Field for notes, clients info, etc..',
+                    labelText: _locale.tr('calculation_notes'),
+                    hintText: _locale.tr('field_notes'),
                     maxLines: 14,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(1024),
@@ -900,15 +910,15 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                       IconDropdown(
                         initialData: _currency!,
                         values: kCurrencies,
-                        labelText: 'Currency',
+                        labelText: _locale.tr('currency'),
                         onChanged: _onSelectCurrency,
                       ),
                       const SizedBox(width: 8.0),
                       Expanded(
                         child: CustomTextField(
                           controller: _controllerPrice,
-                          labelText: 'Unit price',
-                          hintText: 'Enter value',
+                          labelText: _locale.tr('unit_price'),
+                          hintText: _locale.tr('enter_value'),
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(10),
                             FilteringTextInputFormatter.digitsOnly,
@@ -925,8 +935,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         child: CustomTextField(
                           controller: _controllerDepositVal,
                           enabled: _priceValid,
-                          labelText: 'First deposit in ($_currency)',
-                          hintText: 'Enter value',
+                          labelText:
+                              _locale.tr('first_deposit_currency', args: [
+                            '$_currency',
+                          ]),
+                          hintText: _locale.tr('enter_value'),
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(10),
                             FilteringTextInputFormatter.digitsOnly,
@@ -939,8 +952,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                         child: CustomTextField(
                           controller: _controllerDepositPct,
                           enabled: _priceValid,
-                          labelText: 'First deposit in (%)',
-                          hintText: 'Enter percent',
+                          labelText: _locale.tr('first_deposit_percent'),
+                          hintText: _locale.tr('enter_percent'),
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(3),
                             FilteringTextInputFormatter.digitsOnly,
@@ -953,8 +966,8 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   const SizedBox(height: 16.0),
                   AnimatedDropdown(
                     initialData: _period?.name,
-                    labelText: 'Calculation period',
-                    hintText: 'Select period',
+                    labelText: _locale.tr('calculation_period'),
+                    hintText: _locale.tr('select_period'),
                     values: kPeriods.map((e) => e.name).toList(),
                     onChanged: _onSelectCalculationPeriod,
                   ),
@@ -966,7 +979,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           addDay: false,
                           initialDate: _startInstallments,
                           lastDate: _endInstallments,
-                          labelText: 'Start of installments',
+                          labelText: _locale.tr('start_installments'),
                           hintFormat: kDatePattern,
                           onChanged: _onSelectStartInstallments,
                         ),
@@ -977,7 +990,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                           addDay: true,
                           initialDate: _endInstallments,
                           firstDate: _startInstallments,
-                          labelText: 'End of installments',
+                          labelText: _locale.tr('end_installments'),
                           hintFormat: kDatePattern,
                           onChanged: _onSelectEndInstallments,
                         ),
@@ -986,7 +999,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ),
                   const SizedBox(height: 28.0),
                   Text(
-                    'Extra expense',
+                    _locale.tr('extra_expense'),
                     style: AppTextStyles.paragraphLMedium,
                   ),
                   const SizedBox(height: 16.0),
@@ -1004,20 +1017,20 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ),
                   CustomTextButton(
                     prefixIcon: AppIcons.add,
-                    text: 'Add extra expense',
+                    text: _locale.tr('add_extra_expense'),
                     onTap: _showManageExtraModal,
                   ),
                   const SizedBox(height: 12.0),
                   CustomButton(
                     prefixIcon: AppIcons.print,
-                    text: 'Print PDF',
+                    text: _locale.tr('print_pdf'),
                     backgroundColor: AppColors.info,
                     onTap: () => _printPdf(state),
                   ),
                   const SizedBox(height: 40.0),
                   if (state.calculation == null) ...[
                     CustomButton(
-                      text: 'Create calculation',
+                      text: _locale.tr('create_calculation'),
                       onTap: () => _createCalculation(
                         context: context,
                         state: state,
@@ -1025,14 +1038,14 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                     ),
                   ] else ...[
                     CustomButton(
-                      text: 'Save changes',
+                      text: _locale.tr('save_changes'),
                       onTap: () => _updateCalculation(context),
                     ),
                   ],
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Calculations page',
+                    text: _locale.tr('back_calculations'),
                     onTap: widget.navigateToCalculationsPage,
                   ),
                 ],
@@ -1317,7 +1330,7 @@ class _ProjectHeader extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    state.userData!.credential.email,
+                    _getUserContact(),
                     style: AppTextStyles.captionRegular.copyWith(
                       color: AppColors.scaffoldSecondary,
                     ),
@@ -1451,49 +1464,49 @@ class _ProjectContent extends StatelessWidget {
                 children: [
                   if (section.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Section',
+                      title: _locale.tr('section'),
                       data: section,
                     ),
                   ],
                   if (floor.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Floor',
+                      title: _locale.tr('floor'),
                       data: floor,
                     ),
                   ],
                   if (number.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Unit number',
+                      title: _locale.tr('unit_number'),
                       data: number,
                     ),
                   ],
                   if (type.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Unit type',
+                      title: _locale.tr('unit_type'),
                       data: type,
                     ),
                   ],
                   if (rooms.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Rooms',
+                      title: _locale.tr('rooms'),
                       data: rooms,
                     ),
                   ],
                   if (bathrooms.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Bathrooms',
+                      title: _locale.tr('bathrooms'),
                       data: bathrooms,
                     ),
                   ],
                   if (total.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Total area',
+                      title: _locale.tr('total_area'),
                       data: '$total m2',
                     ),
                   ],
                   if (living.isNotEmpty) ...[
                     _ProjectFeatureItem(
-                      title: 'Living area',
+                      title: _locale.tr('living_area'),
                       data: '$living m2',
                     ),
                   ],
@@ -1567,7 +1580,7 @@ class _ProjectFooter extends StatelessWidget {
         children: [
           if (company != null) ...[
             Text(
-              'About company',
+              _locale.tr('about_company'),
               style: AppTextStyles.captionMedium.copyWith(
                 fontSize: 10.0,
                 color: AppColors.scaffoldSecondary,
@@ -1673,36 +1686,39 @@ class _CalculationInfo extends StatelessWidget {
       children: [
         Text(
           project != null
-              ? 'Calculations for ${project!.info.name}'
-              : 'Calculations',
+              ? _locale.tr('calculations_for', args: [
+                  project!.info.name,
+                ])
+              : _locale.tr('calculations'),
           style: AppTextStyles.paragraphMSemiBold,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 6.0),
         _calculationInfoItem(
-          title: 'Unit price',
+          title: _locale.tr('unit_price'),
           data: '$currency$price',
         ),
         if (depositVal.isNotEmpty) ...[
           _calculationInfoItem(
-            title: 'First deposit',
+            title: _locale.tr('first_deposit'),
             data: '$currency$depositVal — $depositPct%',
           ),
         ],
         if (payment > 0) ...[
           _calculationInfoItem(
-            title: 'Installment plan',
-            data:
-                '${period!.name}(~$currency$payment) — $paymentsCount payment(s)',
+            title: _locale.tr('installment_plan'),
+            data: _locale.tr('payments', args: [
+              '${period!.name}(~$currency$payment) — $paymentsCount',
+            ]),
           ),
           _calculationInfoItem(
-            title: 'Installment terms',
+            title: _locale.tr('installment_terms'),
             data: '$start — $end',
           ),
           if (price != totalPrice) ...[
             _calculationInfoItem(
-              title: 'Total price (Unit price + Taxes and fees)',
+              title: _locale.tr('total_price'),
               data: '$currency$totalPrice',
             ),
           ],
@@ -1710,11 +1726,11 @@ class _CalculationInfo extends StatelessWidget {
           _calculationItem(
             addColor: true,
             number: '№',
-            date: 'Payment date',
-            total: 'Total',
-            payment: 'Installments',
-            extraPrice: 'Taxes and fees',
-            extraDescription: 'Description',
+            date: _locale.tr('payment_date'),
+            total: _locale.tr('total'),
+            payment: _locale.tr('installments'),
+            extraPrice: _locale.tr('taxes_fees'),
+            extraDescription: _locale.tr('description'),
           ),
           ...calculations,
         ],

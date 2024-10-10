@@ -17,11 +17,11 @@ import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/layouts/tables_layout.dart';
+import '../../../widgets/views/table_view.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
-import '../../../widgets/uncategorized/empty_state_view.dart';
+import '../../../widgets/views/empty_state_view.dart';
 import 'blocs/projects_bloc/projects_bloc.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -94,7 +94,8 @@ class _ProjectsPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInAnimation(
-      child: TablesLayout(
+      child: TableView(
+        screenSize: screenSize,
         header: SizedBox(
           height: 40.0,
           child: Row(
@@ -123,6 +124,7 @@ class _ProjectsPageContent extends StatelessWidget {
           ),
         ),
         body: EmptyStateView(
+          screenSize: screenSize,
           isEmpty: state.projects.isEmpty,
           animation: AppAnimations.addProject,
           title: 'Add first project',
