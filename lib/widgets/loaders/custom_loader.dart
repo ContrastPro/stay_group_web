@@ -3,6 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../resources/app_colors.dart';
 import '../../resources/app_text_styles.dart';
+import '../../utils/translate_locale.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class CustomLoader extends StatelessWidget {
   const CustomLoader({
@@ -28,7 +31,7 @@ class CustomLoader extends StatelessWidget {
             Material(
               color: AppColors.transparent,
               child: Text(
-                'Loading...',
+                _locale.tr('loading'),
                 style: AppTextStyles.subtitleMedium,
               ),
             ),

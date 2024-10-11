@@ -11,6 +11,6 @@ class TranslateLocale {
     String field, {
     List<String>? args,
   }) {
-    return '$_localeRoute.$field'.tr(args: args ?? []);
+    return '$_localeRoute.$field'.tr(args: args);
   }
 }

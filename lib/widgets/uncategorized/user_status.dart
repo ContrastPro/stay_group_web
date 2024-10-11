@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../resources/app_colors.dart';
+import '../../utils/translate_locale.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class UserStatus extends StatelessWidget {
   const UserStatus({
@@ -38,7 +41,9 @@ class UserStatus extends StatelessWidget {
           const SizedBox(width: 8.0),
           Flexible(
             child: Text(
-              archived ? 'Inactive' : 'Active',
+              _locale.tr(
+                archived ? 'inactive' : 'active',
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

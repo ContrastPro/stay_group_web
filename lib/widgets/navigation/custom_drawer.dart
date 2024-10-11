@@ -14,6 +14,9 @@ import '../../resources/app_colors.dart';
 import '../../resources/app_icons.dart';
 import '../../resources/app_text_styles.dart';
 import '../../utils/constants.dart';
+import '../../utils/translate_locale.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
@@ -25,63 +28,63 @@ class CustomDrawer extends StatelessWidget {
   final String? fullPath;
   final Size screenSize;
 
-  static const List<BottomNavigationBarItemModel> _tabsManager = [
+  static final List<BottomNavigationBarItemModel> _tabsManager = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: 'Companies', //Dashboard
+      title: _locale.tr('companies'),
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.projects,
-      title: 'Projects',
+      title: _locale.tr('projects'),
       routePath: ProjectsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.team,
-      title: 'Team',
+      title: _locale.tr('team'),
       routePath: TeamPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.calculation,
-      title: 'Calculations',
+      title: _locale.tr('calculations'),
       routePath: CalculationsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.settings,
-      title: 'Account settings',
+      title: _locale.tr('account_settings'),
       routePath: AccountSettingsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.signOut,
-      title: 'Logout',
+      title: _locale.tr('logout'),
       routePath: 'sign_out',
     ),
   ];
 
-  static const List<BottomNavigationBarItemModel> _tabsWorker = [
+  static final List<BottomNavigationBarItemModel> _tabsWorker = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: 'Companies', //Dashboard
+      title: _locale.tr('companies'),
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.projects,
-      title: 'Projects',
+      title: _locale.tr('projects'),
       routePath: ProjectsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.calculation,
-      title: 'Calculations',
+      title: _locale.tr('calculations'),
       routePath: CalculationsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.settings,
-      title: 'Account settings',
+      title: _locale.tr('account_settings'),
       routePath: AccountSettingsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.signOut,
-      title: 'Logout',
+      title: _locale.tr('logout'),
       routePath: 'sign_out',
     ),
   ];

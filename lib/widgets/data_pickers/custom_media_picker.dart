@@ -8,6 +8,9 @@ import '../../resources/app_text_styles.dart';
 import '../../services/in_app_notification_service.dart';
 import '../../services/media_service.dart';
 import '../../utils/constants.dart';
+import '../../utils/translate_locale.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class CustomMediaPicker extends StatelessWidget {
   const CustomMediaPicker({
@@ -34,14 +37,14 @@ class CustomMediaPicker extends StatelessWidget {
 
     if (!kImageFormats.contains(response.format)) {
       return InAppNotificationService.show(
-        title: 'Wrong file format',
+        title: _locale.tr('wrong_file_format'),
         type: InAppNotificationType.error,
       );
     }
 
     if (response.data!.lengthInBytes > kFileWeightMax) {
       return InAppNotificationService.show(
-        title: 'File too large',
+        title: _locale.tr('file_large'),
         type: InAppNotificationType.error,
       );
     }
@@ -147,7 +150,7 @@ class CustomMediaPicker extends StatelessWidget {
                       ),
                       const SizedBox(width: 8.0),
                       Text(
-                        'Click to choose file',
+                        _locale.tr('click_choose_file'),
                         style: AppTextStyles.paragraphMRegular.copyWith(
                           color: AppColors.iconPrimary,
                         ),

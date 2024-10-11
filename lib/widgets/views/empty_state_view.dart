@@ -56,6 +56,7 @@ class EmptyStateView extends StatelessWidget {
                 Text(
                   title,
                   style: AppTextStyles.subtitleBold,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8.0),
                 Text(

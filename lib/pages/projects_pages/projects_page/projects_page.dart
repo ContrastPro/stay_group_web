@@ -13,16 +13,19 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/views/table_view.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
 import '../../../widgets/views/empty_state_view.dart';
+import '../../../widgets/views/table_view.dart';
 import 'blocs/projects_bloc/projects_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('projects.projects');
 
 class ProjectsPage extends StatelessWidget {
   const ProjectsPage({
@@ -41,9 +44,9 @@ class ProjectsPage extends StatelessWidget {
     return BlocProvider<ProjectsBloc>(
       create: (_) => ProjectsBloc(
         authRepository: context.read<AuthRepository>(),
+        usersRepository: context.read<UsersRepository>(),
         projectsRepository: context.read<ProjectsRepository>(),
         storageRepository: context.read<StorageRepository>(),
-        usersRepository: context.read<UsersRepository>(),
       )..add(
           const Init(),
         ),
@@ -102,13 +105,13 @@ class _ProjectsPageContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Projects',
+                _locale.tr('projects'),
                 style: AppTextStyles.head6Medium,
               ),
               if (screenSize.width >= kMobileScreenWidth) ...[
                 CustomButton(
                   prefixIcon: AppIcons.add,
-                  text: 'Add project',
+                  text: _locale.tr('add_project'),
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageProjectPage,
                 ),
@@ -127,10 +130,9 @@ class _ProjectsPageContent extends StatelessWidget {
           screenSize: screenSize,
           isEmpty: state.projects.isEmpty,
           animation: AppAnimations.addProject,
-          title: 'Add first project',
-          description:
-              "You don't added your first project yet.\nLet's get started!",
-          buttonText: 'Add project',
+          title: _locale.tr('add_first_project'),
+          description: _locale.tr('not_project'),
+          buttonText: _locale.tr('add_project'),
           onTap: navigateToManageProjectPage,
           content: Column(
             children: [
@@ -147,25 +149,25 @@ class _ProjectsPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Project Name',
+                      title: _locale.tr('project_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 20,
-                      title: 'Location',
+                      title: _locale.tr('location'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 25,
-                      title: 'Description',
+                      title: _locale.tr('description'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Date Creation',
+                      title: _locale.tr('date_creation'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ] else ...[
                     TableCellItem(
@@ -176,12 +178,12 @@ class _ProjectsPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Project Name',
+                      title: _locale.tr('project_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 40,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ],
                 ],

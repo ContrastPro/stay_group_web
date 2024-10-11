@@ -23,9 +23,9 @@ part 'manage_project_state.dart';
 class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
   ManageProjectBloc({
     required this.authRepository,
+    required this.usersRepository,
     required this.projectsRepository,
     required this.storageRepository,
-    required this.usersRepository,
   }) : super(const ManageProjectState()) {
     on<Init>((event, emit) async {
       await requestDelay();
@@ -221,7 +221,7 @@ class ManageProjectBloc extends Bloc<ManageProjectEvent, ManageProjectState> {
   }
 
   final AuthRepository authRepository;
+  final UsersRepository usersRepository;
   final ProjectsRepository projectsRepository;
   final StorageRepository storageRepository;
-  final UsersRepository usersRepository;
 }

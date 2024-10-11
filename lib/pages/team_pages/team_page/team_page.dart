@@ -11,17 +11,20 @@ import '../../../resources/app_icons.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
-import '../../../widgets/views/table_view.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/tables/table_cell_item.dart';
 import '../../../widgets/tables/table_item.dart';
-import '../../../widgets/views/empty_state_view.dart';
 import '../../../widgets/uncategorized/user_status.dart';
+import '../../../widgets/views/empty_state_view.dart';
+import '../../../widgets/views/table_view.dart';
 import 'blocs/team_bloc/team_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('team.team');
 
 class TeamPage extends StatelessWidget {
   const TeamPage({
@@ -116,13 +119,13 @@ class _TeamPageContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Team',
+                _locale.tr('team'),
                 style: AppTextStyles.head6Medium,
               ),
               if (screenSize.width >= kMobileScreenWidth) ...[
                 CustomButton(
                   prefixIcon: AppIcons.add,
-                  text: 'Add user',
+                  text: _locale.tr('add_user'),
                   backgroundColor: AppColors.info,
                   onTap: navigateToManageUserPage,
                 ),
@@ -141,10 +144,9 @@ class _TeamPageContent extends StatelessWidget {
           screenSize: screenSize,
           isEmpty: state.users.isEmpty,
           animation: AppAnimations.addUser,
-          title: 'Add first user',
-          description:
-              "You don't added your first user yet.\nLet's get started!",
-          buttonText: 'Add user',
+          title: _locale.tr('add_first_user'),
+          description: _locale.tr('not_user'),
+          buttonText: _locale.tr('add_user'),
           onTap: navigateToManageUserPage,
           content: Column(
             children: [
@@ -161,31 +163,31 @@ class _TeamPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Customer Name',
+                      title: _locale.tr('customer_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 20,
-                      title: 'Email',
+                      title: _locale.tr('email'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 10,
                       alignment: Alignment.center,
-                      title: 'Role',
+                      title: _locale.tr('role'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Status',
+                      title: _locale.tr('status'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Date Joined',
+                      title: _locale.tr('date_joined'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 15,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ] else ...[
                     TableCellItem(
@@ -196,12 +198,12 @@ class _TeamPageContent extends StatelessWidget {
                         left: 16.0,
                         right: 4.0,
                       ),
-                      title: 'Customer Name',
+                      title: _locale.tr('customer_name'),
                     ),
-                    const TableCellItem(
+                    TableCellItem(
                       flex: 40,
                       alignment: Alignment.center,
-                      title: 'Actions',
+                      title: _locale.tr('actions'),
                     ),
                   ],
                 ],
@@ -234,10 +236,10 @@ class _TeamPageContent extends StatelessWidget {
                             title: state.users[i].credential.email,
                             maxLines: 1,
                           ),
-                          const TableCellItem(
+                          TableCellItem(
                             flex: 10,
                             alignment: Alignment.center,
-                            title: 'Worker',
+                            title: _locale.tr('worker'),
                             maxLines: 1,
                           ),
                           TableCellItem(

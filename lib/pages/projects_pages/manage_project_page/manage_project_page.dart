@@ -16,6 +16,7 @@ import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
@@ -28,6 +29,8 @@ import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 import '../../uncategorized_pages/media_viewer_page/media_viewer_page.dart';
 import 'blocs/manage_project_bloc/manage_project_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('projects.manage_project');
 
 class ManageProjectPage extends StatefulWidget {
   const ManageProjectPage({
@@ -141,8 +144,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     _switchErrorDescription();
 
     if (state.projects.length > 9) {
-      const String errorLimit =
-          'The limit for creating projects for the workspace has been reached';
+      final String errorLimit = _locale.tr('limit_reached');
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
@@ -151,21 +153,21 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Project name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
     if (location.isEmpty || !_locationValid) {
-      const String errorLocation = 'Location is too short';
+      final String errorLocation = _locale.tr('location_short');
 
       _switchErrorLocation(error: errorLocation);
       return _showErrorMessage(errorMessage: errorLocation);
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorDescription = 'Project description is too short';
+      final String errorDescription = _locale.tr('description_short');
 
       _switchErrorDescription(error: errorDescription);
       return _showErrorMessage(errorMessage: errorDescription);
@@ -194,21 +196,21 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Project name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
     if (location.isEmpty || !_locationValid) {
-      const String errorLocation = 'Location is too short';
+      final String errorLocation = _locale.tr('location_short');
 
       _switchErrorLocation(error: errorLocation);
       return _showErrorMessage(errorMessage: errorLocation);
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorDescription = 'Project description is too short';
+      final String errorDescription = _locale.tr('description_short');
 
       _switchErrorDescription(error: errorDescription);
       return _showErrorMessage(errorMessage: errorDescription);
@@ -269,9 +271,9 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
     return BlocProvider<ManageProjectBloc>(
       create: (_) => ManageProjectBloc(
         authRepository: context.read<AuthRepository>(),
+        usersRepository: context.read<UsersRepository>(),
         projectsRepository: context.read<ProjectsRepository>(),
         storageRepository: context.read<StorageRepository>(),
-        usersRepository: context.read<UsersRepository>(),
       )..add(
           Init(
             id: widget.id,
@@ -293,9 +295,9 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: state.project == null
-                  ? 'Project successfully created'
-                  : 'Project successfully updated',
+              title: _locale.tr(
+                state.project == null ? 'project_created' : 'project_updated',
+              ),
               type: InAppNotificationType.success,
             );
 
@@ -324,15 +326,19 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    state.project == null ? 'Add new project' : 'Edit project',
+                    _locale.tr(
+                      state.project == null ? 'add_project' : 'edit_project',
+                    ),
                     style: AppTextStyles.head5SemiBold,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    state.project == null
-                        ? 'Create project card'
-                        : 'Edit project card',
+                    _locale.tr(
+                      state.project == null
+                          ? 'create_project_card'
+                          : 'edit_project_card',
+                    ),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -340,7 +346,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   ),
                   const SizedBox(height: 28.0),
                   CustomMediaPicker(
-                    labelText: 'Upload images',
+                    labelText: _locale.tr('upload_images'),
                     media: _media,
                     onPickMedia: _onPickMedia,
                     onDeleteMedia: _onDeleteMedia,
@@ -348,8 +354,8 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 8.0),
                   CustomTextField(
                     controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'Project name',
+                    labelText: _locale.tr('name'),
+                    hintText: _locale.tr('project_name'),
                     errorText: _errorTextName,
                     maxLines: 2,
                     inputFormatters: [
@@ -360,8 +366,8 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerLocation,
-                    labelText: 'Location',
-                    hintText: 'Project location',
+                    labelText: _locale.tr('location'),
+                    hintText: _locale.tr('project_location'),
                     errorText: _errorTextLocation,
                     maxLines: 1,
                     inputFormatters: [
@@ -372,8 +378,8 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerDescription,
-                    labelText: 'Description',
-                    hintText: 'Project description',
+                    labelText: _locale.tr('description'),
+                    hintText: _locale.tr('project_description'),
                     errorText: _errorTextDescription,
                     maxLines: 14,
                     inputFormatters: [
@@ -384,7 +390,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 40.0),
                   if (state.project == null) ...[
                     CustomButton(
-                      text: 'Create project',
+                      text: _locale.tr('create_project'),
                       onTap: () => _createProject(
                         context: context,
                         state: state,
@@ -392,7 +398,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                     ),
                   ] else ...[
                     CustomButton(
-                      text: 'Save changes',
+                      text: _locale.tr('save_changes'),
                       onTap: () => _updateProject(
                         context: context,
                         state: state,
@@ -402,7 +408,7 @@ class _ManageProjectPageState extends State<ManageProjectPage> {
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Projects page',
+                    text: _locale.tr('back_projects'),
                     onTap: widget.navigateToProjectsPage,
                   ),
                 ],
@@ -497,7 +503,7 @@ class _ProjectPreview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name.isNotEmpty ? name : 'Project Name',
+                name.isNotEmpty ? name : _locale.tr('project_name'),
                 style: AppTextStyles.subtitleSemiBold,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -515,7 +521,7 @@ class _ProjectPreview extends StatelessWidget {
                   const SizedBox(width: 6.0),
                   Flexible(
                     child: Text(
-                      location.isNotEmpty ? location : 'location',
+                      location.isNotEmpty ? location : _locale.tr('location'),
                       style: AppTextStyles.paragraphSRegular,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -525,13 +531,13 @@ class _ProjectPreview extends StatelessWidget {
               ),
               const SizedBox(height: 18.0),
               Text(
-                'Project details',
+                _locale.tr('project_details'),
                 style: AppTextStyles.paragraphMSemiBold,
               ),
               Text(
                 description.isNotEmpty
                     ? description
-                    : 'Ownership, Date of construction, etc..',
+                    : _locale.tr('ownership_date'),
                 style: AppTextStyles.paragraphSRegular,
               ),
             ],
@@ -601,7 +607,9 @@ class _BannerItem extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Max file size: ${formatMediaSize(kFileWeightMax)}',
+              _locale.tr('file_size', args: [
+                formatMediaSize(kFileWeightMax),
+              ]),
               style: AppTextStyles.captionBold.copyWith(
                 color: AppColors.iconPrimary.withOpacity(0.6),
               ),

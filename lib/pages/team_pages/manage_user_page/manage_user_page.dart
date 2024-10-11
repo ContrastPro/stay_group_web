@@ -12,6 +12,7 @@ import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helpers.dart';
+import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_icon_button.dart';
@@ -20,6 +21,8 @@ import '../../../widgets/layouts/preview_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
 import 'blocs/manage_user_bloc/manage_user_bloc.dart';
+
+const TranslateLocale _locale = TranslateLocale('team.manage_user');
 
 class ManageUserPage extends StatefulWidget {
   const ManageUserPage({
@@ -110,8 +113,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
     _switchErrorPassword();
 
     if (state.users.length > 3) {
-      const String errorLimit =
-          'The limit for creating users for the workspace has been reached';
+      final String errorLimit = _locale.tr('limit_reached');
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
@@ -120,21 +122,21 @@ class _ManageUserPageState extends State<ManageUserPage> {
     final String password = _controllerPassword.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'User name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
     if (email.isEmpty || !_emailValid) {
-      const String errorFormat = 'Wrong email format';
+      final String errorFormat = _locale.tr('wrong_format');
 
       _switchErrorEmail(error: errorFormat);
       return _showErrorMessage(errorMessage: errorFormat);
     }
 
     if (password.isEmpty || !_passwordValid) {
-      const String errorLength = 'User password is too short';
+      final String errorLength = _locale.tr('password_short');
 
       _switchErrorPassword(error: errorLength);
       return _showErrorMessage(errorMessage: errorLength);
@@ -155,7 +157,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
     final String name = _controllerName.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'User name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
@@ -217,9 +219,9 @@ class _ManageUserPageState extends State<ManageUserPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: state.userData == null
-                  ? 'User successfully created'
-                  : 'User successfully updated',
+              title: _locale.tr(
+                state.userData == null ? 'user_created' : 'user_updated',
+              ),
               type: InAppNotificationType.success,
             );
 
@@ -253,17 +255,19 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    state.userData == null
-                        ? 'Add new team member'
-                        : 'Edit team member',
+                    _locale.tr(
+                      state.userData == null ? 'add_member' : 'edit_member',
+                    ),
                     style: AppTextStyles.head5SemiBold,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    state.userData == null
-                        ? 'Create your team member'
-                        : 'Edit your team member info',
+                    _locale.tr(
+                      state.userData == null
+                          ? 'create_team_member'
+                          : 'edit_team_member',
+                    ),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -272,8 +276,8 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   const SizedBox(height: 28.0),
                   CustomTextField(
                     controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'User name',
+                    labelText: _locale.tr('name'),
+                    hintText: _locale.tr('user_name'),
                     prefixIcon: AppIcons.user,
                     errorText: _errorTextName,
                     inputFormatters: [
@@ -285,8 +289,8 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   CustomTextField(
                     controller: _controllerEmail,
                     enabled: state.userData == null,
-                    labelText: 'Email',
-                    hintText: 'User email',
+                    labelText: _locale.tr('email'),
+                    hintText: _locale.tr('user_email'),
                     prefixIcon: AppIcons.mail,
                     errorText: _errorTextEmail,
                     inputFormatters: [
@@ -298,8 +302,8 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     const SizedBox(height: 16.0),
                     CustomTextField(
                       controller: _controllerPassword,
-                      labelText: 'Password',
-                      hintText: 'User password',
+                      labelText: _locale.tr('password'),
+                      hintText: _locale.tr('user_password'),
                       isObscureText: _isObscurePassword,
                       prefixIcon: AppIcons.lock,
                       suffixIcon: _isObscurePassword
@@ -314,7 +318,7 @@ class _ManageUserPageState extends State<ManageUserPage> {
                     ),
                     const SizedBox(height: 40.0),
                     CustomButton(
-                      text: 'Create user',
+                      text: _locale.tr('create_user'),
                       onTap: () => _createUser(
                         context: context,
                         state: state,
@@ -323,14 +327,14 @@ class _ManageUserPageState extends State<ManageUserPage> {
                   ] else ...[
                     const SizedBox(height: 40.0),
                     CustomButton(
-                      text: 'Save changes',
+                      text: _locale.tr('save_changes'),
                       onTap: () => _updateUser(context),
                     ),
                   ],
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Team page',
+                    text: _locale.tr('back_team'),
                     onTap: widget.navigateToTeamPage,
                   ),
                 ],
@@ -409,7 +413,7 @@ class _UserPreview extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     getFirstLetter(
-                      name.isNotEmpty ? name : 'User Name',
+                      name.isNotEmpty ? name : _locale.tr('user_name'),
                     ),
                     style: AppTextStyles.subtitleMedium.copyWith(
                       color: AppColors.scaffoldSecondary,
@@ -423,7 +427,7 @@ class _UserPreview extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        name.isNotEmpty ? name : 'User Name',
+                        name.isNotEmpty ? name : _locale.tr('user_name'),
                         style: AppTextStyles.paragraphLMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

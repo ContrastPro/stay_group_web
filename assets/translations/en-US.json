@@ -160,14 +160,97 @@
       "actions": "Actions"
     },
     "manage_company": {
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_"
+      "limit_reached": "The limit for creating companies for the workspace has been reached",
+      "name_short": "Company name is too short",
+      "description_short": "Company description is too short",
+      "company_created": "Company successfully created",
+      "company_updated": "Company successfully updated",
+      "add_company": "Add new company",
+      "edit_company": "Edit company",
+      "create_company_card": "Create building company card",
+      "edit_company_card": "Edit building company card",
+      "name": "Name",
+      "company_name": "Company name",
+      "description": "Description",
+      "company_description": "Company description",
+      "create_company": "Create company",
+      "save_changes": "Save changes",
+      "back_dashboard": "Back to Dashboard page",
+      "ownership_location": "Ownership, Location, etc.."
+    }
+  },
+  "projects": {
+    "manage_project": {
+      "limit_reached": "The limit for creating projects for the workspace has been reached",
+      "name_short": "Project name is too short",
+      "location_short": "Location is too short",
+      "description_short": "Project description is too short",
+      "project_created": "Project successfully created",
+      "project_updated": "Project successfully updated",
+      "add_project": "Add new project",
+      "edit_project": "Edit project",
+      "create_project_card": "Create project card",
+      "edit_project_card": "Edit project card",
+      "upload_images": "Upload images",
+      "name": "Name",
+      "project_name": "Project name",
+      "location": "Location",
+      "project_location": "Project location",
+      "description": "Description",
+      "project_description": "Project description",
+      "create_project": "Create project",
+      "save_changes": "Save changes",
+      "back_projects": "Back to Projects page",
+      "project_details": "Project details",
+      "ownership_date": "Ownership, Date of construction, etc..",
+      "file_size": "Max file size: {}"
+    },
+    "projects": {
+      "projects": "Projects",
+      "add_project": "Add project",
+      "add_first_project": "Add first project",
+      "not_project": "You don't added your first project yet.\nLet's get started!",
+      "project_name": "Project Name",
+      "location": "Location",
+      "description": "Description",
+      "date_creation": "Date Creation",
+      "actions": "Actions"
+    }
+  },
+  "team": {
+    "manage_user": {
+      "limit_reached": "The limit for creating users for the workspace has been reached",
+      "name_short": "User name is too short",
+      "wrong_format": "Wrong email format",
+      "password_short": "User password is too short",
+      "user_created": "User successfully created",
+      "user_updated": "User successfully updated",
+      "add_member": "Add new team member",
+      "edit_member": "Edit team member",
+      "create_team_member": "Create your team member",
+      "edit_team_member": "Edit your team member info",
+      "name": "Name",
+      "user_name": "User name",
+      "email": "Email",
+      "user_email": "User email",
+      "password": "Password",
+      "user_password": "User password",
+      "create_user": "Create user",
+      "save_changes": "Save changes",
+      "back_team": "Back to Team page"
+    },
+    "team": {
+      "team": "Team",
+      "add_user": "Add user",
+      "add_first_user": "Add first user",
+      "not_user": "You don't added your first user yet.\nLet's get started!",
+      "customer_name": "Customer Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "date_joined": "Date Joined",
+      "actions": "Actions",
+      "worker": "Worker"
     }
   },
   "system": {
@@ -178,24 +261,17 @@
     "account_archived_deleted": "You have been logged out due to account archived or deleted",
     "account_blocking": "You have been logged out due to account blocking",
     "subscription_expired": "Your subscription is expired",
-    "_": "_",
-    "_": "_",
-    "_": "_",
-    "_": "_",
-    "_": "_",
-    "_": "_",
-    "_": "_"
-  },
-  "_": {
-    "_": {
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_",
-      "_": "_"
-    }
+    "wrong_file_format": "Wrong file format",
+    "file_large": "File too large",
+    "click_choose_file": "Click to choose file",
+    "loading": "Loading...",
+    "companies": "Companies",
+    "projects": "Projects",
+    "team": "Team",
+    "calculations": "Calculations",
+    "account_settings": "Account settings",
+    "logout": "Logout",
+    "inactive": "Inactive",
+    "active": "Active"
   }
 }

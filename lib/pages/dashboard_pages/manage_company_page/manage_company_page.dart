@@ -120,8 +120,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     _switchErrorDescription();
 
     if (state.companies.length > 2) {
-      const String errorLimit =
-          'The limit for creating companies for the workspace has been reached';
+      final String errorLimit = _locale.tr('limit_reached');
       return _showErrorMessage(errorMessage: errorLimit);
     }
 
@@ -129,14 +128,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Company name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorDescription = 'Company description is too short';
+      final String errorDescription = _locale.tr('description_short');
 
       _switchErrorDescription(error: errorDescription);
       return _showErrorMessage(errorMessage: errorDescription);
@@ -162,14 +161,14 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
     final String description = _controllerDescription.text.trim();
 
     if (name.isEmpty || !_nameValid) {
-      const String errorName = 'Company name is too short';
+      final String errorName = _locale.tr('name_short');
 
       _switchErrorName(error: errorName);
       return _showErrorMessage(errorMessage: errorName);
     }
 
     if (description.isEmpty || !_descriptionValid) {
-      const String errorDescription = 'Company description is too short';
+      final String errorDescription = _locale.tr('description_short');
 
       _switchErrorDescription(error: errorDescription);
       return _showErrorMessage(errorMessage: errorDescription);
@@ -249,9 +248,9 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
 
           if (state.status == BlocStatus.success) {
             InAppNotificationService.show(
-              title: state.company == null
-                  ? 'Company successfully created'
-                  : 'Company successfully updated',
+              title: _locale.tr(
+                state.company == null ? 'company_created' : 'company_updated',
+              ),
               type: InAppNotificationType.success,
             );
 
@@ -280,15 +279,19 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    state.company == null ? 'Add new company' : 'Edit company',
+                    _locale.tr(
+                      state.company == null ? 'add_company' : 'edit_company',
+                    ),
                     style: AppTextStyles.head5SemiBold,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    state.company == null
-                        ? 'Create building company card'
-                        : 'Edit building company card',
+                    _locale.tr(
+                      state.company == null
+                          ? 'create_company_card'
+                          : 'edit_company_card',
+                    ),
                     style: AppTextStyles.paragraphSRegular.copyWith(
                       color: AppColors.iconPrimary,
                     ),
@@ -297,8 +300,8 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                   const SizedBox(height: 28.0),
                   CustomTextField(
                     controller: _controllerName,
-                    labelText: 'Name',
-                    hintText: 'Company name',
+                    labelText: _locale.tr('name'),
+                    hintText: _locale.tr('company_name'),
                     errorText: _errorTextName,
                     maxLines: 2,
                     inputFormatters: [
@@ -309,8 +312,8 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                   const SizedBox(height: 16.0),
                   CustomTextField(
                     controller: _controllerDescription,
-                    labelText: 'Description',
-                    hintText: 'Company description',
+                    labelText: _locale.tr('description'),
+                    hintText: _locale.tr('company_description'),
                     errorText: _errorTextDescription,
                     maxLines: 14,
                     inputFormatters: [
@@ -321,7 +324,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                   const SizedBox(height: 40.0),
                   if (state.company == null) ...[
                     CustomButton(
-                      text: 'Create company',
+                      text: _locale.tr('create_company'),
                       onTap: () => _createCompany(
                         context: context,
                         state: state,
@@ -329,7 +332,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                     ),
                   ] else ...[
                     CustomButton(
-                      text: 'Save changes',
+                      text: _locale.tr('save_changes'),
                       onTap: () => _updateCompany(
                         context: context,
                         state: state,
@@ -339,7 +342,7 @@ class _ManageCompanyPageState extends State<ManageCompanyPage> {
                   const SizedBox(height: 12.0),
                   CustomTextButton(
                     prefixIcon: AppIcons.arrowBack,
-                    text: 'Back to Dashboard page',
+                    text: _locale.tr('back_dashboard'),
                     onTap: widget.navigateToDashboardPage,
                   ),
                 ],
@@ -400,11 +403,13 @@ class _CompanyPreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            name.isNotEmpty ? name : 'Company Name',
+            name.isNotEmpty ? name : _locale.tr('company_name'),
             style: AppTextStyles.subtitleSemiBold,
           ),
           Text(
-            description.isNotEmpty ? description : 'Ownership, Location, etc..',
+            description.isNotEmpty
+                ? description
+                : _locale.tr('ownership_location'),
             style: AppTextStyles.paragraphSRegular,
           ),
         ],

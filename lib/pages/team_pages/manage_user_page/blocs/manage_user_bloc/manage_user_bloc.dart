@@ -10,10 +10,13 @@ import '../../../../../repositories/auth_repository.dart';
 import '../../../../../repositories/users_repository.dart';
 import '../../../../../utils/constants.dart';
 import '../../../../../utils/helpers.dart';
+import '../../../../../utils/translate_locale.dart';
 
 part 'manage_user_event.dart';
 
 part 'manage_user_state.dart';
+
+const TranslateLocale _locale = TranslateLocale('system');
 
 class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
   ManageUserBloc({
@@ -97,7 +100,7 @@ class ManageUserBloc extends Bloc<ManageUserEvent, ManageUserState> {
       emit(
         state.copyWith(
           status: BlocStatus.failed,
-          errorMessage: 'A user with this email address already exists',
+          errorMessage: _locale.tr('user_exists'),
         ),
       );
     });
