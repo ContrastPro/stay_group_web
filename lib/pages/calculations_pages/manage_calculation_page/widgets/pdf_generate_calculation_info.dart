@@ -10,6 +10,8 @@ import '../../../../utils/helpers.dart';
 import '../../../../utils/translate_locale.dart';
 import 'pdf_generate_document.dart';
 
+const TranslateLocale _system = TranslateLocale('system');
+
 const TranslateLocale _locale = TranslateLocale(
   'calculations.manage_calculation',
 );
@@ -88,7 +90,7 @@ Future<pdf.MultiPage> pdfGenerateCalculationInfo({
           _pdfGetCalculationInfoItem(
             title: _locale.tr('installment_plan'),
             data: _locale.tr('payments', args: [
-              '${period.name}(~$currency$payment) — $paymentsCount',
+              '${_system.tr(period.name)}(~$currency$payment) — $paymentsCount',
             ]),
             stylePrimary: stylePrimary,
             styleSecondary: styleSecondary,

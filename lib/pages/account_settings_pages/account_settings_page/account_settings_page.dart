@@ -196,11 +196,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                       controller: _controllerName,
                                       enabled: state.spaceData == null,
                                       labelText: _locale.tr('name'),
-                                      hintText: _locale.tr(
-                                        state.spaceData != null
-                                            ? 'user_name'
-                                            : 'workspace_name',
-                                      ),
+                                      hintText: _locale.tr('workspace_name'),
                                       errorText: _errorTextName,
                                       inputFormatters: [
                                         LengthLimitingTextInputFormatter(64),

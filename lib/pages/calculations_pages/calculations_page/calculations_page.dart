@@ -27,6 +27,8 @@ import '../../../widgets/views/empty_state_view.dart';
 import '../../../widgets/views/table_view.dart';
 import 'blocs/calculations_bloc/calculations_bloc.dart';
 
+const TranslateLocale _system = TranslateLocale('system');
+
 const TranslateLocale _locale = TranslateLocale('calculations.calculations');
 
 class CalculationsPage extends StatelessWidget {
@@ -130,7 +132,7 @@ class _CalculationsPageContent extends StatelessWidget {
         (e) => e.month == info.period,
       );
 
-      return period.name;
+      return _system.tr(period.name);
     }
 
     return '—';

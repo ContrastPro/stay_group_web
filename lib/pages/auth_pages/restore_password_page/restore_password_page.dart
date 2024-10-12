@@ -62,7 +62,7 @@ class _RestorePasswordPageState extends State<RestorePasswordPage> {
     final String email = _controllerEmail.text.trim();
 
     if (email.isEmpty || !_emailValid) {
-      const String errorFormat = 'Wrong email format';
+      final String errorFormat = _locale.tr('wrong_format');
 
       _switchError(error: errorFormat);
       return _showErrorMessage(errorMessage: errorFormat);

@@ -29,15 +29,15 @@ const List<String> kCurrencies = ['€', '\$', '£', '¥', '₹'];
 const List<CalculationPeriodModel> kPeriods = [
   CalculationPeriodModel(
     month: 1,
-    name: 'Every month',
+    name: 'every_month',
   ),
   CalculationPeriodModel(
     month: 3,
-    name: 'Every quarter',
+    name: 'every_quarter',
   ),
   CalculationPeriodModel(
     month: 6,
-    name: 'Every six months',
+    name: 'every_six_months',
   ),
 ];
 

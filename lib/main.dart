@@ -39,11 +39,11 @@ Future<void> main() async {
 
       await EasyLocalization.ensureInitialized();
 
+      final GoRouter routerConfig = AppRouter.generateRoute();
+
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-
-      final GoRouter routerConfig = AppRouter.generateRoute();
 
       runApp(
         EasyLocalization(

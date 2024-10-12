@@ -234,7 +234,8 @@ class _ManageCalculationExtraModalDialogState
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 22.0,
-                  vertical: 22.0,
+                ).copyWith(
+                  bottom: 22.0,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -313,7 +314,7 @@ class _ManageCalculationExtraModalDialogState
                         ] else ...[
                           Expanded(
                             child: CustomButton(
-                              text: _locale.tr('save_changes'),
+                              text: _locale.tr('save'),
                               onTap: _updateCalculationExtra,
                             ),
                           ),

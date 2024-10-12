@@ -7,7 +7,6 @@
       "account_settings": "Account settings",
       "workspace_name": "Workspace name",
       "name": "Name",
-      "user_name": "User name",
       "email": "Email",
       "phone": "Phone",
       "contact_phone": "Contact phone",
@@ -32,6 +31,7 @@
       "back_to_login": "Back to login"
     },
     "restore_password": {
+      "wrong_format": "Wrong email format",
       "reset_your_password": "Reset your password",
       "enter_email": "Enter your email, and we'll help ou reset it in snap. Security made simple",
       "email": "Email",
@@ -48,7 +48,7 @@
       "email": "Email",
       "placeholder": "Placeholder",
       "password": "Password",
-      "confirm_password": "Confirm Password",
+      "confirm_password": "Confirm password",
       "sign_up": "Sign up",
       "already_account": "Already have an account?",
       "log_in": "Log in"
@@ -65,11 +65,11 @@
       "add_calculation": "Add calculation",
       "add_first_calculation": "Add first calculation",
       "not_calculation": "You don't added your first calculation yet.\nLet's get started!",
-      "calculation_name": "Calculation Name",
+      "calculation_name": "Calculation name",
       "unit_price": "Unit price",
       "installment_terms": "Installment terms",
       "installment_plan": "Installment plan",
-      "date_creation": "Date Creation",
+      "date_creation": "Date creation",
       "actions": "Actions"
     },
     "manage_calculation": {
@@ -145,7 +145,8 @@
       "extra_date": "Extra expense date",
       "select_date": "Select date",
       "cancel": "Cancel",
-      "create": "Create"
+      "create": "Create",
+      "save": "Save"
     }
   },
   "dashboard": {
@@ -154,9 +155,9 @@
       "add_company": "Add company",
       "add_first_company": "Add first company",
       "not_company": "You don't added your first company yet.\nLet's get started!",
-      "company_name": "Company Name",
+      "company_name": "Company name",
       "description": "Description",
-      "date_creation": "Date Creation",
+      "date_creation": "Date creation",
       "actions": "Actions"
     },
     "manage_company": {
@@ -175,7 +176,7 @@
       "company_description": "Company description",
       "create_company": "Create company",
       "save_changes": "Save changes",
-      "back_dashboard": "Back to Dashboard page",
+      "back_dashboard": "Back to Companies page",
       "ownership_location": "Ownership, Location, etc.."
     }
   },
@@ -210,10 +211,10 @@
       "add_project": "Add project",
       "add_first_project": "Add first project",
       "not_project": "You don't added your first project yet.\nLet's get started!",
-      "project_name": "Project Name",
+      "project_name": "Project name",
       "location": "Location",
       "description": "Description",
-      "date_creation": "Date Creation",
+      "date_creation": "Date creation",
       "actions": "Actions"
     }
   },
@@ -241,14 +242,14 @@
     },
     "team": {
       "team": "Team",
-      "add_user": "Add user",
-      "add_first_user": "Add first user",
+      "add_user": "Add member",
+      "add_first_user": "Add first member",
       "not_user": "You don't added your first user yet.\nLet's get started!",
-      "customer_name": "Customer Name",
+      "customer_name": "User name",
       "email": "Email",
       "role": "Role",
       "status": "Status",
-      "date_joined": "Date Joined",
+      "date_joined": "Date joined",
       "actions": "Actions",
       "worker": "Worker"
     }
@@ -272,6 +273,9 @@
     "account_settings": "Account settings",
     "logout": "Logout",
     "inactive": "Inactive",
-    "active": "Active"
+    "active": "Active",
+    "every_month": "Every month",
+    "every_quarter": "Every quarter",
+    "every_six_months": "Every six months"
   }
 }

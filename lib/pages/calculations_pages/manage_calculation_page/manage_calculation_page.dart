@@ -43,6 +43,8 @@ import 'widgets/manage_calculation_extra_item.dart';
 import 'widgets/manage_calculation_extra_modal_dialog.dart';
 import 'widgets/pdf_generate_document.dart';
 
+const TranslateLocale _system = TranslateLocale('system');
+
 const TranslateLocale _locale = TranslateLocale(
   'calculations.manage_calculation',
 );
@@ -290,7 +292,7 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
 
   void _onSelectCalculationPeriod(String name) {
     final CalculationPeriodModel period = kPeriods.firstWhere(
-      (e) => e.name == name,
+      (e) => _system.tr(e.name) == name,
     );
 
     _period = period;
@@ -965,10 +967,11 @@ class _ManageCalculationPageState extends State<ManageCalculationPage> {
                   ),
                   const SizedBox(height: 16.0),
                   AnimatedDropdown(
-                    initialData: _period?.name,
+                    initialData:
+                        _period != null ? _system.tr(_period!.name) : null,
                     labelText: _locale.tr('calculation_period'),
                     hintText: _locale.tr('select_period'),
-                    values: kPeriods.map((e) => e.name).toList(),
+                    values: kPeriods.map((e) => _system.tr(e.name)).toList(),
                     onChanged: _onSelectCalculationPeriod,
                   ),
                   const SizedBox(height: 16.0),
@@ -1709,7 +1712,7 @@ class _CalculationInfo extends StatelessWidget {
           _calculationInfoItem(
             title: _locale.tr('installment_plan'),
             data: _locale.tr('payments', args: [
-              '${period!.name}(~$currency$payment) — $paymentsCount',
+              '${_system.tr(period!.name)}(~$currency$payment) — $paymentsCount',
             ]),
           ),
           _calculationInfoItem(
