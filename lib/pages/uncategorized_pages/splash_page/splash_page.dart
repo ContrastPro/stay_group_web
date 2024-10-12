@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../database/local_database.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../resources/app_colors.dart';
 import '../../../resources/app_text_styles.dart';
@@ -26,6 +28,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  static const LocalDB _localDB = LocalDB.instance;
+
   @override
   void initState() {
     _setInitialData();
@@ -37,8 +41,17 @@ class _SplashPageState extends State<SplashPage> {
       const Duration(
         milliseconds: 3000,
       ),
-      () {
+      () async {
         final AuthRepository repository = context.read<AuthRepository>();
+
+        final Locale? locale = await _localDB.getLocale();
+
+        if (!mounted) return;
+
+        if (locale == null) {
+          await _localDB.saveLocale(context.locale);
+        }
+
         final User? user = repository.currentUser();
 
         if (user != null) {

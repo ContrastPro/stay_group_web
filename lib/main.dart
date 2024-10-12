@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'database/local_database.dart';
 import 'firebase_options.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/calculations_repository.dart';
@@ -39,6 +40,8 @@ Future<void> main() async {
 
       await EasyLocalization.ensureInitialized();
 
+      await LocalDB.instance.ensureInitialized();
+
       final GoRouter routerConfig = AppRouter.generateRoute();
 
       await Firebase.initializeApp(
@@ -48,7 +51,7 @@ Future<void> main() async {
       runApp(
         EasyLocalization(
           path: AppLocale.path,
-          supportedLocales: AppLocale.supportedLocales,
+          supportedLocales: AppLocale.getSupportedLocales,
           fallbackLocale: AppLocale.fallbackLocale,
           child: _App(
             routerConfig: routerConfig,

@@ -10,6 +10,7 @@
       "email": "Email",
       "phone": "Phone",
       "contact_phone": "Contact phone",
+      "system_locale": "System language",
       "save_changes": "Save changes"
     }
   },

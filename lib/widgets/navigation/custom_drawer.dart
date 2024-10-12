@@ -28,63 +28,63 @@ class CustomDrawer extends StatelessWidget {
   final String? fullPath;
   final Size screenSize;
 
-  static final List<BottomNavigationBarItemModel> _tabsManager = [
+  static const List<BottomNavigationBarItemModel> _tabsManager = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: _locale.tr('companies'),
+      title: 'companies',
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.projects,
-      title: _locale.tr('projects'),
+      title: 'projects',
       routePath: ProjectsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.team,
-      title: _locale.tr('team'),
+      title: 'team',
       routePath: TeamPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.calculation,
-      title: _locale.tr('calculations'),
+      title: 'calculations',
       routePath: CalculationsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.settings,
-      title: _locale.tr('account_settings'),
+      title: 'account_settings',
       routePath: AccountSettingsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.signOut,
-      title: _locale.tr('logout'),
+      title: 'logout',
       routePath: 'sign_out',
     ),
   ];
 
-  static final List<BottomNavigationBarItemModel> _tabsWorker = [
+  static const List<BottomNavigationBarItemModel> _tabsWorker = [
     BottomNavigationBarItemModel(
       icon: AppIcons.dashboard,
-      title: _locale.tr('companies'),
+      title: 'companies',
       routePath: DashboardPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.projects,
-      title: _locale.tr('projects'),
+      title: 'projects',
       routePath: ProjectsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.calculation,
-      title: _locale.tr('calculations'),
+      title: 'calculations',
       routePath: CalculationsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.settings,
-      title: _locale.tr('account_settings'),
+      title: 'account_settings',
       routePath: AccountSettingsPage.routePath,
     ),
     BottomNavigationBarItemModel(
       icon: AppIcons.signOut,
-      title: _locale.tr('logout'),
+      title: 'logout',
       routePath: 'sign_out',
     ),
   ];
@@ -199,7 +199,7 @@ class _ExpandedMenu extends StatelessWidget {
                       ),
                       const SizedBox(width: 8.0),
                       Text(
-                        e.title,
+                        _locale.tr(e.title),
                         style: AppTextStyles.paragraphSRegular.copyWith(
                           color: e.routePath == fullPath
                               ? AppColors.textPrimary

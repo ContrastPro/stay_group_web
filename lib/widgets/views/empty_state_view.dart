@@ -68,7 +68,7 @@ class EmptyStateView extends StatelessWidget {
                 ),
                 const SizedBox(height: 24.0),
                 SizedBox(
-                  width: 240.0,
+                  width: 260.0,
                   child: CustomButton(
                     prefixIcon: AppIcons.add,
                     text: buttonText,

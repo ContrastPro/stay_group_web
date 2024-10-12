@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/uncategorized/locale_model.dart';
+
 class AppLocale {
   const AppLocale._();
 
@@ -7,8 +9,18 @@ class AppLocale {
 
   static const Locale fallbackLocale = Locale('en', 'US');
 
-  static const List<Locale> supportedLocales = [
-    Locale('en', 'US'), // English
-    Locale('ru', 'RU'), // Russian
+  static const List<LocaleModel> supportedLocales = [
+    LocaleModel(
+      locale: Locale('en', 'US'),
+      name: 'English',
+    ),
+    LocaleModel(
+      locale: Locale('ru', 'RU'),
+      name: 'Русский',
+    ),
   ];
+
+  static List<Locale> get getSupportedLocales {
+    return supportedLocales.map((e) => e.locale).toList();
+  }
 }

@@ -1,10 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../database/local_database.dart';
+import '../../../models/uncategorized/locale_model.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/users_repository.dart';
+import '../../../resources/app_locale.dart';
 import '../../../resources/app_text_styles.dart';
 import '../../../services/in_app_notification_service.dart';
 import '../../../utils/constants.dart';
@@ -12,6 +16,7 @@ import '../../../utils/translate_locale.dart';
 import '../../../widgets/animations/action_loader.dart';
 import '../../../widgets/animations/fade_in_animation.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/dropdowns/animated_dropdown.dart';
 import '../../../widgets/layouts/drawer_layout.dart';
 import '../../../widgets/loaders/custom_loader.dart';
 import '../../../widgets/text_fields/custom_text_field.dart';
@@ -37,6 +42,8 @@ class AccountSettingsPage extends StatefulWidget {
 }
 
 class _AccountSettingsPageState extends State<AccountSettingsPage> {
+  static const LocalDB _localDB = LocalDB.instance;
+
   final TextEditingController _controllerWorkspace = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
@@ -47,8 +54,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   bool _nameValid = false;
 
   String? _errorTextName;
+  LocaleModel? _systemLocale;
 
-  void _setInitialData(AccountSettingsState state) {
+  Future<void> _setInitialData(AccountSettingsState state) async {
     if (_dataLoaded) return;
 
     if (state.spaceData != null) {
@@ -62,6 +70,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     if (state.userData!.info.phone != null) {
       _controllerPhone.text = state.userData!.info.phone!;
     }
+
+    final Locale? locale = await _localDB.getLocale();
+
+    final LocaleModel systemLocale = AppLocale.supportedLocales.firstWhere(
+      (e) => e.locale.toLanguageTag() == locale!.toLanguageTag(),
+    );
+
+    _systemLocale = systemLocale;
 
     _switchDataLoaded(true);
   }
@@ -80,6 +96,20 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   void _validateName(String name) {
     setState(() => _nameValid = name.length > 1);
+  }
+
+  Future<void> _onSelectLocale(String name) async {
+    final LocaleModel systemLocale = AppLocale.supportedLocales.firstWhere(
+      (e) => e.name == name,
+    );
+
+    await _localDB.saveLocale(systemLocale.locale);
+
+    if (!mounted) return;
+
+    await context.setLocale(systemLocale.locale);
+
+    setState(() => _systemLocale = systemLocale);
   }
 
   void _updateAccountInfo({
@@ -219,6 +249,16 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                           RegExp(r'^\+?\d{0,15}$'),
                                         ),
                                       ],
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    AnimatedDropdown(
+                                      initialData: _systemLocale?.name,
+                                      labelText: _locale.tr('system_locale'),
+                                      hintText: _locale.tr('system_locale'),
+                                      values: AppLocale.supportedLocales
+                                          .map((e) => e.name)
+                                          .toList(),
+                                      onChanged: _onSelectLocale,
                                     ),
                                     const SizedBox(height: 40.0),
                                     CustomButton(
