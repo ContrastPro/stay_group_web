@@ -11,7 +11,6 @@ import '../../pages/dashboard_pages/dashboard_page/dashboard_pages.dart';
 import '../../repositories/auth_repository.dart';
 import '../../repositories/users_repository.dart';
 import '../../services/timer_service.dart';
-import '../../utils/constants.dart';
 import '../../utils/helpers.dart';
 import '../../utils/translate_locale.dart';
 
@@ -153,7 +152,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     });
 
     on<DueDateTick>((event, emit) async {
-      final int difference = dateDifference(
+      /*final int difference = dateDifference(
         event.userData.metadata.dueDate!,
         type: DateDifference.minutes,
       );
@@ -167,7 +166,7 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
             ),
           ),
         );
-      }
+      }*/
     });
 
     on<NavigateTab>((event, emit) {
