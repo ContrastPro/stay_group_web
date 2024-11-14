@@ -1,6 +1,6 @@
 # stay_group_web
 
-Our service is a convenient tool for creating professional and informative PDF documents that display installment payment terms for residential properties to clients of construction companies and real estate agencies. With an intuitive interface, you can quickly and easily generate personalized documents that help your clients better understand the payment conditions and make informed decisions.
+Our service is a convenient tool for creating professional and informative PDF documents that display installment payment terms for residential properties to clients of construction companies and real estate agencies. With an intuitive interface, you can quickly and easily generate personalized documents that help your clients better understand the payment conditions and make informed decisions. Link to the site https://www.staygroup.space/
 
 ## Getting Started
 
